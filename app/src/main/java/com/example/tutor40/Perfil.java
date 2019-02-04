@@ -25,7 +25,7 @@ public class Perfil extends AppCompatActivity {
     EditText ApellidoPaterno;
     EditText ApellidoMaterno;
 
-    public void saveProfile(View view){
+    public void cambiarImagen(View view){
 
     }
 
@@ -52,7 +52,5 @@ public class Perfil extends AppCompatActivity {
                 ApellidoMaterno.setText(documentSnapshot.getData().get("ApellidoMaterno").toString());
             }
         });
-
-
     }
 }

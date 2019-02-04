@@ -15,8 +15,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".TutorMain"></activity>
-        <activity android:name=".Login" >
+        <activity
+            android:name=".TutorMaterias"
+            android:label="@string/title_activity_tutor_materias"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".TutorMain"
+            android:label="@string/title_activity_tutor_drawer"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".Login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,8 +32,7 @@
         </activity>
         <activity android:name=".Registro" />
         <activity android:name=".Perfil" />
-        <activity android:name=".AlumnoMain">
-        </activity>
+        <activity android:name=".AlumnoMain" />
     </application>
 
 </manifest>
