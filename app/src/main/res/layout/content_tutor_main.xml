@@ -8,26 +8,8 @@
     tools:context=".TutorMain"
     tools:showIn="@layout/app_bar_tutor_main">
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/borde_redondo"
-        android:text="ESTAS CONECTADO"
-        android:textAlignment="center"
-        android:textColor="@color/fui_bgEmail"
-        android:textSize="30sp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <ImageButton
-        android:id="@+id/imgbtnstop"
+        android:id="@+id/buttonDetenerse"
         android:layout_width="157dp"
         android:layout_height="168dp"
         android:layout_marginStart="117dp"
@@ -47,13 +29,12 @@
         tools:srcCompat="@drawable/stop" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/textViewEstado"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/borde_redondo"
         android:text="Estas Desconectado "
         android:textAlignment="center"
         android:textColor="@color/fui_bgEmail"
@@ -64,7 +45,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/imgbtngo"
+        android:id="@+id/buttonConectarse"
         style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:layout_width="126dp"
         android:layout_height="59dp"
@@ -74,6 +55,7 @@
         android:layout_marginTop="468dp"
         android:layout_marginEnd="163dp"
         android:background="#000000"
+        android:onClick="Conectar"
         android:text="CONECTARSE"
         android:textColor="@color/browser_actions_bg_grey"
         android:textSize="@dimen/activity_horizontal_margin"

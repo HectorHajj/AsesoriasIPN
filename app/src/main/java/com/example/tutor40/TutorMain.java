@@ -1,8 +1,12 @@
 package com.example.tutor40;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,23 +16,165 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.ImageButton;
+import android.widget.TableRow;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.concurrent.ExecutionException;
 
 public class TutorMain extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    SharedPreferences sharedPreferences;
     FirebaseFirestore db;
+
+    ImageButton detenerse;
+    Button conectarse;
+    TextView textViewEstado;
+
+    ArrayList<String> materiasPreferidasList = new ArrayList<>();
+    ArrayList<Peticiones> peticiones = new ArrayList<>();
+
+    public void Conectar(View view){
+
+        //Mostrar boton de detenerse
+        detenerse.setVisibility(View.VISIBLE);
+
+        //Ocultar boton de conectarse
+        conectarse.setVisibility(View.INVISIBLE);
+
+        //Cambiar texto a Buscando Peticiones de Tutoria...
+        textViewEstado.setText("Buscando Peticiones de Tutoria...");
+        textViewEstado.setTextColor(000000);
+
+        //Buscar peticiones con materias preferidas de usuario Tutor (Si NO tiene materias preferidas alertarlo y mandarlo a pantalla de materias)
+        //Si materiasPreferidas no esta vacia proseguir
+        if(actualizarMateriasPreferidas()){
+
+            //Comenzar una busqueda asincrona
+            GetPeticionesTask getPeticiones = new GetPeticionesTask();
+
+            try {
+                getPeticiones.execute(materiasPreferidasList).get();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public boolean actualizarMateriasPreferidas(){
+        try {
+            materiasPreferidasList.clear();
+
+            materiasPreferidasList = (ArrayList<String>) ObjectSerializer.deserialize(sharedPreferences.getString("materiasPreferidas", ObjectSerializer.serialize(new ArrayList<String>())));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //Si materiasPreferidasList esta vacia, alertar al usuario y recomendarle seleccionar algunas en actividad Materias
+        if(materiasPreferidasList.isEmpty()){
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle("No tiene Materias Preferidas")
+                    .setMessage("Para poder contestar preguntas, tiene que elegir las materias de su preferencia.")
+                    .setPositiveButton("Ir a Materias", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(getApplicationContext(), TutorMaterias.class);
+
+                            startActivity(intent);
+                        }
+                    })
+                    .setNegativeButton("Ir despues", null).show();
+            //Si llega aqui, eligio no hacer nada
+            return false;
+        }
+        //Si llega aqui materias no esta vacia
+        return true;
+    }
+
+    public class GetPeticionesTask extends AsyncTask<ArrayList<String>, Void, Void> {
+        @Override
+        protected Void doInBackground(ArrayList<String>... listas) {
+
+            //Encuentra las peticiones de acuerdo a materias elegidas por usuario
+            peticiones.clear();
+
+            for (ArrayList<String> lista : listas) {
+                for (String materia : lista) {
+                    db.collection("Peticiones")
+                            .whereEqualTo("Materia", materia)
+                            .get()
+                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
+
+                                            final Peticiones peticion = new Peticiones();
+
+                                            peticion.AlumnoID = document.getData().get("AlumnoID").toString();
+                                            peticion.PreguntaID = document.getData().get("PreguntaID").toString();
+                                            peticion.Materia = document.getData().get("Materia").toString();
+
+                                            DocumentReference pregunta = db.collection("Preguntas").document(peticion.PreguntaID);
+                                            pregunta.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                    peticion.FechaCreacion = (Date) documentSnapshot.getData().get("FechaCreacion");
+                                                }
+                                            });
+
+                                            peticiones.add(peticion);
+                                        }
+                                    } else {
+                                        Log.i("Mala tuya", "Error getting documents: ", task.getException());
+                                    }
+                                }
+                            });
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+
+            //Despues de terminar el query
+            //Si hay peticiones
+            if(!peticiones.isEmpty()){
+                //Pesar peticiones
+
+            } else {
+               //Si peticiones estan vacias, iterar nuevamente cada x cantidad de segundos
+
+            }
+
+            super.onPostExecute(aVoid);
+        }
+    }
 
     @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
         try {
 
             db = FirebaseFirestore.getInstance();
@@ -75,6 +221,14 @@ public class TutorMain extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        detenerse = findViewById(R.id.buttonDetenerse);
+        conectarse = findViewById(R.id.buttonConectarse);
+        textViewEstado = findViewById(R.id.textViewEstado);
+
+        sharedPreferences = getSharedPreferences("com.example.tutor40", MODE_PRIVATE);
+
+        actualizarMateriasPreferidas();
     }
 
     @Override
@@ -135,5 +289,13 @@ public class TutorMain extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onRestart() {
+
+        actualizarMateriasPreferidas();
+
+        super.onRestart();
     }
 }
