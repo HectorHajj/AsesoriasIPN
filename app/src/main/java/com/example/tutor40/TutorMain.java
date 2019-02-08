@@ -37,6 +37,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
@@ -53,7 +54,14 @@ public class TutorMain extends AppCompatActivity
     ArrayList<String> materiasPreferidasList = new ArrayList<>();
     ArrayList<Peticiones> peticiones = new ArrayList<>();
 
+    GetPeticionesTask getPeticiones;
+
+    boolean disponible = false;
+
     public void Conectar(View view){
+
+        //Disponibilidad es true
+        disponible = true;
 
         //Mostrar boton de detenerse
         detenerse.setVisibility(View.VISIBLE);
@@ -63,20 +71,38 @@ public class TutorMain extends AppCompatActivity
 
         //Cambiar texto a Buscando Peticiones de Tutoria...
         textViewEstado.setText("Buscando Peticiones de Tutoria...");
-        textViewEstado.setTextColor(000000);
 
         //Buscar peticiones con materias preferidas de usuario Tutor (Si NO tiene materias preferidas alertarlo y mandarlo a pantalla de materias)
         //Si materiasPreferidas no esta vacia proseguir
         if(actualizarMateriasPreferidas()){
 
             //Comenzar una busqueda asincrona
-            GetPeticionesTask getPeticiones = new GetPeticionesTask();
+            getPeticiones = new GetPeticionesTask();
 
             try {
-                getPeticiones.execute(materiasPreferidasList).get();
+                    getPeticiones.execute(materiasPreferidasList).get();
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void Desconectar(View view){
+        //Disponibilidad es true
+        disponible = false;
+
+        //Mostrar boton de detenerse
+        detenerse.setVisibility(View.INVISIBLE);
+
+        //Ocultar boton de conectarse
+        conectarse.setVisibility(View.VISIBLE);
+
+        //Cambiar texto a Buscando Peticiones de Tutoria...
+        textViewEstado.setText("Estas Desconectado...");
+
+        //Intentar interrumpir thread
+        if(getPeticiones != null){
+            getPeticiones.cancel(true);
         }
     }
 
@@ -103,7 +129,12 @@ public class TutorMain extends AppCompatActivity
                             startActivity(intent);
                         }
                     })
-                    .setNegativeButton("Ir despues", null).show();
+                    .setNegativeButton("Ir despues", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Desconectar(detenerse);
+                        }
+                    }).show();
             //Si llega aqui, eligio no hacer nada
             return false;
         }
@@ -118,8 +149,10 @@ public class TutorMain extends AppCompatActivity
             //Encuentra las peticiones de acuerdo a materias elegidas por usuario
             peticiones.clear();
 
-            for (ArrayList<String> lista : listas) {
-                for (String materia : lista) {
+            final int[] numeroQueriesTerminados = {0};
+
+            for (final ArrayList<String> lista : listas) {
+                for (final String materia : lista) {
                     db.collection("Peticiones")
                             .whereEqualTo("Materia", materia)
                             .get()
@@ -134,19 +167,69 @@ public class TutorMain extends AppCompatActivity
                                             peticion.AlumnoID = document.getData().get("AlumnoID").toString();
                                             peticion.PreguntaID = document.getData().get("PreguntaID").toString();
                                             peticion.Materia = document.getData().get("Materia").toString();
+                                            peticion.Pregunta = document.getData().get("Pregunta").toString();
+                                            peticion.FechaCreacion = (Date) document.getData().get("FechaCreacion");
 
-                                            DocumentReference pregunta = db.collection("Preguntas").document(peticion.PreguntaID);
-                                            pregunta.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                                @Override
-                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                    peticion.FechaCreacion = (Date) documentSnapshot.getData().get("FechaCreacion");
-                                                }
-                                            });
+                                            //Pesar peticion
+                                            /* Peso por tiempo */
+                                            long diferenciaSegundos;
+                                            Date newDate = new Date();
+
+                                            diferenciaSegundos = (newDate.getTime() - peticion.FechaCreacion.getTime()) / 1000;
+
+                                            peticion.Peso = (int) diferenciaSegundos;
 
                                             peticiones.add(peticion);
                                         }
+
+                                        numeroQueriesTerminados[0] += 1;
+
+                                        //Llamar un callback que se actualice de acuerdo al numero de llamadas a la base (numero de materias)
+                                        //Despues de llegar a la ultima llamada, procesar peticiones
+
+                                        //Si la materia es la [ultima de la lista
+                                        if(lista.size() == numeroQueriesTerminados[0]){
+                                            if(!peticiones.isEmpty()){
+                                                //Elegir la peticion con mas peso e iniciar chat
+                                                int posicion = 0;
+                                                long pesoAnterior = 0;
+                                                for (Peticiones peticion : peticiones) {
+                                                    if(peticion.Peso > pesoAnterior){
+                                                        pesoAnterior = peticion.Peso;
+                                                        posicion = peticiones.indexOf(peticion);
+                                                    }
+                                                }
+
+                                                new AlertDialog.Builder(TutorMain.this)
+                                                        .setIcon(android.R.drawable.ic_dialog_alert)
+                                                        .setTitle("Pregunta encontrada!")
+                                                        .setMessage(peticiones.get(posicion).Pregunta)
+                                                        .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(DialogInterface dialog, int which) {
+                                                                Intent intent = new Intent(getApplicationContext(), TutorMaterias.class);
+
+                                                                startActivity(intent);
+                                                            }
+                                                        })
+                                                        .setNegativeButton("Rechazar", new DialogInterface.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(DialogInterface dialog, int which) {
+                                                                //Si se rechaza pregunta, pesar de nuevo preguntas
+                                                                getPeticiones = new GetPeticionesTask();
+
+                                                                try {
+                                                                    getPeticiones.execute(materiasPreferidasList).get();
+                                                                } catch (Exception e) {
+                                                                    e.printStackTrace();
+                                                                }
+                                                            }
+                                                        }).show();
+                                            }
+                                        }
+
                                     } else {
-                                        Log.i("Mala tuya", "Error getting documents: ", task.getException());
+                                        Log.i("Error en Query", "Error getting documents: ", task.getException());
                                     }
                                 }
                             });
@@ -158,15 +241,8 @@ public class TutorMain extends AppCompatActivity
         @Override
         protected void onPostExecute(Void aVoid) {
 
-            //Despues de terminar el query
-            //Si hay peticiones
-            if(!peticiones.isEmpty()){
-                //Pesar peticiones
+            Log.i("On Post Execute",peticiones.toString());
 
-            } else {
-               //Si peticiones estan vacias, iterar nuevamente cada x cantidad de segundos
-
-            }
 
             super.onPostExecute(aVoid);
         }
@@ -195,7 +271,6 @@ public class TutorMain extends AppCompatActivity
                     }
                 }
             });
-
         } catch(Exception e){
             e.printStackTrace();
 
@@ -294,7 +369,10 @@ public class TutorMain extends AppCompatActivity
     @Override
     protected void onRestart() {
 
+        //Si se regresa a view, desconectar al usuario y actualizar sus preferencias
         actualizarMateriasPreferidas();
+
+        Desconectar(detenerse);
 
         super.onRestart();
     }

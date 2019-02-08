@@ -18,6 +18,7 @@
         android:layout_marginBottom="140dp"
         android:background="@drawable/stop"
         android:contentDescription="TODO"
+        android:onClick="Desconectar"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

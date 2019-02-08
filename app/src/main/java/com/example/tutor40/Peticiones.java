@@ -14,4 +14,8 @@ public class Peticiones {
 
     public Date FechaCreacion;
 
+    public String Pregunta;
+
+    public int Peso;
+
 }
