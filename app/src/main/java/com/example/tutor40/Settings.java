@@ -22,7 +22,7 @@ import java.util.HashMap;
 
 public class Settings extends AppCompatActivity {
 
-    private Button UpdateAccountSettings;
+    /*private Button UpdateAccountSettings;
     private EditText userName, userStatus;
     private ImageView userProfileImage;
     private String currentUserID;
@@ -229,5 +229,5 @@ public class Settings extends AppCompatActivity {
                     {
                     }
                 });
-    }
+    }*/
 }

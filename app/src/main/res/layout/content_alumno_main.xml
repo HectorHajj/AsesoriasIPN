@@ -11,14 +11,15 @@
     <EditText
         android:id="@+id/editTextPregunta"
         android:layout_width="295dp"
-        android:layout_height="57dp"
-        android:layout_marginTop="60dp"
+        android:layout_height="211dp"
+        android:layout_marginTop="48dp"
         android:ems="10"
         android:hint="Introduzca su pregunta"
         android:inputType="textMultiLine|text"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
         app:layout_constraintBottom_toTopOf="@+id/spinnerMaterias"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -40,7 +41,7 @@
         android:layout_height="43dp"
         android:layout_marginTop="32dp"
         android:dropDownWidth="match_parent"
-        android:spinnerMode="dropdown"
+        android:spinnerMode="dialog"
         app:layout_constraintBottom_toTopOf="@+id/buttonPreguntar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

@@ -1,10 +1,14 @@
 package com.example.tutor40;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.text.TextUtils;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -14,21 +18,66 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.Spinner;
+import android.widget.TableRow;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AlumnoMain extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     FirebaseFirestore db;
 
-    public void enviarPregunta(View view){
+    Spinner spinnerMaterias;
+    TextView pregunta;
 
+    ArrayList<String> spinnerArray =  new ArrayList<String>();
+
+    public void enviarPregunta(View view){
+        //Tomar valor actual de pregunta y de materia y enviarla
+        if(TextUtils.isEmpty(pregunta.getText().toString())){
+            Toast.makeText(this, "Introduzca su pregunta en el campo proporcionado, porfavor.", Toast.LENGTH_LONG).show();
+        } else {
+            Peticiones peticion = new Peticiones();
+
+            //Agregar la peticion a la base de datos
+            db.collection("Peticiones")
+                    .add(peticion)
+                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+
+                            Log.d("Done", "DocumentSnapshot written with ID: " + documentReference.getId());
+
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+
+                            Log.w("Undone", "Error adding document", e);
+
+                        }
+                    });
+        }
     }
 
     @Override
@@ -46,6 +95,43 @@ public class AlumnoMain extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        db = FirebaseFirestore.getInstance();
+
+        pregunta = findViewById(R.id.editTextPregunta);
+
+        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, spinnerArray);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerMaterias = findViewById(R.id.spinnerMaterias);
+        spinnerMaterias.setAdapter(adapter);
+
+        spinnerMaterias.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                ((TextView) view).setTextColor(Color.BLACK);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        //Introducir materias en el spinner
+        db.collection("Materias").get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()){
+                                spinnerArray.add(document.getData().get("Nombre").toString());
+                                adapter.notifyDataSetChanged();
+                            }
+                        } else {
+                            Log.i("Mala tuya", "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
     }
 
     @Override
