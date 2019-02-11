@@ -39,12 +39,14 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class AlumnoMain extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     FirebaseFirestore db;
+    FirebaseAuth mAuth;
 
     Spinner spinnerMaterias;
     TextView pregunta;
@@ -57,6 +59,14 @@ public class AlumnoMain extends AppCompatActivity
             Toast.makeText(this, "Introduzca su pregunta en el campo proporcionado, porfavor.", Toast.LENGTH_LONG).show();
         } else {
             Peticiones peticion = new Peticiones();
+            FirebaseUser user = mAuth.getInstance().getCurrentUser();
+
+            peticion.Pregunta = pregunta.getText().toString();
+            peticion.Materia = spinnerMaterias.getSelectedItem().toString();
+            peticion.FechaCreacion = new Date();
+            peticion.AlumnoID = user.getUid().toString();
+
+            //TODO: Crear pregunta
 
             //Agregar la peticion a la base de datos
             db.collection("Peticiones")
@@ -64,7 +74,7 @@ public class AlumnoMain extends AppCompatActivity
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
-
+                            //TODO: Limpiar pantalla, y escuchar por peticiones
                             Log.d("Done", "DocumentSnapshot written with ID: " + documentReference.getId());
 
                         }
@@ -97,6 +107,7 @@ public class AlumnoMain extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
 
         pregunta = findViewById(R.id.editTextPregunta);
 

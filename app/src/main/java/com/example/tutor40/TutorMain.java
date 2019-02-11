@@ -165,7 +165,7 @@ public class TutorMain extends AppCompatActivity
                                             final Peticiones peticion = new Peticiones();
 
                                             peticion.AlumnoID = document.getData().get("AlumnoID").toString();
-                                            peticion.PreguntaID = document.getData().get("PreguntaID").toString();
+                                            //peticion.PreguntaID = document.getData().get("PreguntaID").toString();
                                             peticion.Materia = document.getData().get("Materia").toString();
                                             peticion.Pregunta = document.getData().get("Pregunta").toString();
                                             peticion.FechaCreacion = (Date) document.getData().get("FechaCreacion");
