@@ -1,24 +1,22 @@
 package com.example.tutor40;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -33,6 +31,7 @@ public class Registro extends AppCompatActivity {
     EditText ApellidoMaterno;
 
     Switch alumnoTutor;
+    ProgressDialog loadingBar;
 
     FirebaseAuth mAuth;
     FirebaseFirestore db;
@@ -67,32 +66,40 @@ public class Registro extends AppCompatActivity {
 
             startActivity(intent);
         }
-
     }
 
     public void registrar(View view){
-
-        //TODO: Deberiamos poner aqui validaciones de que no halla nada vacio y asi
-
-
-        //Metodo para crear nuevo usuario
-        mAuth.createUserWithEmailAndPassword(Email.getText().toString(), Password.getText().toString())
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
+        if(TextUtils.isEmpty(Email.getText().toString())) {
+            Toast.makeText(this, "Por favor introduzca un E-Mail", Toast.LENGTH_SHORT).show();
+        }
+        else if(TextUtils.isEmpty(Password.getText().toString())) {
+            Toast.makeText(this, "Por favor introduzca una contraseña", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            loadingBar.setTitle("Creando una cuenta nueva");
+            loadingBar.setMessage("Por favor espere mientras se crea su cuenta");
+            loadingBar.setCanceledOnTouchOutside(true);
+            loadingBar.show();
+            //Metodo para crear nuevo usuario
+            mAuth.createUserWithEmailAndPassword(Email.getText().toString(), Password.getText().toString())
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            FirebaseUser user = mAuth.getInstance().getCurrentUser();
+                                // Sign in success, update UI with the signed-in user's information
+                                FirebaseUser user = mAuth.getInstance().getCurrentUser();
 
-                            registrarNuevoUsuario(user.getUid(), Nombre.getText().toString(), ApellidoPaterno.getText().toString(), ApellidoMaterno.getText().toString(), alumnoTutor.isChecked());
+                                registrarNuevoUsuario(user.getUid(), Nombre.getText().toString(), ApellidoPaterno.getText().toString(), ApellidoMaterno.getText().toString(), alumnoTutor.isChecked());
 
-                        } else {
-                            // If sign in fails, display a message to the user.
-                                Log.i("Login", "la cagamos");
+                            } else {
+                                String message = task.getException().toString();
+                                Toast.makeText(Registro.this, "Error:" + message, Toast.LENGTH_SHORT).show();
+                                loadingBar.dismiss();
+                            }
+
                         }
-
-                    }
-                });
+                    });
+        }
     }
 
     @Override
@@ -106,10 +113,19 @@ public class Registro extends AppCompatActivity {
         ApellidoPaterno = findViewById(R.id.editTextApellidoPaterno);
         ApellidoMaterno = findViewById(R.id.editTextApellidoMaterno);
 
-        alumnoTutor = findViewById(R.id.switch3);
+        alumnoTutor = findViewById(R.id.switchTutorAlumno);
 
         mAuth = FirebaseAuth.getInstance();
 
         db = FirebaseFirestore.getInstance();
+
+        loadingBar = new ProgressDialog(this);
+    }
+
+    public void sendUserToLoginActivity(View view)
+    {
+        Intent loginIntent = new Intent(getApplicationContext(), Login.class);
+
+        startActivity(loginIntent);
     }
 }

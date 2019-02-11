@@ -15,10 +15,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".Settings"></activity>
+        <activity android:name=".PhoneLogin" />
+        <activity
+            android:name=".AlumnoMain"
+            android:label="@string/title_activity_alumno_main"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".TutorMaterias"
             android:label="@string/title_activity_tutor_materias"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".TutorMain"
             android:label="@string/title_activity_tutor_drawer"
@@ -32,7 +38,6 @@
         </activity>
         <activity android:name=".Registro" />
         <activity android:name=".Perfil" />
-        <activity android:name=".AlumnoMain" />
     </application>
 
 </manifest>

@@ -1,12 +1,16 @@
 package com.example.tutor40;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -22,6 +26,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class Login extends AppCompatActivity {
 
     FirebaseAuth mAuth;
+    ProgressDialog loadingBar;
 
     EditText Email;
     EditText Password;
@@ -29,50 +34,70 @@ public class Login extends AppCompatActivity {
     FirebaseFirestore db;
 
     public void login(View view){
-        //TODO: hacer ela validacion con firebase de usuario y contrasenia
-        mAuth.signInWithEmailAndPassword(Email.getText().toString(), Password.getText().toString())
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
+        if(TextUtils.isEmpty(Email.getText().toString())) {
+            Toast.makeText(this, "Por favor introduzca un email", Toast.LENGTH_SHORT).show();
+        } else if(TextUtils.isEmpty(Password.getText().toString())) {
+            Toast.makeText(this, "Por favor introduzca una contraseña", Toast.LENGTH_SHORT).show();
+        } else {
+            loadingBar.setTitle("Logueado");
+            loadingBar.setMessage("Por favor espere");
+            loadingBar.setCanceledOnTouchOutside(true);
+            loadingBar.show();
 
-                            FirebaseUser user = mAuth.getCurrentUser();
+            mAuth.signInWithEmailAndPassword(Email.getText().toString(), Password.getText().toString())
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                // Sign in success, update UI with the signed-in user's information
 
-                            //Verificar Rol de usuario y mandarlo a pantalla correspondiente
-                            DocumentReference docRef = db.collection("users").document(user.getUid());
-                            docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                @Override
-                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                    if(documentSnapshot.getData().get("RolID").toString().equals("Ck5Tnzr0ipmAzKpQpTDX")) {
-                                        Intent intent = new Intent(getApplicationContext(), TutorMain.class);
+                                FirebaseUser user = mAuth.getCurrentUser();
 
-                                        startActivity(intent);
-                                    } else if(documentSnapshot.getData().get("RolID").toString().equals("I60WiSHvFyzJqUT0IU20")) {
-                                        Intent intent = new Intent(getApplicationContext(), AlumnoMain.class);
+                                //Verificar Rol de usuario y mandarlo a pantalla correspondiente
+                                DocumentReference docRef = db.collection("users").document(user.getUid());
+                                docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                        if (documentSnapshot.getData().get("RolID").toString().equals("Ck5Tnzr0ipmAzKpQpTDX")) {
+                                            Intent intent = new Intent(getApplicationContext(), TutorMain.class);
 
-                                        startActivity(intent);
+                                            startActivity(intent);
+                                        } else if (documentSnapshot.getData().get("RolID").toString().equals("I60WiSHvFyzJqUT0IU20")) {
+                                            Intent intent = new Intent(getApplicationContext(), AlumnoMain.class);
+
+                                            startActivity(intent);
+                                        }
                                     }
-                                }
-                            });
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.i("Login", "Oye, mano, fijate que fallo tu intento");
+                                });
+                            } else {
+                                String message = task.getException().toString();
+                                Toast.makeText(Login.this, "Error:" + message, Toast.LENGTH_SHORT).show();
+                                loadingBar.dismiss();
+                            }
                         }
-                    }
-                });
+                    });
+        }
     }
 
-    public void registrarse(View view){
+    public void irRegistrarse(View view){
         Intent intent = new Intent(getApplicationContext(), Registro.class);
 
         startActivity(intent);
     }
 
+    public void irPhoneLogin(View view){
+        Intent phoneLoginIntent = new Intent(getApplicationContext(), PhoneLogin.class);
+
+        startActivity(phoneLoginIntent);
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        loadingBar = new ProgressDialog(this);
 
         Email = findViewById(R.id.editTextEmail);
         Password = findViewById(R.id.editTextPassword);
