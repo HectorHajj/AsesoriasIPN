@@ -22,7 +22,8 @@ import java.util.Set;
  */
 public class GroupsFragment extends Fragment
 {
-/*    private ListView list_view;
+    /*
+    private ListView list_view;
     private ArrayAdapter<String> arrayAdapter;
     private ArrayList<String> list_of_groups = new ArrayList<>();
     private DatabaseReference GroupRef;

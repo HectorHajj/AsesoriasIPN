@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
@@ -34,7 +35,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -51,6 +55,10 @@ public class AlumnoMain extends AppCompatActivity
     Spinner spinnerMaterias;
     TextView pregunta;
 
+    EventListener<DocumentSnapshot> yolo;
+
+    ListenerRegistration registration;
+
     ArrayList<String> spinnerArray =  new ArrayList<String>();
 
     public void enviarPregunta(View view){
@@ -64,7 +72,7 @@ public class AlumnoMain extends AppCompatActivity
             peticion.Pregunta = pregunta.getText().toString();
             peticion.Materia = spinnerMaterias.getSelectedItem().toString();
             peticion.FechaCreacion = new Date();
-            peticion.AlumnoID = user.getUid().toString();
+            peticion.AlumnoID = user.getUid();
 
             //TODO: Crear pregunta
 
@@ -73,18 +81,42 @@ public class AlumnoMain extends AppCompatActivity
                     .add(peticion)
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
-                        public void onSuccess(DocumentReference documentReference) {
-                            //TODO: Limpiar pantalla, y escuchar por peticiones
+                        public void onSuccess(final DocumentReference documentReference) {
                             Log.d("Done", "DocumentSnapshot written with ID: " + documentReference.getId());
 
+                            final DocumentReference docRef = db.collection("Peticiones").document(documentReference.getId());
+
+                            yolo = new EventListener<DocumentSnapshot>() {
+                                @Override
+                                public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException e) {
+                                    if (e != null) {
+                                        Log.w("Null event", "Listen failed.", e);
+                                        return;
+                                    }
+
+                                    if (snapshot != null && snapshot.exists()) {
+                                        Log.d("Heard event", "Current data: " + snapshot.getData());
+
+                                        registration.remove();
+
+                                        Intent intent = new Intent(getApplicationContext(), GroupChatActivity.class);
+
+                                        intent.putExtra("PeticionID", documentReference.getId());
+
+                                        startActivity(intent);
+                                    } else {
+                                        Log.d("Heard event with null data", "Current data: null");
+                                    }
+                                }
+                            };
+
+                            registration = docRef.addSnapshotListener(yolo);
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-
                             Log.w("Undone", "Error adding document", e);
-
                         }
                     });
         }

@@ -6,15 +6,19 @@ import java.util.Date;
 
 public class Peticiones {
 
-    public String Materia;
+    public String PeticionID;
 
     public String AlumnoID;
 
+    public String TutorID;
+
     public String PreguntaID;
 
-    public Date FechaCreacion;
+    public String Materia;
 
     public String Pregunta;
+
+    public Date FechaCreacion;
 
     public int Peso;
 

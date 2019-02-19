@@ -35,10 +35,13 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class TutorMain extends AppCompatActivity
@@ -55,6 +58,8 @@ public class TutorMain extends AppCompatActivity
     ArrayList<Peticiones> peticiones = new ArrayList<>();
 
     GetPeticionesTask getPeticiones;
+
+    String TutorID;
 
     boolean disponible = false;
 
@@ -164,6 +169,7 @@ public class TutorMain extends AppCompatActivity
 
                                             final Peticiones peticion = new Peticiones();
 
+                                            peticion.PeticionID = document.getId();
                                             peticion.AlumnoID = document.getData().get("AlumnoID").toString();
                                             //peticion.PreguntaID = document.getData().get("PreguntaID").toString();
                                             peticion.Materia = document.getData().get("Materia").toString();
@@ -200,6 +206,8 @@ public class TutorMain extends AppCompatActivity
                                                     }
                                                 }
 
+                                                final Peticiones peticionEscogida = peticiones.get(posicion);
+
                                                 new AlertDialog.Builder(TutorMain.this)
                                                         .setIcon(android.R.drawable.ic_dialog_alert)
                                                         .setTitle("Pregunta encontrada!")
@@ -207,9 +215,30 @@ public class TutorMain extends AppCompatActivity
                                                         .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                                                             @Override
                                                             public void onClick(DialogInterface dialog, int which) {
-                                                                Intent intent = new Intent(getApplicationContext(), TutorMaterias.class);
 
-                                                                startActivity(intent);
+                                                                //Modificar peticion
+
+                                                                peticionEscogida.TutorID = TutorID;
+
+                                                                db.collection("Peticiones").document(peticionEscogida.PeticionID)
+                                                                        .set(peticionEscogida, SetOptions.merge());
+
+                                                                Map<String, Object> chat = new HashMap<>();
+                                                                chat.put("TutorID", TutorID);
+                                                                chat.put("AlumnoID", peticionEscogida.AlumnoID);
+
+                                                                db.collection("Chats").document(peticionEscogida.PeticionID)
+                                                                        .set(chat)
+                                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                            @Override
+                                                                            public void onSuccess(Void aVoid) {
+                                                                                Intent intent = new Intent(getApplicationContext(), GroupChatActivity.class);
+
+                                                                                intent.putExtra("PeticionID", peticionEscogida.PeticionID);
+
+                                                                                startActivity(intent);
+                                                                            }
+                                                                        });
                                                             }
                                                         })
                                                         .setNegativeButton("Rechazar", new DialogInterface.OnClickListener() {
@@ -269,6 +298,8 @@ public class TutorMain extends AppCompatActivity
 
                         startActivity(intent);
                     }
+
+                    TutorID = documentSnapshot.getData().get("Nombre").toString();
                 }
             });
         } catch(Exception e){
@@ -284,6 +315,7 @@ public class TutorMain extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_tutor_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

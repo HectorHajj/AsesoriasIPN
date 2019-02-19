@@ -1,10 +1,14 @@
 package com.example.tutor40;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -13,23 +17,36 @@ import android.widget.TextView;
 import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
 public class GroupChatActivity extends AppCompatActivity
 {
-    /*private Toolbar mToolbar;
+    private Toolbar mToolbar;
     private ImageButton SendMessageButton;
     private EditText userMessageInput;
     private ScrollView mScrollView;
     private TextView displayTextMessages;
     private FirebaseAuth mAuth;
-    private DatabaseReference UsersRef, GroupNameRef, GroupMessageKeyRef;
-    private String currentGroupName, currentUserID, currentUserName, currentDate, currentTime;
+    private FirebaseFirestore db;
+    private String currentUserID, currentUserName, PeticionID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -37,16 +54,20 @@ public class GroupChatActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_chat);
 
-        currentGroupName = getIntent().getExtras().get("groupName").toString();
-        Toast.makeText(GroupChatActivity.this, currentGroupName, Toast.LENGTH_SHORT).show();
+        //Traer el id de la peticion
+        Intent intent = getIntent();
+        PeticionID = intent.getStringExtra("PeticionID");
+
+        Log.i("PeticionID", PeticionID);
 
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
         currentUserID = mAuth.getCurrentUser().getUid();
-        UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
-        GroupNameRef = FirebaseDatabase.getInstance().getReference().child("Grupos").child(currentGroupName);
 
         InitializeFields();
         GetUserInfo();
+        DisplayMessages();
 
         SendMessageButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -59,87 +80,44 @@ public class GroupChatActivity extends AppCompatActivity
                 mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
             }
         });
+
+        db.collection("Chats").document(PeticionID).collection("Mensajes").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException e) {
+                DisplayMessages();
+            }
+        });
     }
 
     @Override
-    protected void onStart()
-    {
+    protected void onStart() {
         super.onStart();
-
-        GroupNameRef.addChildEventListener(new ChildEventListener(){
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s)
-            {
-                if(dataSnapshot.exists())
-                {
-                    DisplayMessages(dataSnapshot);
-                }
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s)
-            {
-                if(dataSnapshot.exists())
-                {
-                    DisplayMessages(dataSnapshot);
-                }
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot)
-            {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s)
-            {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError)
-            {
-
-            }
-        });
     }
 
-    private void InitializeFields()
-    {
+    private void InitializeFields() {
         mToolbar = (Toolbar) findViewById(R.id.group_chat_bar_layout);
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle(currentGroupName);
+        //TODO Nombre del otro usuario
+        getSupportActionBar().setTitle("Algo informativo");
 
-          SendMessageButton = (ImageButton) findViewById(R.id.send_message_button);
-           userMessageInput = (EditText) findViewById(R.id.input_group_message);
+        SendMessageButton = (ImageButton) findViewById(R.id.send_message_button);
+        userMessageInput = (EditText) findViewById(R.id.input_group_message);
         displayTextMessages = (TextView) findViewById(R.id.group_chat_text_display);
-                mScrollView = (ScrollView) findViewById(R.id.my_scroll_view);
+        mScrollView = (ScrollView) findViewById(R.id.my_scroll_view);
     }
 
-    private void GetUserInfo()
-    {
-        UsersRef.child(currentUserID).addValueEventListener(new ValueEventListener(){
+    private void GetUserInfo() {
+        DocumentReference docRef = db.collection("users").document(currentUserID);
+        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-            {
-                if(dataSnapshot.exists())
-                {
-                    currentUserName = dataSnapshot.child("name").getValue().toString();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError)
-            {
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                currentUserName = documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString();
             }
         });
     }
 
-    private void SaveMessageInfoToDatabase()
-    {
+    private void SaveMessageInfoToDatabase() {
         String message = userMessageInput.getText().toString();
-        String messageKEY = GroupNameRef.push().getKey();
 
         if(TextUtils.isEmpty(message))
         {
@@ -147,40 +125,68 @@ public class GroupChatActivity extends AppCompatActivity
         }
         else
         {
+            Mensajes mensaje = new Mensajes();
+
+            mensaje.UserID = currentUserID;
+
+            mensaje.Nombre = currentUserName;
+
+            mensaje.Mensaje = message;
+
             Calendar calForDate = Calendar.getInstance();
             SimpleDateFormat currentDateFormat = new SimpleDateFormat("MMM dd, yyyy");
-            currentDate = currentDateFormat.format(calForDate.getTime());
+            mensaje.Fecha = currentDateFormat.format(calForDate.getTime());
 
             Calendar calForTime = Calendar.getInstance();
             SimpleDateFormat currentTimeFormat = new SimpleDateFormat("hh:mm a");
-            currentTime = currentTimeFormat.format(calForTime.getTime());
+            mensaje.Tiempo = currentTimeFormat.format(calForTime.getTime());
 
-            HashMap<String, Object> groupMessageKey = new HashMap<>();
-            GroupNameRef.updateChildren(groupMessageKey);
+            db.collection("Chats").document(PeticionID).collection("Mensajes")
+                    .add(mensaje)
+                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
 
-            GroupMessageKeyRef = GroupNameRef.child(messageKEY);
-            HashMap<String, Object> messageInfoMap = new HashMap<>();
-                messageInfoMap.put("name", currentUserName);
-                messageInfoMap.put("message", message);
-                messageInfoMap.put("date", currentDate);
-                messageInfoMap.put("time", currentTime);
-            GroupMessageKeyRef.updateChildren(messageInfoMap);
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+                            DisplayMessages();
+                        }
+                    });
         }
     }
 
-    private void DisplayMessages(DataSnapshot dataSnapshot)
-    {
-        Iterator iterator = dataSnapshot.getChildren().iterator();
+    private void DisplayMessages() {
+        try {
+            db.collection("Chats").document(PeticionID).collection("Mensajes")
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-        while(iterator.hasNext())
-        {
-               String chatDate = (String) ((DataSnapshot)iterator.next()).getValue();
-            String chatMessage = (String) ((DataSnapshot)iterator.next()).getValue();
-               String chatName = (String) ((DataSnapshot)iterator.next()).getValue();
-               String chatTime = (String) ((DataSnapshot)iterator.next()).getValue();
+                            displayTextMessages.setText("");
 
-               displayTextMessages.append(chatName + ":\n" + chatMessage + "\n" + chatTime + "     " + chatDate + "\n\n\n");
-               mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    String chatDate = document.getData().get("Fecha").toString();
+                                    String chatMessage = document.getData().get("Mensaje").toString();
+                                    String chatName = document.getData().get("Nombre").toString();
+                                    String chatTime = document.getData().get("Tiempo").toString();
+
+                                    displayTextMessages.append(chatName + ":\n" + chatMessage + "\n" + chatTime + "     " + chatDate + "\n\n\n");
+                                    mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
+                                }
+                            } else {
+                                Log.i("Error en Query", "Error getting documents: ", task.getException());
+                            }
+                        }
+                    });
+        } catch (Exception e){
+            //No hay mensajes
         }
-    }*/
+    }
+
+    @Override
+    public void onBackPressed() {
+        //Si se presiona el botón de retroceso
+
+        super.onBackPressed();
+    }
 }
