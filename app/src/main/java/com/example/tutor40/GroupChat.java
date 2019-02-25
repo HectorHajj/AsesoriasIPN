@@ -2,6 +2,7 @@ package com.example.tutor40;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -18,10 +19,10 @@ import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -29,24 +30,23 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.SetOptions;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 
-public class GroupChatActivity extends AppCompatActivity
+public class GroupChat extends AppCompatActivity
 {
     private Toolbar mToolbar;
     private ImageButton SendMessageButton;
     private EditText userMessageInput;
     private ScrollView mScrollView;
-    private TextView displayTextMessages;
+    private TextView displayTextMessages, Temporizador;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
-    private String currentUserID, currentUserName, PeticionID;
+    private String currentUserID, currentUserName, PeticionID, TutorID, AlumnoID;
+    private CountDownTimer Reloj;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -69,6 +69,8 @@ public class GroupChatActivity extends AppCompatActivity
         GetUserInfo();
         DisplayMessages();
 
+
+
         SendMessageButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view)
@@ -87,6 +89,19 @@ public class GroupChatActivity extends AppCompatActivity
                 DisplayMessages();
             }
         });
+
+        Contador();
+
+        db.collection("Peticiones").document(PeticionID)
+        .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        @Override
+        public void onSuccess(DocumentSnapshot documentSnapshot) {
+            Log.i("Peticion", PeticionID);
+            TutorID = documentSnapshot.getData().get("TutorID").toString();
+            AlumnoID = documentSnapshot.getData().get("AlumnoID").toString();
+        }
+    });
+
     }
 
     @Override
@@ -94,16 +109,18 @@ public class GroupChatActivity extends AppCompatActivity
         super.onStart();
     }
 
+
     private void InitializeFields() {
         mToolbar = (Toolbar) findViewById(R.id.group_chat_bar_layout);
         setSupportActionBar(mToolbar);
         //TODO Nombre del otro usuario
         getSupportActionBar().setTitle("Algo informativo");
 
-        SendMessageButton = (ImageButton) findViewById(R.id.send_message_button);
-        userMessageInput = (EditText) findViewById(R.id.input_group_message);
-        displayTextMessages = (TextView) findViewById(R.id.group_chat_text_display);
-        mScrollView = (ScrollView) findViewById(R.id.my_scroll_view);
+        SendMessageButton = findViewById(R.id.send_message_button);
+        userMessageInput = findViewById(R.id.input_group_message);
+        displayTextMessages = findViewById(R.id.group_chat_text_display);
+        mScrollView = findViewById(R.id.my_scroll_view);
+        Temporizador = findViewById(R.id.tiempo);
     }
 
     private void GetUserInfo() {
@@ -112,6 +129,7 @@ public class GroupChatActivity extends AppCompatActivity
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 currentUserName = documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString();
+
             }
         });
     }
@@ -182,6 +200,66 @@ public class GroupChatActivity extends AppCompatActivity
             //No hay mensajes
         }
     }
+
+    public void Contador(){
+
+        Reloj = new CountDownTimer(60000,1000) {
+            @Override
+            public void onTick(long milisegundosRestantes) {
+                //12:00
+                Log.i("milisegundos",String.valueOf(milisegundosRestantes));
+                long segundos = milisegundosRestantes /1000 % 60;
+                long minutos = milisegundosRestantes /60000;
+                Temporizador.setText(String.valueOf(minutos)+ ":" + String.valueOf(segundos));
+
+            }
+            @Override
+            public void onFinish() {
+
+                new AlertDialog.Builder(GroupChat.this)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle("Se termino el tiempo de la sesión desea continuar con otra ?")
+                        .setPositiveButton("Aceptar",new DialogInterface.OnClickListener(){
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                Reloj.cancel();
+                                Contador();
+                            }
+                        })
+                        .setNegativeButton("Rechazar",new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        Reloj.cancel();
+                        //PeticionID = intent.getStringExtra("PeticionID");
+                        db.collection("Peticiones").document(PeticionID)
+                                .delete()
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
+
+                                        intent.putExtra("TutorID",TutorID);
+                                        intent.putExtra("AlumnoID",AlumnoID);
+
+                                        startActivity(intent);
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+
+                                    }
+                                });
+                    }
+                }).show();
+
+
+            }
+        }.start();
+    }
+
 
     @Override
     public void onBackPressed() {

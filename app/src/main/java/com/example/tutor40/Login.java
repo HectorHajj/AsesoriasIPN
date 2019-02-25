@@ -85,13 +85,6 @@ public class Login extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void irPhoneLogin(View view){
-        Intent phoneLoginIntent = new Intent(getApplicationContext(), PhoneLogin.class);
-
-        startActivity(phoneLoginIntent);
-    }
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

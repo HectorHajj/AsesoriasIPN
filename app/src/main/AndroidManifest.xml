@@ -15,8 +15,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Settings"></activity>
-        <activity android:name=".PhoneLogin" />
+        <activity android:name=".Calificaciones"></activity>
+        <activity android:name=".Materias_carreras" />
+        <activity android:name=".Settings" />
         <activity
             android:name=".AlumnoMain"
             android:label="@string/title_activity_alumno_main"
@@ -39,7 +40,7 @@
         <activity android:name=".Registro" />
         <activity android:name=".Perfil" />
         <activity
-            android:name=".GroupChatActivity"
+            android:name=".GroupChat"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>
 

@@ -48,7 +48,7 @@ public class GroupsFragment extends Fragment
             {
                 String currentGroupName = adapterView.getItemAtPosition(position).toString();
 
-                Intent groupChatIntent = new Intent(getContext(), GroupChatActivity.class);
+                Intent groupChatIntent = new Intent(getContext(), GroupChat.class);
                 groupChatIntent.putExtra("groupName", currentGroupName);
                 startActivity(groupChatIntent);
             }

@@ -66,20 +66,21 @@
             <TextView
                 android:id="@+id/forget_password_link"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="20dp"
                 android:layout_below="@+id/editTextPassword"
                 android:layout_centerHorizontal="true"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:text="Olvide contraseña"
-                android:textAlignment="textEnd"
+                android:textAlignment="center"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="17sp"
                 android:textStyle="bold"
+                android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/editTextPassword" />
+                tools:layout_editor_absoluteY="418dp" />
 
             <Button
                 android:id="@+id/buttonLogin"
@@ -87,7 +88,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/forget_password_link"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="56dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/buttons"
                 android:onClick="login"
@@ -97,8 +98,9 @@
                 android:textColor="@android:color/background_light"
                 android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/forget_password_link" />
+                app:layout_constraintTop_toBottomOf="@+id/editTextPassword" />
 
             <TextView
                 android:id="@+id/need_new_account_link"
@@ -107,7 +109,7 @@
                 android:layout_below="@+id/buttonLogin"
                 android:layout_centerHorizontal="true"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:onClick="irRegistrarse"
                 android:text="Crear cuenta"
@@ -116,44 +118,9 @@
                 android:textSize="17sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/buttonLogin" />
-
-            <TextView
-                android:id="@+id/login_using"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/need_new_account_link"
-                android:layout_centerHorizontal="true"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:text="o loguear usando tu"
-                android:textAlignment="center"
-                android:textSize="17sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/need_new_account_link" />
-
-            <Button
-                android:id="@+id/phone_login_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/login_using"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:background="@drawable/buttons"
-                android:drawableStart="@drawable/phone"
-                android:onClick="irPhoneLogin"
-                android:padding="4dp"
-                android:text="Celular"
-                android:textAllCaps="false"
-                android:textColor="@android:color/background_light"
-                android:textSize="14sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/login_using" />
 
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
