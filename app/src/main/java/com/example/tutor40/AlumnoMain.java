@@ -55,6 +55,8 @@ public class AlumnoMain extends AppCompatActivity
 
     ArrayList<String> spinnerArray =  new ArrayList<String>();
 
+    Boolean Aceptado = false;
+
     public void enviarPregunta(View view){
         //Tomar valor actual de pregunta y de materia y enviarla
         if(TextUtils.isEmpty(pregunta.getText().toString())){
@@ -89,15 +91,17 @@ public class AlumnoMain extends AppCompatActivity
                                     }
 
                                     if (snapshot != null && snapshot.exists()) {
-                                        Log.d("Heard event", "Current data: " + snapshot.getData());
+                                        Log.i("Heard event", "Current data: " + snapshot.getData());
 
-                                        registration.remove();
+                                        if(snapshot.getData().get("TutorID") != null){
+                                            registration.remove();
 
-                                        Intent intent = new Intent(getApplicationContext(), GroupChat.class);
+                                            Intent intent = new Intent(getApplicationContext(), GroupChat.class);
 
-                                        intent.putExtra("PeticionID", documentReference.getId());
+                                            intent.putExtra("PeticionID", documentReference.getId());
 
-                                        startActivity(intent);
+                                            startActivity(intent);
+                                        }
                                     } else {
                                         Log.d("Heard event with null data", "Current data: null");
                                     }

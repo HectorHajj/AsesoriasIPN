@@ -10,6 +10,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -43,10 +45,9 @@ public class GroupChat extends AppCompatActivity
     private TextView displayTextMessages, Temporizador;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
-    private String currentUserID, currentUserName, PeticionID, TutorID, AlumnoID;
+    private String currentUserID, currentUserRole, currentUserName, PeticionID, TutorID, AlumnoID;
     private CountDownTimer Reloj;
-
-
+    private Integer CantidadExtensiones = 3, ExtensionesUsadas = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -58,8 +59,6 @@ public class GroupChat extends AppCompatActivity
         Intent intent = getIntent();
         PeticionID = intent.getStringExtra("PeticionID");
 
-        Log.i("PeticionID", PeticionID);
-
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
@@ -68,8 +67,6 @@ public class GroupChat extends AppCompatActivity
         InitializeFields();
         GetUserInfo();
         DisplayMessages();
-
-
 
         SendMessageButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -90,18 +87,8 @@ public class GroupChat extends AppCompatActivity
             }
         });
 
-        Contador();
-
-        db.collection("Peticiones").document(PeticionID)
-        .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-        @Override
-        public void onSuccess(DocumentSnapshot documentSnapshot) {
-            Log.i("Peticion", PeticionID);
-            TutorID = documentSnapshot.getData().get("TutorID").toString();
-            AlumnoID = documentSnapshot.getData().get("AlumnoID").toString();
-        }
-    });
-
+        //Comienza el temporizador del chat
+        reiniciarTemporizador();
     }
 
     @Override
@@ -111,10 +98,39 @@ public class GroupChat extends AppCompatActivity
 
 
     private void InitializeFields() {
-        mToolbar = (Toolbar) findViewById(R.id.group_chat_bar_layout);
-        setSupportActionBar(mToolbar);
-        //TODO Nombre del otro usuario
-        getSupportActionBar().setTitle("Algo informativo");
+        View v = getLayoutInflater().inflate(R.layout.app_bar_layout,null);
+        mToolbar = (Toolbar) v.findViewById(R.id.toolbar);
+
+        db.collection("Peticiones").document(PeticionID)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        TutorID = documentSnapshot.getData().get("TutorID").toString();
+                        AlumnoID = documentSnapshot.getData().get("AlumnoID").toString();
+
+                        if(currentUserID == TutorID){
+                            db.collection("users").document(AlumnoID)
+                                    .get()
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            mToolbar.setTitle("Chat con:" + documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString());
+                                        }
+                            });
+                        }
+                        else {
+                            db.collection("users").document(TutorID)
+                                    .get()
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            mToolbar.setTitle("Chat con:" + documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString());
+                                        }
+                                    });
+                        }
+                    }
+                });
 
         SendMessageButton = findViewById(R.id.send_message_button);
         userMessageInput = findViewById(R.id.input_group_message);
@@ -129,7 +145,7 @@ public class GroupChat extends AppCompatActivity
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 currentUserName = documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString();
-
+                currentUserRole = documentSnapshot.getData().get("RolID").toString();
             }
         });
     }
@@ -162,7 +178,6 @@ public class GroupChat extends AppCompatActivity
             db.collection("Chats").document(PeticionID).collection("Mensajes")
                     .add(mensaje)
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
                             DisplayMessages();
@@ -201,63 +216,78 @@ public class GroupChat extends AppCompatActivity
         }
     }
 
-    public void Contador(){
+    public void reiniciarTemporizador(){
+        if(ExtensionesUsadas < CantidadExtensiones){
+            ExtensionesUsadas += ExtensionesUsadas;
 
-        Reloj = new CountDownTimer(60000,1000) {
-            @Override
-            public void onTick(long milisegundosRestantes) {
-                //12:00
-                Log.i("milisegundos",String.valueOf(milisegundosRestantes));
-                long segundos = milisegundosRestantes /1000 % 60;
-                long minutos = milisegundosRestantes /60000;
-                Temporizador.setText(String.valueOf(minutos)+ ":" + String.valueOf(segundos));
+            Reloj = new CountDownTimer(60000,1000) {
 
-            }
-            @Override
-            public void onFinish() {
+                @Override
+                public void onTick(long milisegundosRestantes) {
+                    long segundos = milisegundosRestantes / 1000 % 60;
+                    long minutos = milisegundosRestantes / 60000;
+                    Temporizador.setText(String.valueOf(minutos)+ ":" + String.valueOf(segundos));
+                }
 
-                new AlertDialog.Builder(GroupChat.this)
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .setTitle("Se termino el tiempo de la sesión desea continuar con otra ?")
-                        .setPositiveButton("Aceptar",new DialogInterface.OnClickListener(){
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                @Override
+                public void onFinish() {
+                    new AlertDialog.Builder(GroupChat.this)
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setTitle("Se termino el tiempo de la sesión, ¿Desea reiniciar el Temporizador?")
+                            .setPositiveButton("Aceptar",new DialogInterface.OnClickListener(){
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Reloj.cancel();
+                                    reiniciarTemporizador();
+                                }
+                            })
+                            .setNegativeButton("Rechazar",new DialogInterface.OnClickListener(){
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    db.collection("Peticiones").document(PeticionID)
+                                            .delete()
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
 
-                                Reloj.cancel();
-                                Contador();
-                            }
-                        })
-                        .setNegativeButton("Rechazar",new DialogInterface.OnClickListener(){
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                                                    //Borrar chat tambien
+                                                    db.collection("Chats").document(PeticionID)
+                                                            .delete()
+                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                @Override
+                                                                public void onSuccess(Void aVoid) {
+                                                                    Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
 
-                        Reloj.cancel();
-                        //PeticionID = intent.getStringExtra("PeticionID");
-                        db.collection("Peticiones").document(PeticionID)
-                                .delete()
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
+                                                                    intent.putExtra("TutorID",TutorID);
+                                                                    intent.putExtra("AlumnoID",AlumnoID);
 
-                                        intent.putExtra("TutorID",TutorID);
-                                        intent.putExtra("AlumnoID",AlumnoID);
+                                                                    startActivity(intent);
+                                                                }
+                                                            })
+                                                            .addOnFailureListener(new OnFailureListener() {
+                                                                @Override
+                                                                public void onFailure(@NonNull Exception e) {
 
-                                        startActivity(intent);
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
+                                                                }
+                                                            });
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
 
-                                    }
-                                });
-                    }
-                }).show();
-
-
-            }
-        }.start();
+                                                }
+                                            });
+                                }
+                            }).show();
+                }
+            }.start();
+        } else {
+            new AlertDialog.Builder(GroupChat.this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle("Han utilizado todas sus extensiones. Se terminara el chat al acabar el tiempo restante.")
+                    .setPositiveButton("Aceptar", null).show();
+        }
     }
 
 
@@ -266,5 +296,74 @@ public class GroupChat extends AppCompatActivity
         //Si se presiona el botón de retroceso
 
         super.onBackPressed();
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if(mAuth.getCurrentUser().getUid() == "Ck5Tnzr0ipmAzKpQpTDX"){
+            Log.i("It's Happening!","Tutor");
+            getMenuInflater().inflate(R.menu.chat_menu_tutor, menu);
+        } else if ( mAuth.getCurrentUser().getUid() == "I60WiSHvFyzJqUT0IU20"){
+            Log.i("It's Happening!","Alumno");
+            getMenuInflater().inflate(R.menu.chat_menu_alumno, menu);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if(id == R.id.extender){
+            reiniciarTemporizador();
+        }else if (id == R.id.solicitarExtension) {
+            //TODO: Crear mensaje que alerte al tutor de el tiempo restante
+        }else if (id == R.id.terminar){
+            new AlertDialog.Builder(GroupChat.this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle("¿En verdad deseas terminar el Chat?")
+                    .setMessage("Asegurate de que la duda halla quedado resuelta.")
+                    .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            db.collection("Peticiones").document(PeticionID)
+                                    .delete()
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            //Borrar chat tambien
+                                            db.collection("Chats").document(PeticionID)
+                                                    .delete()
+                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+                                                            Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
+
+                                                            intent.putExtra("TutorID",TutorID);
+                                                            intent.putExtra("AlumnoID",AlumnoID);
+
+                                                            startActivity(intent);
+                                                        }
+                                                    })
+                                                    .addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception e) {
+                                                            Log.i("Error", "Error borrando Chat");
+                                                        }
+                                                    });
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.i("Error", "Error borrando Peticion");
+                                        }
+                                    });
+                        }
+                    })
+                    .setNegativeButton("Rechazar", null).show();
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

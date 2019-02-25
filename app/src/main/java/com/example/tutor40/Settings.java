@@ -21,7 +21,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import java.util.HashMap;
 
 public class Settings extends AppCompatActivity {
-
+/*
     private Button UpdateAccountSettings;
     private EditText userName, userStatus;
     private ImageView userProfileImage;
@@ -229,5 +229,5 @@ public class Settings extends AppCompatActivity {
                     {
                     }
                 });
-    }
+    }*/
 }

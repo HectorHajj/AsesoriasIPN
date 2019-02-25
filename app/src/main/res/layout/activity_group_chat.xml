@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".GroupChat">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".GroupChat"
+    tools:showIn="@layout/app_bar_layout">>
 
 
     <TextView
@@ -21,20 +23,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <include
-        android:id="@+id/group_chat_bar_layout"
-        layout="@layout/app_bar_layout"
-        app:layout_constraintBottom_toTopOf="@+id/my_scroll_view"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"></include>
-
     <ScrollView
         android:id="@+id/my_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/myLinearLayout"
-        android:layout_below="@+id/group_chat_bar_layout"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
