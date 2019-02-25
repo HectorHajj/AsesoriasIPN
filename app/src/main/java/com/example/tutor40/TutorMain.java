@@ -278,7 +278,7 @@ public class TutorMain extends AppCompatActivity
 
             db = FirebaseFirestore.getInstance();
 
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
             Log.i("Login", user.getEmail());
 
@@ -293,7 +293,7 @@ public class TutorMain extends AppCompatActivity
                         startActivity(intent);
                     }
 
-                    TutorID = documentSnapshot.getData().get("Nombre").toString();
+                    TutorID = user.getUid();
                 }
             });
         } catch(Exception e){
