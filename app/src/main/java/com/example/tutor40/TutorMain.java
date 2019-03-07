@@ -1,12 +1,15 @@
 package com.example.tutor40;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.util.Log;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,19 +23,24 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -43,17 +51,21 @@ public class TutorMain extends AppCompatActivity
 
     SharedPreferences sharedPreferences;
     FirebaseFirestore db;
+    FirebaseAuth mAuth;
 
     ImageButton detenerse;
     Button conectarse;
     TextView textViewEstado;
+    ProgressDialog loadingBar;
 
     ArrayList<String> materiasPreferidasList = new ArrayList<>();
     ArrayList<Peticiones> peticiones = new ArrayList<>();
+    ArrayList<String> peticionesIgnoradasList = new ArrayList<>();
+    String currentUser;
+    String TutorID;
 
     GetPeticionesTask getPeticiones;
 
-    String TutorID;
 
     boolean disponible = false;
 
@@ -75,13 +87,20 @@ public class TutorMain extends AppCompatActivity
         //Si materiasPreferidas no esta vacia proseguir
         if(actualizarMateriasPreferidas()){
 
+            loadingBar.show(this, "Buscando Preguntas", "Por favor espere...", true, false);
+
             //Comenzar una busqueda asincrona
             getPeticiones = new GetPeticionesTask();
 
-            try {
-                    getPeticiones.execute(materiasPreferidasList).get();
-            } catch (Exception e) {
-                e.printStackTrace();
+            //Realizar iterativamente busqueda y pesado de peticiones
+            while (disponible == true) {
+                if(getPeticiones.getStatus() != AsyncTask.Status.RUNNING){
+                    try {
+                        getPeticiones.execute(materiasPreferidasList).get();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
     }
@@ -145,118 +164,129 @@ public class TutorMain extends AppCompatActivity
         @Override
         protected Void doInBackground(ArrayList<String>... listas) {
 
-            //Encuentra las peticiones de acuerdo a materias elegidas por usuario
-            peticiones.clear();
+            if(disponible) {
+                //Encuentra las peticiones de acuerdo a materias elegidas por usuario
+                peticiones.clear();
 
-            final int[] numeroQueriesTerminados = {0};
+                final int[] numeroQueriesTerminados = {0};
 
-            for (final ArrayList<String> lista : listas) {
-                for (final String materia : lista) {
-                    db.collection("Peticiones")
-                            .whereEqualTo("Materia", materia)
-                            .get()
-                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                    if (task.isSuccessful()) {
-                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                for (final ArrayList<String> lista : listas) {
+                    for (final String materia : lista) {
+                        db.collection("Peticiones")
+                                .whereEqualTo("Materia", materia)
+                                .get()
+                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            for (QueryDocumentSnapshot document : task.getResult()) {
 
-                                            final Peticiones peticion = new Peticiones();
+                                                if(!peticionesIgnoradasList.contains(document.getId())){
+                                                    final Peticiones peticion = new Peticiones();
 
-                                            peticion.PeticionID = document.getId();
-                                            peticion.AlumnoID = document.getData().get("AlumnoID").toString();
-                                            //peticion.PreguntaID = document.getData().get("PreguntaID").toString();
-                                            peticion.Materia = document.getData().get("Materia").toString();
-                                            peticion.Pregunta = document.getData().get("Pregunta").toString();
-                                            peticion.FechaCreacion = (Date) document.getData().get("FechaCreacion");
+                                                    peticion.PeticionID = document.getId();
+                                                    peticion.AlumnoID = document.getData().get("AlumnoID").toString();
+                                                    //peticion.PreguntaID = document.getData().get("PreguntaID").toString();
+                                                    peticion.Materia = document.getData().get("Materia").toString();
+                                                    peticion.Pregunta = document.getData().get("Pregunta").toString();
+                                                    peticion.FechaCreacion = (Date) document.getData().get("FechaCreacion");
 
-                                            //Pesar peticion
-                                            /* Peso por tiempo */
-                                            long diferenciaSegundos;
-                                            Date newDate = new Date();
+                                                    //Pesar peticion
+                                                    /* Peso por tiempo */
+                                                    long diferenciaSegundos;
+                                                    Date newDate = new Date();
 
-                                            diferenciaSegundos = (newDate.getTime() - peticion.FechaCreacion.getTime()) / 1000;
+                                                    diferenciaSegundos = (newDate.getTime() - peticion.FechaCreacion.getTime()) / 1000;
 
-                                            peticion.Peso = (int) diferenciaSegundos;
+                                                    peticion.Peso = (int) diferenciaSegundos;
 
-                                            peticiones.add(peticion);
-                                        }
-
-                                        numeroQueriesTerminados[0] += 1;
-
-                                        //Llamar un callback que se actualice de acuerdo al numero de llamadas a la base (numero de materias)
-                                        //Despues de llegar a la ultima llamada, procesar peticiones
-
-                                        //Si la materia es la [ultima de la lista
-                                        if(lista.size() == numeroQueriesTerminados[0]){
-                                            if(!peticiones.isEmpty()){
-                                                //Elegir la peticion con mas peso e iniciar chat
-                                                int posicion = 0;
-                                                long pesoAnterior = 0;
-                                                for (Peticiones peticion : peticiones) {
-                                                    if(peticion.Peso > pesoAnterior){
-                                                        pesoAnterior = peticion.Peso;
-                                                        posicion = peticiones.indexOf(peticion);
-                                                    }
+                                                    peticiones.add(peticion);
                                                 }
-
-                                                final Peticiones peticionEscogida = peticiones.get(posicion);
-
-                                                new AlertDialog.Builder(TutorMain.this)
-                                                        .setIcon(android.R.drawable.ic_dialog_alert)
-                                                        .setTitle("Pregunta encontrada!")
-                                                        .setMessage(peticiones.get(posicion).Pregunta)
-                                                        .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(DialogInterface dialog, int which) {
-
-                                                                //Modificar peticion
-
-                                                                peticionEscogida.TutorID = TutorID;
-
-                                                                db.collection("Peticiones").document(peticionEscogida.PeticionID)
-                                                                        .set(peticionEscogida, SetOptions.merge());
-
-                                                                Map<String, Object> chat = new HashMap<>();
-                                                                chat.put("TutorID", TutorID);
-                                                                chat.put("AlumnoID", peticionEscogida.AlumnoID);
-
-                                                                db.collection("Chats").document(peticionEscogida.PeticionID)
-                                                                        .set(chat)
-                                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                            @Override
-                                                                            public void onSuccess(Void aVoid) {
-                                                                                Intent intent = new Intent(getApplicationContext(), GroupChat.class);
-
-                                                                                intent.putExtra("PeticionID", peticionEscogida.PeticionID);
-
-                                                                                startActivity(intent);
-                                                                            }
-                                                                        });
-                                                            }
-                                                        })
-                                                        .setNegativeButton("Rechazar", new DialogInterface.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(DialogInterface dialog, int which) {
-                                                                //Si se rechaza pregunta, pesar de nuevo preguntas
-                                                                getPeticiones = new GetPeticionesTask();
-
-                                                                try {
-                                                                    getPeticiones.execute(materiasPreferidasList).get();
-                                                                } catch (Exception e) {
-                                                                    e.printStackTrace();
-                                                                }
-                                                            }
-                                                        }).show();
                                             }
-                                        }
 
-                                    } else {
-                                        Log.i("Error en Query", "Error getting documents: ", task.getException());
+                                            numeroQueriesTerminados[0] += 1;
+
+                                            //Llamar un callback que se actualice de acuerdo al numero de llamadas a la base (numero de materias)
+                                            //Despues de llegar a la ultima llamada, procesar peticiones
+
+                                            //Si la materia es la ultima de la lista
+                                            if (lista.size() == numeroQueriesTerminados[0]) {
+                                                if (!peticiones.isEmpty()) {
+                                                    //Elegir la peticion con mas peso e iniciar chat
+                                                    int posicion = 0;
+                                                    long pesoAnterior = 0;
+                                                    for (Peticiones peticion : peticiones) {
+                                                        if (peticion.Peso > pesoAnterior) {
+                                                            pesoAnterior = peticion.Peso;
+                                                            posicion = peticiones.indexOf(peticion);
+                                                        }
+                                                    }
+
+                                                    final Peticiones peticionEscogida = peticiones.get(posicion);
+
+                                                    new AlertDialog.Builder(TutorMain.this)
+                                                            .setIcon(android.R.drawable.ic_dialog_alert)
+                                                            .setTitle("Pregunta encontrada!")
+                                                            .setMessage(peticiones.get(posicion).Pregunta)
+                                                            .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                                                                @Override
+                                                                public void onClick(DialogInterface dialog, int which) {
+
+                                                                    //Modificar peticion
+
+                                                                    peticionEscogida.TutorID = TutorID;
+
+                                                                    db.collection("Peticiones").document(peticionEscogida.PeticionID)
+                                                                            .set(peticionEscogida, SetOptions.merge());
+
+                                                                    Map<String, Object> chat = new HashMap<>();
+                                                                    chat.put("TutorID", TutorID);
+                                                                    chat.put("AlumnoID", peticionEscogida.AlumnoID);
+
+                                                                    db.collection("Chats").document(peticionEscogida.PeticionID)
+                                                                            .set(chat)
+                                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                @Override
+                                                                                public void onSuccess(Void aVoid) {
+                                                                                    Intent intent = new Intent(getApplicationContext(), GroupChat.class);
+
+                                                                                    intent.putExtra("PeticionID", peticionEscogida.PeticionID);
+
+                                                                                    startActivity(intent);
+                                                                                }
+                                                                            });
+                                                                }
+                                                            })
+                                                            //Si rechazas peticion, se quita de lista de posibles peticiones a resolver
+                                                            .setNegativeButton("Rechazar", new DialogInterface.OnClickListener() {
+                                                                @Override
+                                                                public void onClick(DialogInterface dialog, int which) {
+                                                                    try {
+
+                                                                        //Agregar pregunta rechazada a lista de preguntas a ignorar
+                                                                        peticionesIgnoradasList.add(peticionEscogida.PeticionID);
+
+                                                                        //Si se rechaza pregunta, pesar de nuevo preguntas
+                                                                        getPeticiones = new GetPeticionesTask();
+
+                                                                        getPeticiones.execute(materiasPreferidasList).get();
+                                                                    } catch (Exception e) {
+                                                                        e.printStackTrace();
+                                                                    }
+                                                                }
+                                                            }).show();
+                                                }
+                                            }
+
+                                        } else {
+                                            Log.i("Error en Query", "Error getting documents: ", task.getException());
+                                        }
                                     }
-                                }
-                            });
+                                });
+                    }
                 }
+            } else {
+                return null;
             }
             return null;
         }
@@ -266,43 +296,7 @@ public class TutorMain extends AppCompatActivity
 
             Log.i("On Post Execute",peticiones.toString());
 
-
             super.onPostExecute(aVoid);
-        }
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        try {
-
-            db = FirebaseFirestore.getInstance();
-
-            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-            Log.i("Login", user.getEmail());
-
-            //Si hay un usuario logeado
-            DocumentReference docRef = db.collection("users").document(user.getUid());
-            docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    if(documentSnapshot.getData().get("RolID").toString() == "I60WiSHvFyzJqUT0IU20") {
-                        Intent intent = new Intent(getApplicationContext(), AlumnoMain.class);
-
-                        startActivity(intent);
-                    }
-
-                    TutorID = user.getUid();
-                }
-            });
-        } catch(Exception e){
-            e.printStackTrace();
-
-            //Los llevamos a Login
-            Intent intent = new Intent(getApplicationContext(), Login.class);
-
-            startActivity(intent);
         }
     }
 
@@ -323,9 +317,13 @@ public class TutorMain extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        db = FirebaseFirestore.getInstance();
+
         detenerse = findViewById(R.id.buttonDetenerse);
         conectarse = findViewById(R.id.buttonConectarse);
         textViewEstado = findViewById(R.id.textViewEstado);
+        loadingBar = new ProgressDialog(this);
+        currentUser = mAuth.getInstance().getCurrentUser().getUid();
 
         sharedPreferences = getSharedPreferences("com.example.tutor40", MODE_PRIVATE);
 

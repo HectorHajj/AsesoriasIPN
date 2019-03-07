@@ -1,5 +1,7 @@
 package com.example.tutor40;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -48,27 +50,56 @@ public class AlumnoMain extends AppCompatActivity
 
     Spinner spinnerMaterias;
     TextView pregunta;
+    ProgressDialog loadingBar;
 
     EventListener<DocumentSnapshot> yolo;
 
     ListenerRegistration registration;
 
     ArrayList<String> spinnerArray =  new ArrayList<String>();
-
+    String currentUser;
     Boolean Aceptado = false;
+    String peticionActual;
 
     public void enviarPregunta(View view){
         //Tomar valor actual de pregunta y de materia y enviarla
         if(TextUtils.isEmpty(pregunta.getText().toString())){
             Toast.makeText(this, "Introduzca su pregunta en el campo proporcionado, porfavor.", Toast.LENGTH_LONG).show();
         } else {
+
+            loadingBar.show(this, "Buscando Asesores", "Por favor espere...", true, true, new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    //TODO:
+                    if(peticionActual.isEmpty()){
+                        loadingBar.dismiss();
+                    } else {
+                        loadingBar.dismiss();
+
+                        db.collection("Peticiones").document(peticionActual)
+                                .delete()
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.i("Cancelado","Se borro peticion");
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.i("Cancelado","No se borro peticion");
+                                    }
+                                });
+                    }
+                }
+            });
+
             Peticiones peticion = new Peticiones();
-            FirebaseUser user = mAuth.getInstance().getCurrentUser();
 
             peticion.Pregunta = pregunta.getText().toString();
             peticion.Materia = spinnerMaterias.getSelectedItem().toString();
             peticion.FechaCreacion = new Date();
-            peticion.AlumnoID = user.getUid();
+            peticion.AlumnoID = currentUser;
 
             //TODO: Crear pregunta
 
@@ -78,10 +109,10 @@ public class AlumnoMain extends AppCompatActivity
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
                         public void onSuccess(final DocumentReference documentReference) {
-                            Log.d("Done", "DocumentSnapshot written with ID: " + documentReference.getId());
+
+                            peticionActual = documentReference.getId();
 
                             final DocumentReference docRef = db.collection("Peticiones").document(documentReference.getId());
-
                             yolo = new EventListener<DocumentSnapshot>() {
                                 @Override
                                 public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException e) {
@@ -94,6 +125,8 @@ public class AlumnoMain extends AppCompatActivity
                                         Log.i("Heard event", "Current data: " + snapshot.getData());
 
                                         if(snapshot.getData().get("TutorID") != null){
+                                            loadingBar.dismiss();
+
                                             registration.remove();
 
                                             Intent intent = new Intent(getApplicationContext(), GroupChat.class);
@@ -136,9 +169,12 @@ public class AlumnoMain extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        loadingBar = new ProgressDialog(this);
+
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
+        currentUser = mAuth.getInstance().getCurrentUser().getUid();
         pregunta = findViewById(R.id.editTextPregunta);
 
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, spinnerArray);

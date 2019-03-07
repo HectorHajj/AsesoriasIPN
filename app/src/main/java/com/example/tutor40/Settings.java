@@ -17,20 +17,26 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
 
 public class Settings extends AppCompatActivity {
-/*
+
     private Button UpdateAccountSettings;
     private EditText userName, userStatus;
     private ImageView userProfileImage;
     private String currentUserID;
-    private FirebaseAuth mAuth;
-    private DatabaseReference RootRef;
     private static final int GalleryPick = 1;
+
+    private FirebaseAuth mAuth;
     private StorageReference UserProfileImagesRef;
-    private ProgressDialog loadingBar;  //Linea extra
+    FirebaseFirestore db;
+
+    private ProgressDialog loadingBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +44,9 @@ public class Settings extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
 
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
         currentUserID = mAuth.getCurrentUser().getUid();
-        RootRef = FirebaseDatabase.getInstance().getReference();
         UserProfileImagesRef = FirebaseStorage.getInstance().getReference().child("Profile Images");
 
         InitializeFieds();
@@ -54,7 +61,7 @@ public class Settings extends AppCompatActivity {
             }
         });
 
-        RetrieveUserInfo();
+        //RetrieveUserInfo();
 
         userProfileImage.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -74,7 +81,7 @@ public class Settings extends AppCompatActivity {
         userName = (EditText) findViewById(R.id.set_user_name);
         userStatus = (EditText) findViewById(R.id.set_profile_status);
         userProfileImage = (ImageView) findViewById(R.id.set_profile_image);
-        loadingBar = new ProgressDialog(this);   //Linea extra
+        loadingBar = new ProgressDialog(this);
     }
 
     @Override
@@ -82,7 +89,7 @@ public class Settings extends AppCompatActivity {
     {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if((requestCode == GalleryPick)&&(resultCode==RESULT_OK)&&(data!=null))
+        /*if((requestCode == GalleryPick)&&(resultCode==RESULT_OK)&&(data!=null))
         {
             Uri ImgaeUri = data.getData();
 
@@ -95,51 +102,58 @@ public class Settings extends AppCompatActivity {
 
             if(resultCode == RESULT_OK)
             {
-                loadingBar.setTitle("Ponga su imagen de perfil");   //Linea extra
-                loadingBar.setMessage("Por favor espere, su imagen de perfil se esta actualizando..."); //Linea extra
-                loadingBar.setCanceledOnTouchOutside(false);    //Linea extra
-                loadingBar.show();  //Linea extra
+                loadingBar.setTitle("Actualizando Perfil");
+                loadingBar.setMessage("Por favor espere, su imagen de perfil se esta actualizando...");
+                loadingBar.setCanceledOnTouchOutside(false);
+                loadingBar.show();
 
                 Uri resultUri = result.getUri();
 
                 StorageReference filePath = UserProfileImagesRef.child(currentUserID + ".jpg");
+
                 filePath.putFile(resultUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>(){
                     @Override
                     public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task)
                     {
                         if(task.isSuccessful())
                         {
-                            Toast.makeText(SettingsActivity.this, "Imagen de perfil subida exitosamente...", Toast.LENGTH_SHORT).show();
-                            final String downloadUrl = task.getResult().getDownloadUrl().toString();  //Línea extra
-                            RootRef.child("Users").child(currentUserID).child("image").setValue(downloadUrl)    //Linea extra
-                                    .addOnCompleteListener(new OnCompleteListener<Void>(){                      //Linea extra
-                                        @Override                                                               //Linea extra
-                                        public void onComplete(@NonNull Task<Void> task)                        //Linea extra
-                                        {                                                                       //Linea extra
-                                            if(task.isSuccessful())                                             //Linea extra
-                                            {                                                                   //Linea extra
-                                                Toast.makeText(SettingsActivity.this, "Imagen guadada en la base de datos exitosamente", Toast.LENGTH_SHORT).show();    //Linea extra
-                                                loadingBar.dismiss();   //Linea extra
-                                            }                           //Linea extra
-                                            else                        //Linea extra
-                                            {                           //Linea extra
-                                                String message = task.getException().toString();    //Linea extra
-                                                Toast.makeText(SettingsActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show();  //Linea extra
-                                                loadingBar.dismiss();   //Linea extra
-                                            }                           //Linea extra
-                                        }                               //Linea extra
-                                    });                                 //Linea extra
+                            Toast.makeText(Settings.this, "Imagen de perfil subida exitosamente...", Toast.LENGTH_SHORT).show();
+
+                            final String downloadUrl = task.getResult().getDownloadUrl().toString();
+
+                            HashMap<String, String> downloadUrlMap = new HashMap<>();
+                            downloadUrlMap.put("image", downloadUrl);
+
+                            db.collection("users").document(currentUserID)
+                                    .set(downloadUrlMap)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>(){
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task)
+                                        {
+                                            if(task.isSuccessful())
+                                            {
+                                                Toast.makeText(Settings.this, "Imagen guadada en la base de datos exitosamente", Toast.LENGTH_SHORT).show();
+                                                loadingBar.dismiss();
+                                            }
+                                            else
+                                            {
+                                                String message = task.getException().toString();
+                                                Toast.makeText(Settings.this, "Error: " + message, Toast.LENGTH_SHORT).show();
+                                                loadingBar.dismiss();
+                                            }
+                                        }
+                                    });
                         }
                         else
                         {
                             String message = task.getException().toString();
-                            Toast.makeText(SettingsActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Settings.this, "Error: " + message, Toast.LENGTH_SHORT).show();
                             loadingBar.dismiss();   //Linea extra
                         }
                     }
                 });
             }
-        }
+        }*/
     }
 
     private void UpdateSettings()
@@ -159,11 +173,11 @@ public class Settings extends AppCompatActivity {
         else
         {
             HashMap<String, String> profileMap = new HashMap<>();
-            profileMap.put("uid", currentUserID);
             profileMap.put("name", setUserName);
             profileMap.put("status", setStatus);
 
-            RootRef .child("Users").child(currentUserID).setValue(profileMap)
+            db.collection("users").document(currentUserID)
+                    .set(profileMap)
                     .addOnCompleteListener(new OnCompleteListener<Void>(){
                         @Override
                         public void onComplete(@NonNull Task<Void> task)
@@ -171,28 +185,27 @@ public class Settings extends AppCompatActivity {
                             if(task.isSuccessful())
                             {
                                 SendUserToMainActivity();
-                                Toast.makeText(SettingsActivity.this, "Perfil actualizado con exito...", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(Settings.this, "Perfil actualizado con exito...", Toast.LENGTH_SHORT).show();
                             }
                             else
                             {
                                 String message = task.getException().toString();
-                                Toast.makeText(SettingsActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(Settings.this, "Error: " + message, Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
-
         }
     }
 
     private void SendUserToMainActivity()
     {
-        Intent mainIntent = new Intent(SettingsActivity.this, MainActivity.class);
+        Intent mainIntent = new Intent(Settings.this, TutorMain.class);
         mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(mainIntent);
         finish();
     }
 
-    private void RetrieveUserInfo()
+    /*private void RetrieveUserInfo()
     {
         RootRef.child("Users").child(currentUserID)
                 .addValueEventListener(new ValueEventListener(){
@@ -220,13 +233,8 @@ public class Settings extends AppCompatActivity {
                         else
                         {
                             userName.setVisibility(View.VISIBLE);
-                            Toast.makeText(SettingsActivity.this, "Por favor actualiza tu información de perfil", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Settings.this, "Por favor actualiza tu información de perfil", Toast.LENGTH_SHORT).show();
                         }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError)
-                    {
                     }
                 });
     }*/

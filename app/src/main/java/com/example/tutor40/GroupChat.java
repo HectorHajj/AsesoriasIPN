@@ -226,7 +226,16 @@ public class GroupChat extends AppCompatActivity
                 public void onTick(long milisegundosRestantes) {
                     long segundos = milisegundosRestantes / 1000 % 60;
                     long minutos = milisegundosRestantes / 60000;
-                    Temporizador.setText(String.valueOf(minutos)+ ":" + String.valueOf(segundos));
+                    String segundosEdit;
+
+                    if(segundos < 10){
+                        segundosEdit = "0" + String.valueOf(segundos);
+                    }
+                    else{
+                        segundosEdit = String.valueOf(segundos);
+                    }
+
+                    Temporizador.setText(String.valueOf(minutos)+ ":" + String.valueOf(segundosEdit));
                 }
 
                 @Override

@@ -39,8 +39,8 @@ public class Login extends AppCompatActivity {
         } else if(TextUtils.isEmpty(Password.getText().toString())) {
             Toast.makeText(this, "Por favor introduzca una contraseña", Toast.LENGTH_SHORT).show();
         } else {
-            loadingBar.setTitle("Logueado");
-            loadingBar.setMessage("Por favor espere");
+            loadingBar.setTitle("Cargando");
+            loadingBar.setMessage("Por favor espere...");
             loadingBar.setCanceledOnTouchOutside(true);
             loadingBar.show();
 
@@ -59,10 +59,14 @@ public class Login extends AppCompatActivity {
                                     @Override
                                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                                         if (documentSnapshot.getData().get("RolID").toString().equals("Ck5Tnzr0ipmAzKpQpTDX")) {
+                                            loadingBar.dismiss();
+
                                             Intent intent = new Intent(getApplicationContext(), TutorMain.class);
 
                                             startActivity(intent);
                                         } else if (documentSnapshot.getData().get("RolID").toString().equals("I60WiSHvFyzJqUT0IU20")) {
+                                            loadingBar.dismiss();
+
                                             Intent intent = new Intent(getApplicationContext(), AlumnoMain.class);
 
                                             startActivity(intent);
