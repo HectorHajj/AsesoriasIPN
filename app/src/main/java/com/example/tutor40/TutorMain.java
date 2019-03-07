@@ -93,7 +93,8 @@ public class TutorMain extends AppCompatActivity
             getPeticiones = new GetPeticionesTask();
 
             //Realizar iterativamente busqueda y pesado de peticiones
-            while (disponible == true) {
+            while (disponible == true)
+            {
                 if(getPeticiones.getStatus() != AsyncTask.Status.RUNNING){
                     try {
                         getPeticiones.execute(materiasPreferidasList).get();
