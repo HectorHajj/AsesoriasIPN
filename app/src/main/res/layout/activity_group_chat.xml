@@ -80,12 +80,6 @@
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:src="@drawable/send_message" />
-
-        <ImageButton
-            android:id="@+id/send_image_button"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/send_image"/>
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
