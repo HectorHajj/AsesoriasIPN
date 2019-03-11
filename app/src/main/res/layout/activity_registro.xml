@@ -28,9 +28,9 @@
 
             <EditText
                 android:id="@+id/editTextEmail"
-                android:layout_width="380dp"
+                android:layout_width="350dp"
                 android:layout_height="55dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="5dp"
                 android:background="@drawable/inputs"
                 android:hint="E-mail..."
                 android:inputType="textEmailAddress"
@@ -43,9 +43,9 @@
 
             <EditText
                 android:id="@+id/editTextPassword"
-                android:layout_width="380dp"
+                android:layout_width="350dp"
                 android:layout_height="55dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="5dp"
                 android:background="@drawable/inputs"
                 android:drawableStart="@drawable/password"
                 android:hint="Contraseña..."
@@ -58,11 +58,11 @@
 
             <EditText
                 android:id="@+id/editTextNombre"
-                android:layout_width="380dp"
+                android:layout_width="350dp"
                 android:layout_height="55dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="5dp"
                 android:background="@drawable/inputs"
-                android:ems="10"
+                android:drawableStart="@drawable/usr"
                 android:hint="Nombre(s)..."
                 android:inputType="textPersonName"
                 android:padding="4dp"
@@ -73,11 +73,11 @@
 
             <EditText
                 android:id="@+id/editTextApellidoPaterno"
-                android:layout_width="380dp"
+                android:layout_width="350dp"
                 android:layout_height="55dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="5dp"
                 android:background="@drawable/inputs"
-                android:ems="10"
+                android:drawableStart="@drawable/usr"
                 android:hint="Apellido paterno..."
                 android:inputType="textPersonName"
                 android:padding="4dp"
@@ -88,11 +88,11 @@
 
             <EditText
                 android:id="@+id/editTextApellidoMaterno"
-                android:layout_width="380dp"
+                android:layout_width="350dp"
                 android:layout_height="55dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="5dp"
                 android:background="@drawable/inputs"
-                android:ems="10"
+                android:drawableStart="@drawable/usr"
                 android:hint="Apellido materno..."
                 android:inputType="textPersonName"
                 android:padding="4dp"
@@ -105,7 +105,7 @@
                 android:id="@+id/switchTutorAlumno"
                 android:layout_width="wrap_content"
                 android:layout_height="55dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="5dp"
                 android:background="@drawable/inputs"
                 android:checked="false"
                 android:showText="true"
@@ -122,7 +122,7 @@
                 android:layout_width="380dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/editTextPassword"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="5dp"
                 android:background="@drawable/buttons"
                 android:onClick="registrar"
                 android:padding="4dp"

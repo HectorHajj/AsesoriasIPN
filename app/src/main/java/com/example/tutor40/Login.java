@@ -23,8 +23,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class Login extends AppCompatActivity {
-
+public class Login extends AppCompatActivity
+{
     FirebaseAuth mAuth;
     ProgressDialog loadingBar;
 
@@ -34,11 +34,16 @@ public class Login extends AppCompatActivity {
     FirebaseFirestore db;
 
     public void login(View view){
-        if(TextUtils.isEmpty(Email.getText().toString())) {
+        if(TextUtils.isEmpty(Email.getText().toString()))
+        {
             Toast.makeText(this, "Por favor introduzca un email", Toast.LENGTH_SHORT).show();
-        } else if(TextUtils.isEmpty(Password.getText().toString())) {
+        }
+        else if(TextUtils.isEmpty(Password.getText().toString()))
+        {
             Toast.makeText(this, "Por favor introduzca una contraseña", Toast.LENGTH_SHORT).show();
-        } else {
+        }
+        else
+        {
             loadingBar.setTitle("Cargando");
             loadingBar.setMessage("Por favor espere...");
             loadingBar.setCanceledOnTouchOutside(true);
@@ -48,7 +53,8 @@ public class Login extends AppCompatActivity {
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
+                            if(task.isSuccessful())
+                            {
                                 // Sign in success, update UI with the signed-in user's information
 
                                 FirebaseUser user = mAuth.getCurrentUser();
@@ -58,22 +64,25 @@ public class Login extends AppCompatActivity {
                                 docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                     @Override
                                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                        if (documentSnapshot.getData().get("RolID").toString().equals("Ck5Tnzr0ipmAzKpQpTDX")) {
+                                        if(documentSnapshot.getData().get("RolID").toString().equals("Ck5Tnzr0ipmAzKpQpTDX"))
+                                        {
                                             loadingBar.dismiss();
 
                                             Intent intent = new Intent(getApplicationContext(), TutorMain.class);
-
                                             startActivity(intent);
-                                        } else if (documentSnapshot.getData().get("RolID").toString().equals("I60WiSHvFyzJqUT0IU20")) {
+                                        }
+                                        else if(documentSnapshot.getData().get("RolID").toString().equals("I60WiSHvFyzJqUT0IU20"))
+                                        {
                                             loadingBar.dismiss();
 
                                             Intent intent = new Intent(getApplicationContext(), AlumnoMain.class);
-
                                             startActivity(intent);
                                         }
                                     }
                                 });
-                            } else {
+                            }
+                            else
+                            {
                                 String message = task.getException().toString();
                                 Toast.makeText(Login.this, "Error:" + message, Toast.LENGTH_SHORT).show();
                                 loadingBar.dismiss();
@@ -83,14 +92,15 @@ public class Login extends AppCompatActivity {
         }
     }
 
-    public void irRegistrarse(View view){
+    public void irRegistrarse(View view)
+    {
         Intent intent = new Intent(getApplicationContext(), Registro.class);
-
         startActivity(intent);
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 

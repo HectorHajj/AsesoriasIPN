@@ -24,8 +24,8 @@ import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
 
-public class Settings extends AppCompatActivity {
-
+public class Settings extends AppCompatActivity
+{
     private Button UpdateAccountSettings;
     private EditText userName, userStatus;
     private ImageView userProfileImage;
@@ -39,7 +39,8 @@ public class Settings extends AppCompatActivity {
     private ProgressDialog loadingBar;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
