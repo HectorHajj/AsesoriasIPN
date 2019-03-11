@@ -8,7 +8,9 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="45dp">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -32,10 +34,10 @@
                 android:layout_height="55dp"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/inputs"
+                android:drawableStart="@drawable/email"
                 android:hint="E-mail..."
                 android:inputType="textEmailAddress"
                 android:padding="4dp"
-                android:drawableStart="@drawable/email"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
@@ -90,14 +92,13 @@
                 android:id="@+id/editTextApellidoMaterno"
                 android:layout_width="350dp"
                 android:layout_height="55dp"
-                android:layout_marginTop="5dp"
                 android:background="@drawable/inputs"
                 android:drawableStart="@drawable/usr"
                 android:hint="Apellido materno..."
                 android:inputType="textPersonName"
                 android:padding="4dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_bias="0.491"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/editTextApellidoPaterno" />
 
@@ -141,6 +142,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/register_button"
                 android:layout_centerHorizontal="true"
+                android:layout_marginTop="16dp"
                 android:onClick="sendUserToLoginActivity"
                 android:text="Ya poseo una cuenta"
                 android:textAlignment="center"
