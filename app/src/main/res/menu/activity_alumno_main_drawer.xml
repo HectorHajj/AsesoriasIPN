@@ -5,9 +5,6 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/materias"
-            android:title="Materias" />
-        <item
             android:id="@+id/ranking"
             android:title="Ranking" />
         <item

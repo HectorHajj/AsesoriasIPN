@@ -29,6 +29,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -93,7 +94,7 @@ public class TutorMain extends AppCompatActivity
             getPeticiones = new GetPeticionesTask();
 
             //Realizar iterativamente busqueda y pesado de peticiones
-            while (disponible == true) {
+            /*while (disponible == true) {
                 if(getPeticiones.getStatus() != AsyncTask.Status.RUNNING){
                     try {
                         getPeticiones.execute(materiasPreferidasList).get();
@@ -101,6 +102,12 @@ public class TutorMain extends AppCompatActivity
                         e.printStackTrace();
                     }
                 }
+            }*/
+
+            try {
+                getPeticiones.execute(materiasPreferidasList).get();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -189,7 +196,9 @@ public class TutorMain extends AppCompatActivity
                                                     //peticion.PreguntaID = document.getData().get("PreguntaID").toString();
                                                     peticion.Materia = document.getData().get("Materia").toString();
                                                     peticion.Pregunta = document.getData().get("Pregunta").toString();
-                                                    peticion.FechaCreacion = (Date) document.getData().get("FechaCreacion");
+
+                                                    Timestamp fechaCreacion = (Timestamp) document.getData().get("FechaCreacion");
+                                                    peticion.FechaCreacion = fechaCreacion.toDate();
 
                                                     //Pesar peticion
                                                     /* Peso por tiempo */
@@ -235,6 +244,7 @@ public class TutorMain extends AppCompatActivity
                                                                     //Modificar peticion
 
                                                                     peticionEscogida.TutorID = TutorID;
+                                                                    Log.i("TutorID", TutorID);
 
                                                                     db.collection("Peticiones").document(peticionEscogida.PeticionID)
                                                                             .set(peticionEscogida, SetOptions.merge());
@@ -323,7 +333,7 @@ public class TutorMain extends AppCompatActivity
         conectarse = findViewById(R.id.buttonConectarse);
         textViewEstado = findViewById(R.id.textViewEstado);
         loadingBar = new ProgressDialog(this);
-        currentUser = mAuth.getInstance().getCurrentUser().getUid();
+        TutorID = mAuth.getInstance().getCurrentUser().getUid();
 
         sharedPreferences = getSharedPreferences("com.example.tutor40", MODE_PRIVATE);
 
