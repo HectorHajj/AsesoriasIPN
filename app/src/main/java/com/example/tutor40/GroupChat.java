@@ -139,7 +139,8 @@ public class GroupChat extends AppCompatActivity
         Temporizador = findViewById(R.id.tiempo);
     }
 
-    private void GetUserInfo() {
+    private void GetUserInfo()
+    {
         DocumentReference docRef = db.collection("users").document(currentUserID);
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -150,7 +151,8 @@ public class GroupChat extends AppCompatActivity
         });
     }
 
-    private void SaveMessageInfoToDatabase() {
+    private void SaveMessageInfoToDatabase()
+    {
         String message = userMessageInput.getText().toString();
 
         if(TextUtils.isEmpty(message))
@@ -186,8 +188,10 @@ public class GroupChat extends AppCompatActivity
         }
     }
 
-    private void DisplayMessages() {
-        try {
+    private void DisplayMessages()
+    {
+        try
+        {
             db.collection("Chats").document(PeticionID).collection("Mensajes")
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -196,7 +200,8 @@ public class GroupChat extends AppCompatActivity
 
                             displayTextMessages.setText("");
 
-                            if (task.isSuccessful()) {
+                            if(task.isSuccessful())
+                            {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     String chatDate = document.getData().get("Fecha").toString();
                                     String chatMessage = document.getData().get("Mensaje").toString();
@@ -206,32 +211,41 @@ public class GroupChat extends AppCompatActivity
                                     displayTextMessages.append(chatName + ":\n" + chatMessage + "\n" + chatTime + "     " + chatDate + "\n\n\n");
                                     mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
                                 }
-                            } else {
+                            }
+                            else
+                            {
                                 Log.i("Error en Query", "Error getting documents: ", task.getException());
                             }
                         }
                     });
-        } catch (Exception e){
+        }
+        catch(Exception e)
+        {
             //No hay mensajes
         }
     }
 
-    public void reiniciarTemporizador(){
-        if(ExtensionesUsadas < CantidadExtensiones){
+    public void reiniciarTemporizador()
+    {
+        if(ExtensionesUsadas < CantidadExtensiones)
+        {
             ExtensionesUsadas += ExtensionesUsadas;
 
-            Reloj = new CountDownTimer(60000,1000) {
-
+            Reloj = new CountDownTimer(60000,1000)
+            {
                 @Override
-                public void onTick(long milisegundosRestantes) {
+                public void onTick(long milisegundosRestantes)
+                {
                     long segundos = milisegundosRestantes / 1000 % 60;
                     long minutos = milisegundosRestantes / 60000;
                     String segundosEdit;
 
-                    if(segundos < 10){
+                    if(segundos < 10)
+                    {
                         segundosEdit = "0" + String.valueOf(segundos);
                     }
-                    else{
+                    else
+                    {
                         segundosEdit = String.valueOf(segundos);
                     }
 
@@ -239,7 +253,8 @@ public class GroupChat extends AppCompatActivity
                 }
 
                 @Override
-                public void onFinish() {
+                public void onFinish()
+                {
                     new AlertDialog.Builder(GroupChat.this)
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setTitle("Se termino el tiempo de la sesión, ¿Desea reiniciar el Temporizador?")
@@ -291,7 +306,9 @@ public class GroupChat extends AppCompatActivity
                             }).show();
                 }
             }.start();
-        } else {
+        }
+        else
+        {
             new AlertDialog.Builder(GroupChat.this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle("Han utilizado todas sus extensiones. Se terminara el chat al acabar el tiempo restante.")

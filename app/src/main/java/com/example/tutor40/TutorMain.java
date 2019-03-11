@@ -70,15 +70,15 @@ public class TutorMain extends AppCompatActivity
 
     boolean disponible = false;
 
-    public void Conectar(View view){
-
-        //Disponibilidad es true
+    public void Conectar(View view)
+    {
+        //Disponibilidad es true:
         disponible = true;
 
-        //Mostrar boton de detenerse
+        //Mostrar boton de detenerse:
         detenerse.setVisibility(View.VISIBLE);
 
-        //Ocultar boton de conectarse
+        //Ocultar boton de conectarse:
         conectarse.setVisibility(View.INVISIBLE);
 
         //Cambiar texto a Buscando Peticiones de Tutoria...
@@ -86,8 +86,8 @@ public class TutorMain extends AppCompatActivity
 
         //Buscar peticiones con materias preferidas de usuario Tutor (Si NO tiene materias preferidas alertarlo y mandarlo a pantalla de materias)
         //Si materiasPreferidas no esta vacia proseguir
-        if(actualizarMateriasPreferidas()){
-
+        if(actualizarMateriasPreferidas())
+        {
             loadingBar.show(this, "Buscando Preguntas", "Por favor espere...", true, false);
 
             //Comenzar una busqueda asincrona
@@ -112,36 +112,43 @@ public class TutorMain extends AppCompatActivity
         }
     }
 
-    public void Desconectar(View view){
-        //Disponibilidad es true
+    public void Desconectar(View view)
+    {
+        //Disponibilidad es true:
         disponible = false;
 
-        //Mostrar boton de detenerse
+        //Ocultar boton de detenerse:
         detenerse.setVisibility(View.INVISIBLE);
 
-        //Ocultar boton de conectarse
+        //Mostrar boton de conectarse:
         conectarse.setVisibility(View.VISIBLE);
 
-        //Cambiar texto a Buscando Peticiones de Tutoria...
-        textViewEstado.setText("Estas Desconectado...");
+        //Cambiar texto a Buscando Peticiones de asesoría...
+        textViewEstado.setText("Estas desconectado...");
 
-        //Intentar interrumpir thread
-        if(getPeticiones != null){
+        //Intentar interrumpir thread:
+        if(getPeticiones != null)
+        {
             getPeticiones.cancel(true);
         }
     }
 
-    public boolean actualizarMateriasPreferidas(){
-        try {
+    public boolean actualizarMateriasPreferidas()
+    {
+        try
+        {
             materiasPreferidasList.clear();
 
             materiasPreferidasList = (ArrayList<String>) ObjectSerializer.deserialize(sharedPreferences.getString("materiasPreferidas", ObjectSerializer.serialize(new ArrayList<String>())));
-        } catch (Exception e) {
+        }
+        catch(Exception e)
+        {
             e.printStackTrace();
         }
 
         //Si materiasPreferidasList esta vacia, alertar al usuario y recomendarle seleccionar algunas en actividad Materias
-        if(materiasPreferidasList.isEmpty()){
+        if(materiasPreferidasList.isEmpty())
+        {
             new AlertDialog.Builder(this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle("No tiene Materias Preferidas")
@@ -167,28 +174,34 @@ public class TutorMain extends AppCompatActivity
         return true;
     }
 
-    public class GetPeticionesTask extends AsyncTask<ArrayList<String>, Void, Void> {
+    public class GetPeticionesTask extends AsyncTask<ArrayList<String>, Void, Void>
+    {
         @Override
-        protected Void doInBackground(ArrayList<String>... listas) {
-
-            if(disponible) {
+        protected Void doInBackground(ArrayList<String>... listas)
+        {
+            if(disponible)
+            {
                 //Encuentra las peticiones de acuerdo a materias elegidas por usuario
                 peticiones.clear();
 
                 final int[] numeroQueriesTerminados = {0};
 
-                for (final ArrayList<String> lista : listas) {
-                    for (final String materia : lista) {
+                for(final ArrayList<String> lista : listas)
+                {
+                    for(final String materia : lista)
+                    {
                         db.collection("Peticiones")
                                 .whereEqualTo("Materia", materia)
                                 .get()
                                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                     @Override
                                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                        if (task.isSuccessful()) {
-                                            for (QueryDocumentSnapshot document : task.getResult()) {
-
-                                                if(!peticionesIgnoradasList.contains(document.getId())){
+                                        if(task.isSuccessful())
+                                        {
+                                            for(QueryDocumentSnapshot document : task.getResult())
+                                            {
+                                                if(!peticionesIgnoradasList.contains(document.getId()))
+                                                {
                                                     final Peticiones peticion = new Peticiones();
 
                                                     peticion.PeticionID = document.getId();
@@ -219,13 +232,18 @@ public class TutorMain extends AppCompatActivity
                                             //Despues de llegar a la ultima llamada, procesar peticiones
 
                                             //Si la materia es la ultima de la lista
-                                            if (lista.size() == numeroQueriesTerminados[0]) {
-                                                if (!peticiones.isEmpty()) {
+                                            if(lista.size() == numeroQueriesTerminados[0])
+                                            {
+                                                if(!peticiones.isEmpty())
+                                                {
                                                     //Elegir la peticion con mas peso e iniciar chat
                                                     int posicion = 0;
                                                     long pesoAnterior = 0;
-                                                    for (Peticiones peticion : peticiones) {
-                                                        if (peticion.Peso > pesoAnterior) {
+
+                                                    for(Peticiones peticion : peticiones)
+                                                    {
+                                                        if(peticion.Peso > pesoAnterior)
+                                                        {
                                                             pesoAnterior = peticion.Peso;
                                                             posicion = peticiones.indexOf(peticion);
                                                         }
@@ -244,7 +262,6 @@ public class TutorMain extends AppCompatActivity
                                                                     //Modificar peticion
 
                                                                     peticionEscogida.TutorID = TutorID;
-                                                                    Log.i("TutorID", TutorID);
 
                                                                     db.collection("Peticiones").document(peticionEscogida.PeticionID)
                                                                             .set(peticionEscogida, SetOptions.merge());
@@ -267,12 +284,13 @@ public class TutorMain extends AppCompatActivity
                                                                             });
                                                                 }
                                                             })
+
                                                             //Si rechazas peticion, se quita de lista de posibles peticiones a resolver
                                                             .setNegativeButton("Rechazar", new DialogInterface.OnClickListener() {
                                                                 @Override
                                                                 public void onClick(DialogInterface dialog, int which) {
-                                                                    try {
-
+                                                                    try
+                                                                    {
                                                                         //Agregar pregunta rechazada a lista de preguntas a ignorar
                                                                         peticionesIgnoradasList.add(peticionEscogida.PeticionID);
 
@@ -280,7 +298,10 @@ public class TutorMain extends AppCompatActivity
                                                                         getPeticiones = new GetPeticionesTask();
 
                                                                         getPeticiones.execute(materiasPreferidasList).get();
-                                                                    } catch (Exception e) {
+                                                                    }
+
+                                                                    catch(Exception e)
+                                                                    {
                                                                         e.printStackTrace();
                                                                     }
                                                                 }
@@ -288,22 +309,26 @@ public class TutorMain extends AppCompatActivity
                                                 }
                                             }
 
-                                        } else {
+                                        }
+                                        else
+                                        {
                                             Log.i("Error en Query", "Error getting documents: ", task.getException());
                                         }
                                     }
                                 });
                     }
                 }
-            } else {
+            }
+            else
+            {
                 return null;
             }
             return null;
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-
+        protected void onPostExecute(Void aVoid)
+        {
             Log.i("On Post Execute",peticiones.toString());
 
             super.onPostExecute(aVoid);
@@ -311,7 +336,8 @@ public class TutorMain extends AppCompatActivity
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_tutor_main);
@@ -341,31 +367,39 @@ public class TutorMain extends AppCompatActivity
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBackPressed()
+    {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
+        if(drawer.isDrawerOpen(GravityCompat.START))
+        {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
+        }
+        else
+        {
             super.onBackPressed();
         }
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
         int id = item.getItemId();
 
-        if(id == R.id.perfil){
+        if(id == R.id.perfil)
+        {
             Intent intent = new Intent(getApplicationContext(), Perfil.class);
 
             startActivity(intent);
-        } else if (id == R.id.logout){
+        }
+        else if(id == R.id.logout)
+        {
             FirebaseAuth.getInstance().signOut();
 
             Intent intent = new Intent(getApplicationContext(), Login.class);
@@ -378,20 +412,23 @@ public class TutorMain extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(MenuItem item)
+    {
         int id = item.getItemId();
 
-        if (id == R.id.materias) {
+        if(id == R.id.materias)
+        {
             Intent intent = new Intent(getApplicationContext(), TutorMaterias.class);
-
             startActivity(intent);
-        } else if (id == R.id.perfil) {
+        }
+        else if(id == R.id.perfil)
+        {
             Intent intent = new Intent(getApplicationContext(), Perfil.class);
-
             startActivity(intent);
-        } else if (id == R.id.ranking) {
+        }
+        else if(id == R.id.ranking)
+        {
             Intent intent = new Intent(getApplicationContext(), Perfil.class);
-
             startActivity(intent);
         }
 
@@ -401,8 +438,8 @@ public class TutorMain extends AppCompatActivity
     }
 
     @Override
-    protected void onRestart() {
-
+    protected void onRestart()
+    {
         //Si se regresa a view, desconectar al usuario y actualizar sus preferencias
         actualizarMateriasPreferidas();
 
