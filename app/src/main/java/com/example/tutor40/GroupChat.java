@@ -96,8 +96,8 @@ public class GroupChat extends AppCompatActivity
         super.onStart();
     }
 
-
-    private void InitializeFields() {
+    private void InitializeFields()
+    {
         View v = getLayoutInflater().inflate(R.layout.app_bar_layout,null);
         mToolbar = (Toolbar) v.findViewById(R.id.toolbar);
 
@@ -109,7 +109,8 @@ public class GroupChat extends AppCompatActivity
                         TutorID = documentSnapshot.getData().get("TutorID").toString();
                         AlumnoID = documentSnapshot.getData().get("AlumnoID").toString();
 
-                        if(currentUserID == TutorID){
+                        if(currentUserID == TutorID)
+                        {
                             db.collection("users").document(AlumnoID)
                                     .get()
                                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -119,7 +120,8 @@ public class GroupChat extends AppCompatActivity
                                         }
                             });
                         }
-                        else {
+                        else
+                        {
                             db.collection("users").document(TutorID)
                                     .get()
                                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
