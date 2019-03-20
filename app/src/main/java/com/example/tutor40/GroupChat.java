@@ -24,6 +24,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -35,6 +36,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class GroupChat extends AppCompatActivity
 {
@@ -48,6 +50,7 @@ public class GroupChat extends AppCompatActivity
     private String currentUserID, currentUserRole, currentUserName, PeticionID, TutorID, AlumnoID;
     private CountDownTimer Reloj;
     private Integer CantidadExtensiones = 3, ExtensionesUsadas = 0;
+    private Date FechaCreacion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -91,11 +94,6 @@ public class GroupChat extends AppCompatActivity
         reiniciarTemporizador();
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
     private void InitializeFields()
     {
         View v = getLayoutInflater().inflate(R.layout.app_bar_layout,null);
@@ -108,6 +106,10 @@ public class GroupChat extends AppCompatActivity
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         TutorID = documentSnapshot.getData().get("TutorID").toString();
                         AlumnoID = documentSnapshot.getData().get("AlumnoID").toString();
+
+                        Timestamp fecha = (Timestamp) documentSnapshot.getData().get("FechaCreacion");
+                        FechaCreacion = fecha.toDate();
+                        Log.i("Si sirve cainal", documentSnapshot.getData().get("FechaCreacion").toString());
 
                         if(currentUserID == TutorID)
                         {
@@ -231,14 +233,27 @@ public class GroupChat extends AppCompatActivity
     {
         if(ExtensionesUsadas < CantidadExtensiones)
         {
+            final long tiempoTemporizador;
+
+            if(ExtensionesUsadas == 0){
+                tiempoTemporizador = 60000;
+            } else {
+                //Calcular tiempo restante
+                if((new Date().getTime() - FechaCreacion.getTime()) <= 0){
+                    tiempoTemporizador = 60000;
+                } else {
+                    tiempoTemporizador = (new Date().getTime() - FechaCreacion.getTime()) + 60000;
+                }
+            }
+
             ExtensionesUsadas += ExtensionesUsadas;
 
-            Reloj = new CountDownTimer(60000,1000)
+            Reloj = new CountDownTimer(tiempoTemporizador,1000)
             {
                 @Override
                 public void onTick(long milisegundosRestantes)
                 {
-                    long segundos = milisegundosRestantes / 1000 % 60;
+                    /*long segundos = milisegundosRestantes / 1000 % 60;
                     long minutos = milisegundosRestantes / 60000;
                     String segundosEdit;
 
@@ -249,9 +264,61 @@ public class GroupChat extends AppCompatActivity
                     else
                     {
                         segundosEdit = String.valueOf(segundos);
-                    }
+                    }*/
 
-                    Temporizador.setText(String.valueOf(minutos)+ ":" + String.valueOf(segundosEdit));
+                    if(FechaCreacion == null){
+                        db.collection("Chats").document(PeticionID)
+                                .get()
+                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                        Timestamp fecha = (Timestamp) documentSnapshot.getData().get("FechaCreacion");
+                                        FechaCreacion = fecha.toDate();
+
+                                        //Segundos restantes calculados desde la creación en servidor
+                                        long segundos = (new Date().getTime() - FechaCreacion.getTime()) / 1000 % 60;
+                                        long minutos = (new Date().getTime() - FechaCreacion.getTime()) / 60000 % 60;
+
+                                        String segundosEdit;
+                                        String minutosEdit;
+
+                                        if (segundos < 10) {
+                                            segundosEdit = "0" + String.valueOf(segundos);
+                                        } else {
+                                            segundosEdit = String.valueOf(segundos);
+                                        }
+
+                                        if (minutos < 10) {
+                                            minutosEdit = "0" + String.valueOf(minutos);
+                                        } else {
+                                            minutosEdit = String.valueOf(minutos);
+                                        }
+
+                                        Temporizador.setText(String.valueOf(minutosEdit) + ":" + String.valueOf(segundosEdit));
+                                    }
+                                });
+                    } else {
+                        //Segundos restantes calculados desde la creación en servidor
+                        long segundos = (new Date().getTime() - FechaCreacion.getTime()) / 1000 % 60;
+                        long minutos = (new Date().getTime() - FechaCreacion.getTime()) / 60000 % 60;
+
+                        String segundosEdit;
+                        String minutosEdit;
+
+                        if (segundos < 10) {
+                            segundosEdit = "0" + String.valueOf(segundos);
+                        } else {
+                            segundosEdit = String.valueOf(segundos);
+                        }
+
+                        if (minutos < 10) {
+                            minutosEdit = "0" + String.valueOf(minutos);
+                        } else {
+                            minutosEdit = String.valueOf(minutos);
+                        }
+
+                        Temporizador.setText(String.valueOf(minutosEdit) + ":" + String.valueOf(segundosEdit));
+                    }
                 }
 
                 @Override
@@ -259,7 +326,7 @@ public class GroupChat extends AppCompatActivity
                 {
                     new AlertDialog.Builder(GroupChat.this)
                             .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle("Se termino el tiempo de la sesión, ¿Desea reiniciar el Temporizador?")
+                            .setTitle("Se terminó el tiempo de la sesión, ¿Desea agregar otros 15 minutos a la sesión?")
                             .setPositiveButton("Aceptar",new DialogInterface.OnClickListener(){
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -313,7 +380,7 @@ public class GroupChat extends AppCompatActivity
         {
             new AlertDialog.Builder(GroupChat.this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setTitle("Han utilizado todas sus extensiones. Se terminara el chat al acabar el tiempo restante.")
+                    .setTitle("Han utilizado todas sus extensiones. Se terminará el chat al acabar el tiempo restante.")
                     .setPositiveButton("Aceptar", null).show();
         }
     }
@@ -321,7 +388,7 @@ public class GroupChat extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        //Si se presiona el botón de retroceso
+        //TODO: Si se presiona el botón de retroceso, alertar al usuario sobre terminacion de chat
 
         super.onBackPressed();
     }

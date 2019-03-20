@@ -88,10 +88,23 @@ public class TutorMain extends AppCompatActivity
         //Si materiasPreferidas no esta vacia proseguir
         if(actualizarMateriasPreferidas())
         {
-            loadingBar.show(this, "Buscando Preguntas", "Por favor espere...", true, false);
-
             //Comenzar una busqueda asincrona
             getPeticiones = new GetPeticionesTask();
+
+            loadingBar.show(this, "Buscando Preguntas", "Por favor espere...", true, true, new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    try {
+                        if(getPeticiones.getStatus() == AsyncTask.Status.RUNNING){
+                            getPeticiones.cancel(true);
+                        }
+
+                        Desconectar(detenerse);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
 
             //Realizar iterativamente busqueda y pesado de peticiones
             /*while (disponible == true) {
@@ -269,7 +282,9 @@ public class TutorMain extends AppCompatActivity
                                                                     Map<String, Object> chat = new HashMap<>();
                                                                     chat.put("TutorID", TutorID);
                                                                     chat.put("AlumnoID", peticionEscogida.AlumnoID);
+                                                                    chat.put("FechaCreacion", new Date());
 
+                                                                    //Creación del chat
                                                                     db.collection("Chats").document(peticionEscogida.PeticionID)
                                                                             .set(chat)
                                                                             .addOnSuccessListener(new OnSuccessListener<Void>() {

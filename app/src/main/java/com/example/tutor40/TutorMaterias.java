@@ -81,7 +81,12 @@ public class TutorMaterias extends AppCompatActivity
                                             }
                                         }
 
-                                        Log.i("Estado de Materias", materiasPreferidasList.toString());
+                                        //Guardar las preferencias de materias del usuario
+                                        try {
+                                            sharedPreferences.edit().putString("materiasPreferidas", ObjectSerializer.serialize(materiasPreferidasList)).apply();
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
 
                                     }
                                 });
@@ -215,18 +220,5 @@ public class TutorMaterias extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    @Override
-    protected void onStop() {
-
-        //Guardar las preferencias de materias del usuario
-        try {
-            sharedPreferences.edit().putString("materiasPreferidas", ObjectSerializer.serialize(materiasPreferidasList)).apply();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        super.onStop();
     }
 }

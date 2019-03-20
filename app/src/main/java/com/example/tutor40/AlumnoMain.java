@@ -101,9 +101,21 @@ public class AlumnoMain extends AppCompatActivity
             peticion.FechaCreacion = new Date();
             peticion.AlumnoID = currentUser;
 
+            /*
             //TODO: Crear pregunta
+            //Agregar la pregunta a la base de datos
+            db.collection("Preguntas")
+                    .add(peticion)
+                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(final DocumentReference documentReference) {
 
-            //Agregar la peticion a la base de datos
+                        }
+                    });
+                    */
+
+
+             //Agregar la peticion a la base de datos
             db.collection("Peticiones")
                     .add(peticion)
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -124,6 +136,7 @@ public class AlumnoMain extends AppCompatActivity
                                     if (snapshot != null && snapshot.exists()) {
                                         Log.i("Heard event", "Current data: " + snapshot.getData());
 
+                                        //Si se asigna un Tutor
                                         if(snapshot.getData().get("TutorID") != null){
                                             loadingBar.dismiss();
 
@@ -252,11 +265,7 @@ public class AlumnoMain extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.materias) {
-            Intent intent = new Intent(getApplicationContext(), TutorMaterias.class);
-
-            startActivity(intent);
-        } else if (id == R.id.perfil) {
+         if (id == R.id.perfil) {
             Intent intent = new Intent(getApplicationContext(), Perfil.class);
 
             startActivity(intent);
