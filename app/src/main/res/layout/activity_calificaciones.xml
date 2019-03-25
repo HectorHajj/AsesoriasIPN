@@ -99,10 +99,12 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/btnContinuar"
+        style="@android:style/Widget.DeviceDefault.Button.Toggle"
         android:layout_width="123dp"
         android:layout_height="54dp"
         android:layout_marginTop="524dp"
+        android:onClick="Continuar"
         android:text="CONTINUAR"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"

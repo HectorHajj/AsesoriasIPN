@@ -25,8 +25,9 @@
 
     <Button
         android:id="@+id/buttonPreguntar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@android:style/Widget.DeviceDefault.Button.Toggle"
+        android:layout_width="157dp"
+        android:layout_height="50dp"
         android:layout_marginTop="32dp"
         android:onClick="enviarPregunta"
         android:text="Enviar Pregunta"

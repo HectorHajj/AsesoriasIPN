@@ -11,26 +11,27 @@
 
     <TextView
         android:id="@+id/tiempo"
-        android:layout_width="69dp"
-        android:layout_height="32dp"
+        android:layout_width="93dp"
+        android:layout_height="39dp"
         android:layout_marginStart="16dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@color/design_default_color_primary_dark"
-        android:textStyle="italic"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:textColor="@color/design_default_color_primary"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.973"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ScrollView
         android:id="@+id/my_scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="122dp"
+        android:layout_height="445dp"
         android:layout_above="@+id/myLinearLayout"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="48dp"
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -42,7 +43,7 @@
             <TextView
                 android:id="@+id/group_chat_text_display"
                 android:layout_width="match_parent"
-                android:layout_height="61dp"
+                android:layout_height="58dp"
                 android:layout_marginStart="2dp"
                 android:layout_marginEnd="2dp"
                 android:layout_marginBottom="60dp"
@@ -56,30 +57,33 @@
 
     <LinearLayout
         android:id="@+id/myLinearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="1167dp"
+        android:layout_width="393dp"
+        android:layout_height="800dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="605dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="10dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/my_scroll_view">
 
         <EditText
             android:id="@+id/input_group_message"
-            android:layout_width="320dp"
-            android:layout_height="wrap_content"
+            android:layout_width="336dp"
+            android:layout_height="79dp"
             android:hint="Escriba su mensaje aqui..."
-            android:padding="17dp" />
+            android:padding="17dp"
+            android:visibility="visible" />
 
         <ImageButton
             android:id="@+id/send_message_button"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/send_message" />
+            android:layout_width="wrap_content"
+            android:layout_height="79dp"
+            android:src="@drawable/send_message"
+            android:visibility="visible" />
+
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
