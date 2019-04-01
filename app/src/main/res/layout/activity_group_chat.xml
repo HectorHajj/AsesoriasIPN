@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".GroupChat"
-    tools:showIn="@layout/app_bar_layout">>
-
+    tools:showIn="@layout/app_bar_layout">
+    <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
 
     <TextView
         android:id="@+id/tiempo"
@@ -25,15 +25,16 @@
     <ScrollView
         android:id="@+id/my_scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="445dp"
-        android:layout_above="@+id/myLinearLayout"
-        android:layout_marginStart="8dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tiempo"
+        android:layout_above="@+id/myLinearLayout">
+        <!--android:layout_marginStart="8dp"
         android:layout_marginTop="48dp"
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent">-->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -43,47 +44,45 @@
             <TextView
                 android:id="@+id/group_chat_text_display"
                 android:layout_width="match_parent"
-                android:layout_height="58dp"
-                android:layout_marginStart="2dp"
-                android:layout_marginEnd="2dp"
-                android:layout_marginBottom="60dp"
+                android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:textAllCaps="false"
+                android:textSize="20sp"
                 android:textColor="@android:color/background_dark"
-                android:textSize="20sp" />
-
-        </LinearLayout>
-    </ScrollView>
-
-    <LinearLayout
-        android:id="@+id/myLinearLayout"
-        android:layout_width="393dp"
-        android:layout_height="800dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="10dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/my_scroll_view">
-
-        <EditText
-            android:id="@+id/input_group_message"
-            android:layout_width="336dp"
-            android:layout_height="79dp"
-            android:hint="Escriba su mensaje aqui..."
-            android:padding="17dp"
-            android:visibility="visible" />
-
-        <ImageButton
-            android:id="@+id/send_message_button"
-            android:layout_width="wrap_content"
-            android:layout_height="79dp"
-            android:src="@drawable/send_message"
-            android:visibility="visible" />
-
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:layout_marginBottom="60dp" />
     </LinearLayout>
+</ScrollView>
 
-</android.support.constraint.ConstraintLayout>
+<LinearLayout
+    android:id="@+id/myLinearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_alignParentStart="true"
+    android:layout_alignParentBottom="true">
+    <!--android:layout_marginStart="8dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="10dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/my_scroll_view">-->
+
+    <EditText
+        android:id="@+id/input_group_message"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:hint="Escriba su mensaje aqui..."
+        android:padding="17dp" />
+
+    <ImageButton
+        android:id="@+id/send_message_button"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/send_message"
+        android:visibility="visible" />
+
+</LinearLayout>
+
+</RelativeLayout>

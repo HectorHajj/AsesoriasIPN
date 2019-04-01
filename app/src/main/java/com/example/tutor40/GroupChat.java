@@ -206,7 +206,8 @@ public class GroupChat extends AppCompatActivity
 
                             if(task.isSuccessful())
                             {
-                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                for(QueryDocumentSnapshot document : task.getResult())
+                                {
                                     String chatDate = document.getData().get("Fecha").toString();
                                     String chatMessage = document.getData().get("Mensaje").toString();
                                     String chatName = document.getData().get("Nombre").toString();
