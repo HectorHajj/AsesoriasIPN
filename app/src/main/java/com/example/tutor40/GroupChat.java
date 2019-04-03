@@ -47,7 +47,7 @@ public class GroupChat extends AppCompatActivity
     private TextView displayTextMessages, Temporizador;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
-    private String currentUserID, currentUserRole, currentUserName, PeticionID, TutorID, AlumnoID;
+    private String currentUserID, currentUserRole, currentUserName, PeticionID, AsesorID, AlumnoID;
     private CountDownTimer Reloj;
     private Integer CantidadExtensiones = 3, ExtensionesUsadas = 0;
     private Date FechaCreacion;
@@ -104,14 +104,14 @@ public class GroupChat extends AppCompatActivity
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        TutorID = documentSnapshot.getData().get("TutorID").toString();
+                        AsesorID = documentSnapshot.getData().get("AsesorID").toString();
                         AlumnoID = documentSnapshot.getData().get("AlumnoID").toString();
 
                         Timestamp fecha = (Timestamp) documentSnapshot.getData().get("FechaCreacion");
                         FechaCreacion = fecha.toDate();
                         Log.i("Si sirve cainal", documentSnapshot.getData().get("FechaCreacion").toString());
 
-                        if(currentUserID == TutorID)
+                        if(currentUserID == AsesorID)
                         {
                             db.collection("users").document(AlumnoID)
                                     .get()
@@ -124,7 +124,7 @@ public class GroupChat extends AppCompatActivity
                         }
                         else
                         {
-                            db.collection("users").document(TutorID)
+                            db.collection("users").document(AsesorID)
                                     .get()
                                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                         @Override
@@ -351,9 +351,13 @@ public class GroupChat extends AppCompatActivity
                                                                 @Override
                                                                 public void onSuccess(Void aVoid) {
                                                                     Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
-
-                                                                    intent.putExtra("TutorID",TutorID);
-                                                                    intent.putExtra("AlumnoID",AlumnoID);
+                                                                    if (currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")) {
+                                                                        intent.putExtra("UserID",AlumnoID);
+                                                                    }
+                                                                    else if(currentUserRole.equals("I60WiSHvFyzJqUT0IU20")){
+                                                                        intent.putExtra("UserID",AsesorID);
+                                                                    }
+                                                                    intent.putExtra("RolID",currentUserRole);
 
                                                                     startActivity(intent);
                                                                 }
@@ -436,7 +440,7 @@ public class GroupChat extends AppCompatActivity
                                                         public void onSuccess(Void aVoid) {
                                                             Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
 
-                                                            intent.putExtra("TutorID",TutorID);
+                                                            intent.putExtra("AsesorID",AsesorID);
                                                             intent.putExtra("AlumnoID",AlumnoID);
 
                                                             startActivity(intent);

@@ -22,4 +22,6 @@ public class Peticiones {
 
     public int Peso;
 
+
+
 }
