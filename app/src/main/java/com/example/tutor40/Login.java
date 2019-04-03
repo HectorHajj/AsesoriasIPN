@@ -6,11 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -68,7 +65,7 @@ public class Login extends AppCompatActivity
                                         {
                                             loadingBar.dismiss();
 
-                                            Intent intent = new Intent(getApplicationContext(), TutorMain.class);
+                                            Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
                                             startActivity(intent);
                                         }
                                         else if(documentSnapshot.getData().get("RolID").toString().equals("I60WiSHvFyzJqUT0IU20"))

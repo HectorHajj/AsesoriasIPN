@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Switch;
@@ -58,7 +57,7 @@ public class Registro extends AppCompatActivity {
 
 
         if(user.get("RolID").toString() == "Ck5Tnzr0ipmAzKpQpTDX") {
-            Intent intent = new Intent(getApplicationContext(), TutorMain.class);
+            Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
 
             startActivity(intent);
         } else if (user.get("RolID").toString() == "I60WiSHvFyzJqUT0IU20"){

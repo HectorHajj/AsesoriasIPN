@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -27,10 +25,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
-public class TutorMaterias extends AppCompatActivity
+public class AsesorMaterias extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     ArrayList<String> materiasPreferidasList = new ArrayList<>();
@@ -204,7 +201,7 @@ public class TutorMaterias extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.materias) {
-            Intent intent = new Intent(getApplicationContext(), TutorMaterias.class);
+            Intent intent = new Intent(getApplicationContext(), AsesorMaterias.class);
 
             startActivity(intent);
         } else if (id == R.id.perfil) {

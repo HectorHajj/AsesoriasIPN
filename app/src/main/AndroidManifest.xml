@@ -23,11 +23,11 @@
             android:label="@string/title_activity_alumno_main"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".TutorMaterias"
+            android:name=".AsesorMaterias"
             android:label="@string/title_activity_tutor_materias"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".TutorMain"
+            android:name=".AsesorMain"
             android:label="@string/title_activity_tutor_drawer"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Login">

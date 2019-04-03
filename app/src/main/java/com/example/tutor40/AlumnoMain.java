@@ -298,7 +298,7 @@ public class AlumnoMain extends AppCompatActivity
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     if(documentSnapshot.getData().get("RolID").toString() == "Ck5Tnzr0ipmAzKpQpTDX") {
-                        Intent intent = new Intent(getApplicationContext(), TutorMain.class);
+                        Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
 
                         startActivity(intent);
                     }
