@@ -7,9 +7,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.text.TextUtils;
 import android.util.Log;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -23,31 +21,23 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TutorMain extends AppCompatActivity
+public class AsesorMain extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     SharedPreferences sharedPreferences;
@@ -169,7 +159,7 @@ public class TutorMain extends AppCompatActivity
                     .setPositiveButton("Ir a Materias", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Intent intent = new Intent(getApplicationContext(), TutorMaterias.class);
+                            Intent intent = new Intent(getApplicationContext(), AsesorMaterias.class);
 
                             startActivity(intent);
                         }
@@ -264,7 +254,7 @@ public class TutorMain extends AppCompatActivity
 
                                                     final Peticiones peticionEscogida = peticiones.get(posicion);
 
-                                                    new AlertDialog.Builder(TutorMain.this)
+                                                    new AlertDialog.Builder(AsesorMain.this)
                                                             .setIcon(android.R.drawable.ic_dialog_alert)
                                                             .setTitle("Pregunta encontrada!")
                                                             .setMessage(peticiones.get(posicion).Pregunta)
@@ -433,7 +423,7 @@ public class TutorMain extends AppCompatActivity
 
         if(id == R.id.materias)
         {
-            Intent intent = new Intent(getApplicationContext(), TutorMaterias.class);
+            Intent intent = new Intent(getApplicationContext(), AsesorMaterias.class);
             startActivity(intent);
         }
         else if(id == R.id.perfil)
