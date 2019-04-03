@@ -53,7 +53,7 @@ public class AsesorMain extends AppCompatActivity
     ArrayList<Peticiones> peticiones = new ArrayList<>();
     ArrayList<String> peticionesIgnoradasList = new ArrayList<>();
     String currentUser;
-    String TutorID;
+    String AsesorID;
 
     GetPeticionesTask getPeticiones;
 
@@ -264,13 +264,13 @@ public class AsesorMain extends AppCompatActivity
 
                                                                     //Modificar peticion
 
-                                                                    peticionEscogida.TutorID = TutorID;
+                                                                    peticionEscogida.AsesorID = AsesorID;
 
                                                                     db.collection("Peticiones").document(peticionEscogida.PeticionID)
                                                                             .set(peticionEscogida, SetOptions.merge());
 
                                                                     Map<String, Object> chat = new HashMap<>();
-                                                                    chat.put("TutorID", TutorID);
+                                                                    chat.put("AsesorID", AsesorID);
                                                                     chat.put("AlumnoID", peticionEscogida.AlumnoID);
                                                                     chat.put("FechaCreacion", new Date());
 
@@ -364,7 +364,7 @@ public class AsesorMain extends AppCompatActivity
         conectarse = findViewById(R.id.buttonConectarse);
         textViewEstado = findViewById(R.id.textViewEstado);
         loadingBar = new ProgressDialog(this);
-        TutorID = mAuth.getInstance().getCurrentUser().getUid();
+        AsesorID = mAuth.getInstance().getCurrentUser().getUid();
 
         sharedPreferences = getSharedPreferences("com.example.tutor40", MODE_PRIVATE);
 

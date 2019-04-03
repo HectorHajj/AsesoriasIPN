@@ -10,7 +10,7 @@ public class Peticiones {
 
     public String AlumnoID;
 
-    public String TutorID;
+    public String AsesorID;
 
     public String PreguntaID;
 
