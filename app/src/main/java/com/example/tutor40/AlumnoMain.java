@@ -137,7 +137,7 @@ public class AlumnoMain extends AppCompatActivity
                                         Log.i("Heard event", "Current data: " + snapshot.getData());
 
                                         //Si se asigna un Tutor
-                                        if(snapshot.getData().get("TutorID") != null){
+                                        if(snapshot.getData().get("AsesorID") != null){
                                             loadingBar.dismiss();
 
                                             registration.remove();
