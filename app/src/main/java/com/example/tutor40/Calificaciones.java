@@ -36,7 +36,9 @@ public class Calificaciones extends AppCompatActivity {
 
         CurrentUserRole = getIntent().getStringExtra("RolID");
         UserID = getIntent().getStringExtra("UserID");
+        Log.i("UserID AQUIIIIIIIIII",UserID);
         R1 = (RatingBar) findViewById (R.id. ratingBar );  // iniciar una barra de calificación
+        db = FirebaseFirestore.getInstance();
     }
 
 
@@ -48,101 +50,95 @@ public class Calificaciones extends AppCompatActivity {
         }
         else
             if (CurrentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")) {
-                DocumentReference docRef2 = db.collection("Calificaciones").document(UserID);
-                docRef2.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            if (document.exists()) {
-                                float Cal = (float) document.getData().get("Calificacion");
-                                int NumCal = (int) document.getData().get("NumeroCalificaciones");
-                                float Promedio = (NumCal*Cal+Calificacion)/(NumCal+1);
-                                Calificacion = Promedio;
-                                NumCal = NumCal + 1;
+                db.collection("Calificaciones").document(UserID)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if(task.getResult().exists()){
+                                    float Cal = (float) task.getResult().getData().get("Calificacion");
+                                    int NumCal = (int) task.getResult().getData().get("NumeroCalificaciones");
+                                    float Promedio = (NumCal*Cal+Calificacion)/(NumCal+1);
+                                    Calificacion = Promedio;
+                                    NumCal = NumCal + 1;
 
-                                final Map<String, Object> data = new HashMap<>();
-                                data.put("Calificacion",Promedio);
+                                    final Map<String, Object> data = new HashMap<>();
+                                    data.put("Calificacion",Promedio);
 
-                                DocumentReference docRef3 = db.collection("Calificaciones").document(UserID);
-                                docRef3.set(data).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
+                                    db.collection("Calificaciones").document(UserID)
+                                            .set(data)
+                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
 
-                                        if (task.isSuccessful()) {
-                                            Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
-                                            startActivity(intent);
+                                                    if (task.isSuccessful()) {
+                                                        Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
+                                                        startActivity(intent);
+                                                    }
+                                                }
+                                            });
+                                } else {
+                                    Map<String, Object> data = new HashMap<>();
+                                    data.put("Calificacion", Calificacion);
+                                    data.put("NumeroCalificaciones",1);
 
-                                        }
-                                    }
-                                });
-
-                            } else {
-                                final Map<String, Object> data = new HashMap<>();
-                                data.put("Calificacion", Calificacion);
-                                data.put("NumeroCalificaciones",1);
-
-                                final DocumentReference docRef = db.collection("Calificaciones").document(UserID);
-                                docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                    @Override
-                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                        Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
-                                        startActivity(intent);
-                                    }
-                                });
-                                    }
-                        }
-                    }
-                });
-
-
-            }
-            else if(CurrentUserRole.equals("I60WiSHvFyzJqUT0IU20")){
-                DocumentReference docRef2 = db.collection("Calificaciones").document(UserID);
-                docRef2.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            if (document.exists()) {
-                                float Cal = (float) document.getData().get("Calificacion");
-                                int NumCal = (int) document.getData().get("NumeroCalificaciones");
-                                float Promedio = (NumCal*Cal+Calificacion)/(NumCal+1);
-                                Calificacion = Promedio;
-                                NumCal = NumCal + 1;
-
-                                final Map<String, Object> data = new HashMap<>();
-                                data.put("Calificacion",Promedio);
-
-                                DocumentReference docRef3 = db.collection("Calificaciones").document(UserID);
-                                docRef3.set(data).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-
-                                        if (task.isSuccessful()) {
-                                            Intent intent = new Intent(getApplicationContext(), AlumnoMain.class);
-                                            startActivity(intent);
-                                        }
-                                    }
-                                });
-
-                            } else {
-                                final Map<String, Object> data = new HashMap<>();
-                                data.put("Calificacion", Calificacion);
-                                data.put("NumeroCalificaciones",1);
-
-                                final DocumentReference docRef = db.collection("Calificaciones").document(UserID);
-                                docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                    @Override
-                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                        Intent intent = new Intent(getApplicationContext(), AlumnoMain.class);
-                                        startActivity(intent);
-                                    }
-                                });
+                                    db.collection("Calificaciones").document(UserID)
+                                            .set(data)
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
+                                                    startActivity(intent);
+                                                }
+                                            });
+                                }
                             }
-                        }
-                    }
-                });
-        }
+                        });
+            }
+            else if(CurrentUserRole.equals("I60WiSHvFyzJqUT0IU20")) {
+                db.collection("Calificaciones").document(UserID)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if (task.getResult().exists()) {
+                                    float Cal = (float) task.getResult().getData().get("Calificacion");
+                                    int NumCal = (int) task.getResult().getData().get("NumeroCalificaciones");
+                                    float Promedio = (NumCal * Cal + Calificacion) / (NumCal + 1);
+                                    Calificacion = Promedio;
+                                    NumCal = NumCal + 1;
+
+                                    final Map<String, Object> data = new HashMap<>();
+                                    data.put("Calificacion", Promedio);
+
+                                    db.collection("Calificaciones").document(UserID)
+                                            .set(data)
+                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (task.isSuccessful()) {
+                                                        Intent intent = new Intent(getApplicationContext(), AlumnoMain.class);
+                                                        startActivity(intent);
+                                                    }
+                                                }
+                                            });
+                                } else {
+                                    Map<String, Object> dat = new HashMap<>();
+                                    dat.put("Calificacion", Calificacion);
+                                    dat.put("NumeroCalificaciones", 1);
+
+                                    db.collection("Calificaciones").document(UserID)
+                                            .set(dat)
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    Intent intent = new Intent(getApplicationContext(), AlumnoMain.class);
+                                                    startActivity(intent);
+                                                }
+                                            });
+                                }
+                            }
+                        });
+            }
     }
 }
