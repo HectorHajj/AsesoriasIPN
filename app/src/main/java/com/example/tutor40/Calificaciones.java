@@ -56,14 +56,15 @@ public class Calificaciones extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                 if(task.getResult().exists()){
-                                    float Cal = (float) task.getResult().getData().get("Calificacion");
-                                    int NumCal = (int) task.getResult().getData().get("NumeroCalificaciones");
+                                    float Cal = Float.parseFloat(task.getResult().getData().get("Calificacion").toString());
+                                    int NumCal = Integer.parseInt(task.getResult().getData().get("NumeroCalificaciones").toString());
                                     float Promedio = (NumCal*Cal+Calificacion)/(NumCal+1);
                                     Calificacion = Promedio;
                                     NumCal = NumCal + 1;
 
                                     final Map<String, Object> data = new HashMap<>();
                                     data.put("Calificacion",Promedio);
+                                    data.put("NumeroCalificaciones", NumCal);
 
                                     db.collection("Calificaciones").document(UserID)
                                             .set(data)
@@ -102,14 +103,15 @@ public class Calificaciones extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                 if (task.getResult().exists()) {
-                                    float Cal = (float) task.getResult().getData().get("Calificacion");
-                                    int NumCal = (int) task.getResult().getData().get("NumeroCalificaciones");
+                                    float Cal = Float.parseFloat(task.getResult().getData().get("Calificacion").toString());
+                                    int NumCal = Integer.parseInt(task.getResult().getData().get("NumeroCalificaciones").toString());
                                     float Promedio = (NumCal * Cal + Calificacion) / (NumCal + 1);
                                     Calificacion = Promedio;
                                     NumCal = NumCal + 1;
 
                                     final Map<String, Object> data = new HashMap<>();
                                     data.put("Calificacion", Promedio);
+                                    data.put("NumeroCalificaciones", NumCal);
 
                                     db.collection("Calificaciones").document(UserID)
                                             .set(data)
