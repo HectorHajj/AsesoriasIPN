@@ -52,18 +52,18 @@
     <TextView
         android:id="@+id/textViewEstado"
         android:layout_width="0dp"
-        android:layout_height="46dp"
+        android:layout_height="102dp"
         android:layout_below="@+id/buttonConectarse"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginBottom="520dp"
+        android:layout_marginBottom="472dp"
         android:text="ESTAS DESCONECTADO"
         android:textAlignment="center"
         android:textColor="@color/colorPrimary"
         android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Switch
@@ -71,12 +71,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="111dp"
-        android:layout_marginTop="113dp"
+        android:layout_marginTop="248dp"
         android:layout_marginEnd="112dp"
-        android:layout_marginBottom="463dp"
         android:text="Mantenerse Conectado"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
