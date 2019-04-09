@@ -118,7 +118,7 @@ public class AsesorMaterias extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tutor_materias);
+        setContentView(R.layout.activity_asesor_materias);
 
         //Menus y Toolbars
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

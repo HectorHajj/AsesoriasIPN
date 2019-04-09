@@ -45,17 +45,18 @@ import java.util.Date;
 public class AlumnoMain extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    //Firebase
     FirebaseFirestore db;
     FirebaseAuth mAuth;
+    EventListener<DocumentSnapshot> yolo;
+    ListenerRegistration registration;
 
+    //Controles
     Spinner spinnerMaterias;
     TextView pregunta;
     ProgressDialog loadingBar;
 
-    EventListener<DocumentSnapshot> yolo;
-
-    ListenerRegistration registration;
-
+    //Variables
     ArrayList<String> spinnerArray =  new ArrayList<String>();
     String currentUser;
     Boolean Aceptado = false;
@@ -142,9 +143,10 @@ public class AlumnoMain extends AppCompatActivity
 
                                             registration.remove();
 
-                                            Intent intent = new Intent(getApplicationContext(), GroupChat.class);
+                                            Intent intent = new Intent(getApplicationContext(), Chat.class);
 
                                             intent.putExtra("PeticionID", documentReference.getId());
+                                            intent.putExtra("Rol", getIntent().getStringExtra("Rol"));
 
                                             startActivity(intent);
                                         }
@@ -170,32 +172,36 @@ public class AlumnoMain extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alumno_main);
+
+        //Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //Drawer
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        //Navigation Menu
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        loadingBar = new ProgressDialog(this);
-
+        //Firebase
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
-
         currentUser = mAuth.getInstance().getCurrentUser().getUid();
+
+        //Controles
         pregunta = findViewById(R.id.editTextPregunta);
-
+        loadingBar = new ProgressDialog(this);
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, spinnerArray);
-
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerMaterias = findViewById(R.id.spinnerMaterias);
         spinnerMaterias.setAdapter(adapter);
 
+        //Acciones de spinner
         spinnerMaterias.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

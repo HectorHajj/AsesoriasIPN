@@ -66,6 +66,9 @@ public class Login extends AppCompatActivity
                                             loadingBar.dismiss();
 
                                             Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
+
+                                            intent.putExtra("Rol", "Ck5Tnzr0ipmAzKpQpTDX");
+
                                             startActivity(intent);
                                         }
                                         else if(documentSnapshot.getData().get("RolID").toString().equals("I60WiSHvFyzJqUT0IU20"))
@@ -73,6 +76,9 @@ public class Login extends AppCompatActivity
                                             loadingBar.dismiss();
 
                                             Intent intent = new Intent(getApplicationContext(), AlumnoMain.class);
+
+                                            intent.putExtra("Rol", "I60WiSHvFyzJqUT0IU20");
+
                                             startActivity(intent);
                                         }
                                     }

@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/extender"
-        android:title="Solicitar extensión de tiempo." />
+        android:title="Extender tiempo." />
     <item
         android:id="@+id/terminar"
         android:title="Terminar Chat" />

@@ -41,23 +41,28 @@ public class AsesorMain extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     SharedPreferences sharedPreferences;
+
+    //Firebase
     FirebaseFirestore db;
     FirebaseAuth mAuth;
 
+    //Controles
     ImageButton detenerse;
     Button conectarse;
     TextView textViewEstado;
     ProgressDialog loadingBar;
 
+    //Variables
     ArrayList<String> materiasPreferidasList = new ArrayList<>();
     ArrayList<Peticiones> peticiones = new ArrayList<>();
     ArrayList<String> peticionesIgnoradasList = new ArrayList<>();
     String currentUser;
     String AsesorID;
 
+    //Tasks
     GetPeticionesTask getPeticiones;
 
-
+    //Banderas
     boolean disponible = false;
 
     public void Conectar(View view)
@@ -280,8 +285,9 @@ public class AsesorMain extends AppCompatActivity
                                                                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                                 @Override
                                                                                 public void onSuccess(Void aVoid) {
-                                                                                    Intent intent = new Intent(getApplicationContext(), GroupChat.class);
+                                                                                    Intent intent = new Intent(getApplicationContext(), Chat.class);
 
+                                                                                    intent.putExtra("Rol", getIntent().getStringExtra("Rol"));
                                                                                     intent.putExtra("PeticionID", peticionEscogida.PeticionID);
 
                                                                                     startActivity(intent);
@@ -344,28 +350,35 @@ public class AsesorMain extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_asesor_main);
 
-        setContentView(R.layout.activity_tutor_main);
+        //Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //Drawer
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        //Navigation Menu
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        //Firebase
         db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        AsesorID = mAuth.getInstance().getCurrentUser().getUid();
 
+        //Controles
         detenerse = findViewById(R.id.buttonDetenerse);
         conectarse = findViewById(R.id.buttonConectarse);
         textViewEstado = findViewById(R.id.textViewEstado);
         loadingBar = new ProgressDialog(this);
-        AsesorID = mAuth.getInstance().getCurrentUser().getUid();
 
+        //Shared Preferences
         sharedPreferences = getSharedPreferences("com.example.tutor40", MODE_PRIVATE);
 
         actualizarMateriasPreferidas();

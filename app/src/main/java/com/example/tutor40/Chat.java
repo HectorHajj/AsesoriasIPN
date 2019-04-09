@@ -2,22 +2,22 @@ package com.example.tutor40;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -38,33 +38,38 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-public class GroupChat extends AppCompatActivity
-{
-    private Toolbar mToolbar;
-    private ImageButton SendMessageButton;
-    private EditText userMessageInput;
-    private ScrollView mScrollView;
-    private TextView displayTextMessages, Temporizador;
-    private FirebaseAuth mAuth;
-    private FirebaseFirestore db;
-    private String currentUserID, currentUserRole, currentUserName, PeticionID, AsesorID, AlumnoID;
-    private CountDownTimer Reloj;
-    private Integer CantidadExtensiones = 3, ExtensionesUsadas = 0;
-    private Date FechaCreacion;
+public class Chat extends AppCompatActivity {
+    //Firebase
+    FirebaseAuth mAuth;
+    FirebaseFirestore db;
+
+    //Controles
+    Toolbar toolbar;
+    ImageButton SendMessageButton;
+    EditText userMessageInput;
+    ScrollView mScrollView;
+    TextView displayTextMessages, Temporizador;
+
+    //Variables
+    String currentUserID, currentUserRole, currentUserName, PeticionID, AsesorID, AlumnoID;
+    CountDownTimer Reloj;
+    Integer CantidadExtensiones = 3, ExtensionesUsadas = 0;
+    Date FechaCreacion;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_group_chat);
+        setContentView(R.layout.activity_chat);
 
-        //Traer el id de la peticion
-        Intent intent = getIntent();
-        PeticionID = intent.getStringExtra("PeticionID");
+        //Toolbar
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
+        //Instancias de Firebase
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
+        //Usuario Conectado
         currentUserID = mAuth.getCurrentUser().getUid();
 
         InitializeFields();
@@ -96,40 +101,40 @@ public class GroupChat extends AppCompatActivity
 
     private void InitializeFields()
     {
-        View v = getLayoutInflater().inflate(R.layout.app_bar_layout,null);
-        mToolbar = (Toolbar) v.findViewById(R.id.toolbar);
+        //Traer el id de la peticion
+        PeticionID = getIntent().getStringExtra("PeticionID");
 
         db.collection("Peticiones").document(PeticionID)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        //Informacion de participantes
                         AsesorID = documentSnapshot.getData().get("AsesorID").toString();
                         AlumnoID = documentSnapshot.getData().get("AlumnoID").toString();
 
                         Timestamp fecha = (Timestamp) documentSnapshot.getData().get("FechaCreacion");
                         FechaCreacion = fecha.toDate();
-                        Log.i("Si sirve cainal", documentSnapshot.getData().get("FechaCreacion").toString());
 
-                        if(currentUserID == AsesorID)
+                        if(getIntent().getStringExtra("Rol").equals("Ck5Tnzr0ipmAzKpQpTDX"))
                         {
                             db.collection("users").document(AlumnoID)
                                     .get()
                                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                         @Override
                                         public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                            mToolbar.setTitle("Chat con:" + documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString());
+                                            setTitle("Chat con: " + documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString());
                                         }
-                            });
+                                    });
                         }
-                        else
+                        else if (getIntent().getStringExtra("Rol").equals("I60WiSHvFyzJqUT0IU20"))
                         {
                             db.collection("users").document(AsesorID)
                                     .get()
                                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                         @Override
                                         public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                            mToolbar.setTitle("Chat con:" + documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString());
+                                            setTitle("Chat con: " + documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString());
                                         }
                                     });
                         }
@@ -143,91 +148,71 @@ public class GroupChat extends AppCompatActivity
         Temporizador = findViewById(R.id.tiempo);
     }
 
-    private void GetUserInfo()
-    {
-        DocumentReference docRef = db.collection("users").document(currentUserID);
-        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                currentUserName = documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString();
-                currentUserRole = documentSnapshot.getData().get("RolID").toString();
-            }
-        });
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        if(getIntent().getStringExtra("Rol").equals("Ck5Tnzr0ipmAzKpQpTDX")){
+            getMenuInflater().inflate(R.menu.chat_menu_asesor, menu);
+        } else if (getIntent().getStringExtra("Rol").equals("I60WiSHvFyzJqUT0IU20")){
+            getMenuInflater().inflate(R.menu.chat_menu_alumno, menu);
+        }
+        return true;
     }
 
-    private void SaveMessageInfoToDatabase()
-    {
-        String message = userMessageInput.getText().toString();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
 
-        if(TextUtils.isEmpty(message))
-        {
-            Toast.makeText(this, "Por favor escriba un mensaje primero", Toast.LENGTH_SHORT).show();
-        }
-        else
-        {
-            Mensajes mensaje = new Mensajes();
-
-            mensaje.UserID = currentUserID;
-
-            mensaje.Nombre = currentUserName;
-
-            mensaje.Mensaje = message;
-
-            Calendar calForDate = Calendar.getInstance();
-            SimpleDateFormat currentDateFormat = new SimpleDateFormat("MMM dd, yyyy");
-            mensaje.Fecha = currentDateFormat.format(calForDate.getTime());
-
-            Calendar calForTime = Calendar.getInstance();
-            SimpleDateFormat currentTimeFormat = new SimpleDateFormat("hh:mm a");
-            mensaje.Tiempo = currentTimeFormat.format(calForTime.getTime());
-
-            db.collection("Chats").document(PeticionID).collection("Mensajes")
-                    .add(mensaje)
-                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+        if(id == R.id.extender){
+            reiniciarTemporizador();
+        }else if (id == R.id.solicitarExtension) {
+            //TODO: Crear mensaje que alerte al tutor de el tiempo restante
+        }else if (id == R.id.terminar){
+            new AlertDialog.Builder(Chat.this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle("¿En verdad deseas terminar el Chat?")
+                    .setMessage("Asegurate de que la duda halla quedado resuelta.")
+                    .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                         @Override
-                        public void onSuccess(DocumentReference documentReference) {
-                            DisplayMessages();
+                        public void onClick(DialogInterface dialog, int which) {
+                            db.collection("Peticiones").document(PeticionID)
+                                    .delete()
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            //Borrar chat tambien
+                                            db.collection("Chats").document(PeticionID)
+                                                    .delete()
+                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+                                                            Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
+
+                                                            intent.putExtra("AsesorID",AsesorID);
+                                                            intent.putExtra("AlumnoID",AlumnoID);
+
+                                                            startActivity(intent);
+                                                        }
+                                                    })
+                                                    .addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception e) {
+                                                            Log.i("Error", "Error borrando Chat");
+                                                        }
+                                                    });
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.i("Error", "Error borrando Peticion");
+                                        }
+                                    });
                         }
-                    });
+                    })
+                    .setNegativeButton("Rechazar", null).show();
         }
-    }
-
-    private void DisplayMessages()
-    {
-        try
-        {
-            db.collection("Chats").document(PeticionID).collection("Mensajes")
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                            displayTextMessages.setText("");
-
-                            if(task.isSuccessful())
-                            {
-                                for(QueryDocumentSnapshot document : task.getResult())
-                                {
-                                    String chatDate = document.getData().get("Fecha").toString();
-                                    String chatMessage = document.getData().get("Mensaje").toString();
-                                    String chatName = document.getData().get("Nombre").toString();
-                                    String chatTime = document.getData().get("Tiempo").toString();
-
-                                    displayTextMessages.append(chatName + ":\n" + chatMessage + "\n" + chatTime + "     " + chatDate + "\n\n\n");
-                                    mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
-                                }
-                            }
-                            else
-                            {
-                                Log.i("Error en Query", "Error getting documents: ", task.getException());
-                            }
-                        }
-                    });
-        }
-        catch(Exception e)
-        {
-            //No hay mensajes
-        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void reiniciarTemporizador()
@@ -254,19 +239,6 @@ public class GroupChat extends AppCompatActivity
                 @Override
                 public void onTick(long milisegundosRestantes)
                 {
-                    /*long segundos = milisegundosRestantes / 1000 % 60;
-                    long minutos = milisegundosRestantes / 60000;
-                    String segundosEdit;
-
-                    if(segundos < 10)
-                    {
-                        segundosEdit = "0" + String.valueOf(segundos);
-                    }
-                    else
-                    {
-                        segundosEdit = String.valueOf(segundos);
-                    }*/
-
                     if(FechaCreacion == null){
                         db.collection("Chats").document(PeticionID)
                                 .get()
@@ -325,7 +297,7 @@ public class GroupChat extends AppCompatActivity
                 @Override
                 public void onFinish()
                 {
-                    new AlertDialog.Builder(GroupChat.this)
+                    new AlertDialog.Builder(Chat.this)
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setTitle("Se terminó el tiempo de la sesión, ¿Desea agregar otros 15 minutos a la sesión?")
                             .setPositiveButton("Aceptar",new DialogInterface.OnClickListener(){
@@ -383,87 +355,98 @@ public class GroupChat extends AppCompatActivity
         }
         else
         {
-            new AlertDialog.Builder(GroupChat.this)
+            new AlertDialog.Builder(Chat.this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle("Han utilizado todas sus extensiones. Se terminará el chat al acabar el tiempo restante.")
                     .setPositiveButton("Aceptar", null).show();
         }
     }
 
-
-    @Override
-    public void onBackPressed() {
-        //TODO: Si se presiona el botón de retroceso, alertar al usuario sobre terminacion de chat
-
-        super.onBackPressed();
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if(mAuth.getCurrentUser().getUid() == "Ck5Tnzr0ipmAzKpQpTDX"){
-            Log.i("It's Happening!","Tutor");
-            getMenuInflater().inflate(R.menu.chat_menu_tutor, menu);
-        } else if ( mAuth.getCurrentUser().getUid() == "I60WiSHvFyzJqUT0IU20"){
-            Log.i("It's Happening!","Alumno");
-            getMenuInflater().inflate(R.menu.chat_menu_alumno, menu);
-        }
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if(id == R.id.extender){
-            reiniciarTemporizador();
-        }else if (id == R.id.solicitarExtension) {
-            //TODO: Crear mensaje que alerte al tutor de el tiempo restante
-        }else if (id == R.id.terminar){
-            new AlertDialog.Builder(GroupChat.this)
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setTitle("¿En verdad deseas terminar el Chat?")
-                    .setMessage("Asegurate de que la duda halla quedado resuelta.")
-                    .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+    public void DisplayMessages()
+    {
+        try
+        {
+            db.collection("Chats").document(PeticionID).collection("Mensajes")
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            db.collection("Peticiones").document(PeticionID)
-                                    .delete()
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            //Borrar chat tambien
-                                            db.collection("Chats").document(PeticionID)
-                                                    .delete()
-                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                        @Override
-                                                        public void onSuccess(Void aVoid) {
-                                                            Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-                                                            intent.putExtra("AsesorID",AsesorID);
-                                                            intent.putExtra("AlumnoID",AlumnoID);
+                            displayTextMessages.setText("");
 
-                                                            startActivity(intent);
-                                                        }
-                                                    })
-                                                    .addOnFailureListener(new OnFailureListener() {
-                                                        @Override
-                                                        public void onFailure(@NonNull Exception e) {
-                                                            Log.i("Error", "Error borrando Chat");
-                                                        }
-                                                    });
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Log.i("Error", "Error borrando Peticion");
-                                        }
-                                    });
+                            if(task.isSuccessful())
+                            {
+                                for(QueryDocumentSnapshot document : task.getResult())
+                                {
+                                    String chatDate = document.getData().get("Fecha").toString();
+                                    String chatMessage = document.getData().get("Mensaje").toString();
+                                    String chatName = document.getData().get("Nombre").toString();
+                                    String chatTime = document.getData().get("Tiempo").toString();
+
+                                    displayTextMessages.append(chatName + ":\n" + chatMessage + "\n" + chatTime + "     " + chatDate + "\n\n\n");
+                                    mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
+                                }
+                            }
+                            else
+                            {
+                                Log.i("Error en Query", "Error getting documents: ", task.getException());
+                            }
                         }
-                    })
-                    .setNegativeButton("Rechazar", null).show();
+                    });
         }
-        return super.onOptionsItemSelected(item);
+        catch(Exception e)
+        {
+            //No hay mensajes
+        }
     }
+
+    private void SaveMessageInfoToDatabase()
+    {
+        String message = userMessageInput.getText().toString();
+
+        if(TextUtils.isEmpty(message))
+        {
+            Toast.makeText(this, "Por favor escriba un mensaje primero", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Mensajes mensaje = new Mensajes();
+
+            mensaje.UserID = currentUserID;
+
+            mensaje.Nombre = currentUserName;
+
+            mensaje.Mensaje = message;
+
+            Calendar calForDate = Calendar.getInstance();
+            SimpleDateFormat currentDateFormat = new SimpleDateFormat("MMM dd, yyyy");
+            mensaje.Fecha = currentDateFormat.format(calForDate.getTime());
+
+            Calendar calForTime = Calendar.getInstance();
+            SimpleDateFormat currentTimeFormat = new SimpleDateFormat("hh:mm a");
+            mensaje.Tiempo = currentTimeFormat.format(calForTime.getTime());
+
+            db.collection("Chats").document(PeticionID).collection("Mensajes")
+                    .add(mensaje)
+                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+                            DisplayMessages();
+                        }
+                    });
+        }
+    }
+
+    private void GetUserInfo()
+    {
+        DocumentReference docRef = db.collection("users").document(currentUserID);
+        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                currentUserName = documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString();
+                currentUserRole = documentSnapshot.getData().get("RolID").toString();
+            }
+        });
+    }
+
 }
