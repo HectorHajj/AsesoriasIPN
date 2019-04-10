@@ -102,20 +102,6 @@ public class AlumnoMain extends AppCompatActivity
             peticion.FechaCreacion = new Date();
             peticion.AlumnoID = currentUser;
 
-            /*
-            //TODO: Crear pregunta
-            //Agregar la pregunta a la base de datos
-            db.collection("Preguntas")
-                    .add(peticion)
-                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                        @Override
-                        public void onSuccess(final DocumentReference documentReference) {
-
-                        }
-                    });
-                    */
-
-
              //Agregar la peticion a la base de datos
             db.collection("Peticiones")
                     .add(peticion)

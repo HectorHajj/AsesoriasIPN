@@ -35,7 +35,9 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 
 public class Chat extends AppCompatActivity {
@@ -55,6 +57,7 @@ public class Chat extends AppCompatActivity {
     CountDownTimer Reloj;
     Integer CantidadExtensiones = 3, ExtensionesUsadas = 0;
     Date FechaCreacion;
+    ArrayList<Mensajes> mensajesChat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,11 +68,9 @@ public class Chat extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //Instancias de Firebase
+        //Firebase
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
-
-        //Usuario Conectado
         currentUserID = mAuth.getCurrentUser().getUid();
 
         InitializeFields();
@@ -373,17 +374,28 @@ public class Chat extends AppCompatActivity {
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
                             displayTextMessages.setText("");
+                            mensajesChat= new ArrayList<>();
 
                             if(task.isSuccessful())
                             {
                                 for(QueryDocumentSnapshot document : task.getResult())
                                 {
-                                    String chatDate = document.getData().get("Fecha").toString();
-                                    String chatMessage = document.getData().get("Mensaje").toString();
-                                    String chatName = document.getData().get("Nombre").toString();
-                                    String chatTime = document.getData().get("Tiempo").toString();
+                                    //Extraer todos los mensajes de la coleccion
+                                    Mensajes mensaje = new Mensajes();
+                                    mensaje.Nombre = document.getData().get("Nombre").toString();
+                                    mensaje.Mensaje = document.getData().get("Mensaje").toString();
+                                    mensaje.UserID = document.getData().get("UserID").toString();
 
-                                    displayTextMessages.append(chatName + ":\n" + chatMessage + "\n" + chatTime + "     " + chatDate + "\n\n\n");
+                                    Timestamp fecha = (Timestamp) document.getData().get("Fecha");
+                                    mensaje.Fecha = fecha.toDate();
+
+                                    mensajesChat.add(mensaje);
+                                }
+                                //Mostrar los mensajes en orden cronologico
+                                Collections.sort(mensajesChat, new SortByDate());
+
+                                for (Mensajes mensaje : mensajesChat) {
+                                    displayTextMessages.append(mensaje.Nombre + ":\n" + mensaje.Mensaje + "\n" + mensaje.Fecha.getHours() + ":" + mensaje.Fecha.getMinutes() + ":" + mensaje.Fecha.getSeconds() + "     " + mensaje.Fecha.toString() + "\n\n\n");
                                     mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
                                 }
                             }
@@ -418,13 +430,7 @@ public class Chat extends AppCompatActivity {
 
             mensaje.Mensaje = message;
 
-            Calendar calForDate = Calendar.getInstance();
-            SimpleDateFormat currentDateFormat = new SimpleDateFormat("MMM dd, yyyy");
-            mensaje.Fecha = currentDateFormat.format(calForDate.getTime());
-
-            Calendar calForTime = Calendar.getInstance();
-            SimpleDateFormat currentTimeFormat = new SimpleDateFormat("hh:mm a");
-            mensaje.Tiempo = currentTimeFormat.format(calForTime.getTime());
+            mensaje.Fecha = new Date();
 
             db.collection("Chats").document(PeticionID).collection("Mensajes")
                     .add(mensaje)
