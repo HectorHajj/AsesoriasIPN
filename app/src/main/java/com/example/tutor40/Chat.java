@@ -218,6 +218,7 @@ public class Chat extends AppCompatActivity {
 
     public void reiniciarTemporizador()
     {
+        Log.i("Extensiones",ExtensionesUsadas.toString());
         if(ExtensionesUsadas < CantidadExtensiones)
         {
             final long tiempoTemporizador;
@@ -229,11 +230,11 @@ public class Chat extends AppCompatActivity {
                 if((new Date().getTime() - FechaCreacion.getTime()) <= 0){
                     tiempoTemporizador = 60000;
                 } else {
-                    tiempoTemporizador = (new Date().getTime() - FechaCreacion.getTime()) + 60000;
+                    tiempoTemporizador = ((new Date().getTime() - FechaCreacion.getTime()) + 60000) - (ExtensionesUsadas * 60000);
                 }
             }
 
-            ExtensionesUsadas += ExtensionesUsadas;
+            ExtensionesUsadas = ExtensionesUsadas + 1;
 
             Reloj = new CountDownTimer(tiempoTemporizador,1000)
             {
@@ -359,7 +360,44 @@ public class Chat extends AppCompatActivity {
             new AlertDialog.Builder(Chat.this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle("Han utilizado todas sus extensiones. Se terminará el chat al acabar el tiempo restante.")
-                    .setPositiveButton("Aceptar", null).show();
+                    .setPositiveButton("Aceptar", new DialogInterface.OnClickListener(){
+
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    db.collection("Peticiones").document(PeticionID)
+                                            .delete()
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+
+                                                    //Borrar chat tambien
+                                                    db.collection("Chats").document(PeticionID)
+                                                            .delete()
+                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                @Override
+                                                                public void onSuccess(Void aVoid) {
+                                                                    Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
+                                                                    if (currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")) {
+                                                                        intent.putExtra("UserID",AlumnoID);
+                                                                    }
+                                                                    else if(currentUserRole.equals("I60WiSHvFyzJqUT0IU20")){
+                                                                        intent.putExtra("UserID",AsesorID);
+                                                                    }
+                                                                    intent.putExtra("RolID",currentUserRole);
+
+                                                                    startActivity(intent);
+                                                                }
+                                                            })
+                                                            .addOnFailureListener(new OnFailureListener() {
+                                                                @Override
+                                                                public void onFailure(@NonNull Exception e) {
+
+                                                                }
+                                                            });
+                                                }
+                                            });
+                                }
+                            }).show();
         }
     }
 
