@@ -301,7 +301,7 @@ public class Chat extends AppCompatActivity {
                 {
                     new AlertDialog.Builder(Chat.this)
                             .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle("Se terminó el tiempo de la sesión, ¿Desea agregar otros 15 minutos a la sesión?")
+                            .setTitle("Tiempo Agotado¿Desea continuar con la sesión?")
                             .setPositiveButton("Aceptar",new DialogInterface.OnClickListener(){
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -324,18 +324,27 @@ public class Chat extends AppCompatActivity {
                                                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                 @Override
                                                                 public void onSuccess(Void aVoid) {
-                                                                    Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
-                                                                    if (currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")) {
-                                                                        intent.putExtra("UserID",AlumnoID);
+                                                                    if (currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")){
+                                                                        Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
+                                                                        startActivity(intent);
                                                                     }
-                                                                    else if(currentUserRole.equals("I60WiSHvFyzJqUT0IU20")){
+                                                                    else
+                                                                    {
+                                                                    Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
+                                                                   // if (currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")) {
+                                                                      //  intent.putExtra("UserID",AlumnoID);
+                                                                    //}
+                                                                    //else
+                                                                        if(currentUserRole.equals("I60WiSHvFyzJqUT0IU20")){
                                                                         intent.putExtra("UserID",AsesorID);
                                                                     }
                                                                     intent.putExtra("RolID",currentUserRole);
 
                                                                     startActivity(intent);
                                                                 }
+                                                                }
                                                             })
+
                                                             .addOnFailureListener(new OnFailureListener() {
                                                                 @Override
                                                                 public void onFailure(@NonNull Exception e) {
@@ -433,7 +442,8 @@ public class Chat extends AppCompatActivity {
                                 Collections.sort(mensajesChat, new SortByDate());
 
                                 for (Mensajes mensaje : mensajesChat) {
-                                    displayTextMessages.append(mensaje.Nombre + ":\n" + mensaje.Mensaje + "\n" + mensaje.Fecha.getHours() + ":" + mensaje.Fecha.getMinutes() + ":" + mensaje.Fecha.getSeconds() + "     " + mensaje.Fecha.toString() + "\n\n\n");
+                                    displayTextMessages.append(mensaje.Nombre + ": " + mensaje.Mensaje + "\n");
+                                    //mensaje.Fecha.getHours() + ":" + mensaje.Fecha.getMinutes() + ":" + mensaje.Fecha.getSeconds() + "     " + mensaje.Fecha.toString() +
                                     mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
                                 }
                             }
@@ -487,7 +497,7 @@ public class Chat extends AppCompatActivity {
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                currentUserName = documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString();
+                currentUserName = documentSnapshot.getData().get("Nombre").toString() + " ";//+ documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString()
                 currentUserRole = documentSnapshot.getData().get("RolID").toString();
             }
         });

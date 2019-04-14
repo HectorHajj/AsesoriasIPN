@@ -46,56 +46,14 @@ public class Calificaciones extends AppCompatActivity {
     public void Continuar(View view){
         Calificacion = R1.getRating();
         if (Calificacion <=0.0f){
-            Toast.makeText(this, "PORFAVOR ASIGNA UNA CALIFICACION", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "EVALUA LA SESION", Toast.LENGTH_SHORT).show();
         }
         else
             if (CurrentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")) {
-                db.collection("Calificaciones").document(UserID)
-                        .get()
-                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                if(task.getResult().exists()){
-                                    float Cal = Float.parseFloat(task.getResult().getData().get("Calificacion").toString());
-                                    int NumCal = Integer.parseInt(task.getResult().getData().get("NumeroCalificaciones").toString());
-                                    float Promedio = (NumCal*Cal+Calificacion)/(NumCal+1);
-                                    Calificacion = Promedio;
-                                    NumCal = NumCal + 1;
-
-                                    final Map<String, Object> data = new HashMap<>();
-                                    data.put("Calificacion",Promedio);
-                                    data.put("NumeroCalificaciones", NumCal);
-
-                                    db.collection("Calificaciones").document(UserID)
-                                            .set(data)
-                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
-
-                                                    if (task.isSuccessful()) {
-                                                        Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
-                                                        startActivity(intent);
-                                                    }
-                                                }
-                                            });
-                                } else {
-                                    Map<String, Object> data = new HashMap<>();
-                                    data.put("Calificacion", Calificacion);
-                                    data.put("NumeroCalificaciones",1);
-
-                                    db.collection("Calificaciones").document(UserID)
-                                            .set(data)
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
-                                                    startActivity(intent);
-                                                }
-                                            });
-                                }
-                            }
-                        });
+                Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
+                  startActivity(intent);
             }
+
             else if(CurrentUserRole.equals("I60WiSHvFyzJqUT0IU20")) {
                 db.collection("Calificaciones").document(UserID)
                         .get()
@@ -144,3 +102,49 @@ public class Calificaciones extends AppCompatActivity {
             }
     }
 }
+//    //db.collection("Calificaciones").document(UserID)
+//                     //   .get()
+//                      //  .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//                       //     @Override
+//                         //   public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                            //    if(task.getResult().exists()){
+//                              //      float Cal = Float.parseFloat(task.getResult().getData().get("Calificacion").toString());
+//                              //      int NumCal = Integer.parseInt(task.getResult().getData().get("NumeroCalificaciones").toString());
+//                               //     float Promedio = (NumCal*Cal+Calificacion)/(NumCal+1);
+//                               //     Calificacion = Promedio;
+//                                //    NumCal = NumCal + 1;
+//
+//                                  //  final Map<String, Object> data = new HashMap<>();
+//                                  //  data.put("Calificacion",Promedio);
+//                                  //  data.put("NumeroCalificaciones", NumCal);
+//
+//                                    //db.collection("Calificaciones").document(UserID)
+//                                    //        .set(data)
+//                                     //       .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                     //           @Override
+//                                      //          public void onComplete(@NonNull Task<Void> task) {
+///
+//                                                    if (task.isSuccessful()) {
+//                                                        Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
+//                                                        startActivity(intent);
+//                                                    }
+//                                                }
+//                                            });
+//                                } else {
+//                                    Map<String, Object> data = new HashMap<>();
+//                                    data.put("Calificacion", Calificacion);
+//                                    data.put("NumeroCalificaciones",1);
+//
+//                                    db.collection("Calificaciones").document(UserID)
+//                                            .set(data)
+//                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                                                @Override
+//                                                public void onSuccess(Void aVoid) {
+//                                                    Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
+//                                                    startActivity(intent);
+//                                                }
+//                                            });
+//                                }
+//                            }
+//                        });
+//            }
