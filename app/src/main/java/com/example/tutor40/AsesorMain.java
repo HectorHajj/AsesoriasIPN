@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -51,6 +52,7 @@ public class AsesorMain extends AppCompatActivity
     Button conectarse;
     TextView textViewEstado;
     ProgressDialog loadingBar;
+    Switch SwitchE;
 
     //Variables
     ArrayList<String> materiasPreferidasList = new ArrayList<>();
@@ -180,6 +182,10 @@ public class AsesorMain extends AppCompatActivity
         }
         //Si llega aqui materias no esta vacia
         return true;
+    }
+
+    public void GuardarEstado(View view) {
+
     }
 
     public class GetPeticionesTask extends AsyncTask<ArrayList<String>, Void, Void>
@@ -377,6 +383,7 @@ public class AsesorMain extends AppCompatActivity
         conectarse = findViewById(R.id.buttonConectarse);
         textViewEstado = findViewById(R.id.textViewEstado);
         loadingBar = new ProgressDialog(this);
+        SwitchE = findViewById(R.id.switch1);
 
         //Shared Preferences
         sharedPreferences = getSharedPreferences("com.example.tutor40", MODE_PRIVATE);
@@ -460,9 +467,12 @@ public class AsesorMain extends AppCompatActivity
     {
         //Si se regresa a view, desconectar al usuario y actualizar sus preferencias
         actualizarMateriasPreferidas();
-
-        Desconectar(detenerse);
-
+        if (SwitchE.isChecked()) {
+            Conectar(detenerse);
+        }
+        else{
+            Desconectar(detenerse);
+        }
         super.onRestart();
     }
 }
