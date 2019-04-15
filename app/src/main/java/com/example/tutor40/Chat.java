@@ -147,6 +147,7 @@ public class Chat extends AppCompatActivity {
         displayTextMessages = findViewById(R.id.group_chat_text_display);
         mScrollView = findViewById(R.id.my_scroll_view);
         Temporizador = findViewById(R.id.tiempo);
+        SendImageButton = findViewById(R.id.send_image_button);
     }
 
     @Override
