@@ -47,7 +47,7 @@ public class Chat extends AppCompatActivity {
 
     //Controles
     Toolbar toolbar;
-    ImageButton SendMessageButton;
+    ImageButton SendMessageButton, SendImageButton;
     EditText userMessageInput;
     ScrollView mScrollView;
     TextView displayTextMessages, Temporizador;
