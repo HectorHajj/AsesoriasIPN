@@ -2,6 +2,7 @@ package com.example.tutor40;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
@@ -15,7 +16,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.Gallery;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,7 +36,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -58,6 +64,8 @@ public class Chat extends AppCompatActivity {
     Integer CantidadExtensiones = 3, ExtensionesUsadas = 0;
     Date FechaCreacion;
     ArrayList<Mensajes> mensajesChat;
+
+    private static final int GalleryPick = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,8 +104,25 @@ public class Chat extends AppCompatActivity {
             }
         });
 
+        SendImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                Intent galleryIntent = new Intent();
+                galleryIntent.setType("image/*");
+                galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(galleryIntent, "SELECT IMAGE"), GalleryPick);
+            }
+        });
+
         //Comienza el temporizador del chat
         reiniciarTemporizador();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+    {
+
     }
 
     private void InitializeFields()
@@ -147,7 +172,7 @@ public class Chat extends AppCompatActivity {
         displayTextMessages = findViewById(R.id.group_chat_text_display);
         mScrollView = findViewById(R.id.my_scroll_view);
         Temporizador = findViewById(R.id.tiempo);
-        SendImageButton = findViewById(R.id.send_image_button);
+        SendImageButton = (ImageButton) findViewById(R.id.send_image_button);
     }
 
     @Override
