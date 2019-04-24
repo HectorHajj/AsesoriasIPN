@@ -1,10 +1,14 @@
 package com.example.tutor40;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -29,6 +33,12 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -37,16 +47,25 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
-public class Chat extends AppCompatActivity {
+
+public class Chat extends AppCompatActivity
+{
     //Firebase
     FirebaseAuth mAuth;
     FirebaseFirestore db;
@@ -65,7 +84,11 @@ public class Chat extends AppCompatActivity {
     Date FechaCreacion;
     ArrayList<Mensajes> mensajesChat;
 
-    private static final int GalleryPick = 1;
+    private ImageView imageView;
+    private Uri filePath;
+    private final int PICK_IMAGE_REQUEST = 71;
+    FirebaseStorage storage;
+    StorageReference storageReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +103,8 @@ public class Chat extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         currentUserID = mAuth.getCurrentUser().getUid();
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
 
         InitializeFields();
         GetUserInfo();
@@ -108,10 +133,8 @@ public class Chat extends AppCompatActivity {
             @Override
             public void onClick(View view)
             {
-                Intent galleryIntent = new Intent();
-                galleryIntent.setType("image/*");
-                galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(galleryIntent, "SELECT IMAGE"), GalleryPick);
+                chooseImage();
+                uploadImage();
             }
         });
 
@@ -119,10 +142,67 @@ public class Chat extends AppCompatActivity {
         reiniciarTemporizador();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+    private void chooseImage()
     {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+    }
 
+    private void uploadImage()
+    {
+        if(filePath != null)
+        {
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setTitle("Uploading...");
+            progressDialog.show();
+
+            StorageReference ref = storageReference.child("images/" + UUID.randomUUID().toString());
+            ref.putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
+                {
+                    progressDialog.dismiss();
+                    Toast.makeText(Chat.this, "Uploaded", Toast.LENGTH_SHORT).show();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e)
+                {
+                    progressDialog.dismiss();
+                    Toast.makeText(Chat.this, "Failed"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(UploadTask.TaskSnapshot taskSnapshot)
+                {
+                    double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot.getTotalByteCount());
+                    progressDialog.setMessage("Uploaded"+(int)progress+"%");
+                }
+            });
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null)
+        {
+            filePath = data.getData();
+
+            try
+            {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
+                imageView.setImageBitmap(bitmap);
+            }
+            catch(IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void InitializeFields()
@@ -173,6 +253,9 @@ public class Chat extends AppCompatActivity {
         mScrollView = findViewById(R.id.my_scroll_view);
         Temporizador = findViewById(R.id.tiempo);
         SendImageButton = (ImageButton) findViewById(R.id.send_image_button);
+        imageView = (ImageView) findViewById(R.id.imgView);
+        //messageImage = (ImageView) findViewById(R.id.message_image_layout);
+        //messagePicture = (ImageView) findViewById(R.id.message_image_view);
     }
 
     @Override
@@ -528,5 +611,4 @@ public class Chat extends AppCompatActivity {
             }
         });
     }
-
 }
