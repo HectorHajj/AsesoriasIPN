@@ -134,7 +134,6 @@ public class Chat extends AppCompatActivity
             public void onClick(View view)
             {
                 chooseImage();
-                uploadImage();
             }
         });
 
@@ -142,12 +141,34 @@ public class Chat extends AppCompatActivity
         reiniciarTemporizador();
     }
 
-    private void chooseImage()
-    {
+    private void chooseImage() {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null)
+        {
+            filePath = data.getData();
+
+            try
+            {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
+                imageView.setImageBitmap(bitmap);
+            }
+            catch(IOException e)
+            {
+                e.printStackTrace();
+            }
+
+            uploadImage();
+        }
     }
 
     private void uploadImage()
@@ -181,27 +202,6 @@ public class Chat extends AppCompatActivity
                     progressDialog.setMessage("Uploaded"+(int)progress+"%");
                 }
             });
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null)
-        {
-            filePath = data.getData();
-
-            try
-            {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
-                imageView.setImageBitmap(bitmap);
-            }
-            catch(IOException e)
-            {
-                e.printStackTrace();
-            }
         }
     }
 
