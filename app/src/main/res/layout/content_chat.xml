@@ -66,12 +66,19 @@
             android:id="@+id/send_image_button"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:src="@drawable/send_image"
+            android:src="@drawable/send_image_1"
             android:visibility="visible" />
+
+        <ImageButton
+            android:id="@+id/recieve_image_button"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/send_image_2"
+            android:visibility="visible"/>
 
         <EditText
             android:id="@+id/input_group_message"
-            android:layout_width="260dp"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:hint="Escriba su mensaje aqui..."
             android:padding="17dp" />

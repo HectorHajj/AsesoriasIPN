@@ -1,6 +1,8 @@
 package com.example.tutor40;
 
+import android.app.DownloadManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -27,18 +29,26 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.Registry;
+import com.bumptech.glide.annotation.GlideModule;
+import com.bumptech.glide.load.model.GlideUrl;
+import com.bumptech.glide.module.AppGlideModule;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -46,14 +56,17 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -62,6 +75,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import static android.os.Environment.DIRECTORY_DOWNLOADS;
 
 
 public class Chat extends AppCompatActivity
@@ -72,13 +87,13 @@ public class Chat extends AppCompatActivity
 
     //Controles
     Toolbar toolbar;
-    ImageButton SendMessageButton, SendImageButton;
+    ImageButton SendMessageButton, SendImageButton, RecieveImageButton;
     EditText userMessageInput;
     ScrollView mScrollView;
     TextView displayTextMessages, Temporizador;
 
     //Variables
-    String currentUserID, currentUserRole, currentUserName, PeticionID, AsesorID, AlumnoID;
+    String currentUserID, currentUserRole, currentUserName, PeticionID, AsesorID, AlumnoID, nombreIMAGEN;
     CountDownTimer Reloj;
     Integer CantidadExtensiones = 3, ExtensionesUsadas = 0;
     Date FechaCreacion;
@@ -87,11 +102,12 @@ public class Chat extends AppCompatActivity
     private ImageView imageView;
     private Uri filePath;
     private final int PICK_IMAGE_REQUEST = 71;
-    FirebaseStorage storage;
-    StorageReference storageReference;
+    FirebaseStorage storage, FiReBaSeStOrAgE;
+    StorageReference storageReference, ref, StOrAgErEfErEnCe, ReF, auxREF;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
@@ -137,11 +153,20 @@ public class Chat extends AppCompatActivity
             }
         });
 
+        RecieveImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                downloadImage();
+            }
+        });
+
         //Comienza el temporizador del chat
         reiniciarTemporizador();
     }
 
-    private void chooseImage() {
+    private void chooseImage()
+    {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -179,30 +204,54 @@ public class Chat extends AppCompatActivity
             progressDialog.setTitle("Uploading...");
             progressDialog.show();
 
-            StorageReference ref = storageReference.child("images/" + UUID.randomUUID().toString());
+            //nombreIMAGEN = "images/" + UUID.randomUUID().toString();
+            nombreIMAGEN = "images/1";
+
+            ref = storageReference.child(nombreIMAGEN);
+
             ref.putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
-                {
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     progressDialog.dismiss();
                     Toast.makeText(Chat.this, "Uploaded", Toast.LENGTH_SHORT).show();
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
-                public void onFailure(@NonNull Exception e)
-                {
+                public void onFailure(@NonNull Exception e) {
                     progressDialog.dismiss();
-                    Toast.makeText(Chat.this, "Failed"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Chat.this, "Failed" + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                 @Override
-                public void onProgress(UploadTask.TaskSnapshot taskSnapshot)
-                {
-                    double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot.getTotalByteCount());
-                    progressDialog.setMessage("Uploaded"+(int)progress+"%");
+                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                    double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
+                    progressDialog.setMessage("Uploaded" + (int) progress + "%");
                 }
             });
         }
+    }
+
+    public void downloadImage()
+    {
+        Toast.makeText(Chat.this, "Entra a downloadImage()", Toast.LENGTH_SHORT).show();
+
+        StOrAgErEfErEnCe=FiReBaSeStOrAgE.getInstance().getReference();
+        ReF=StOrAgErEfErEnCe.child("images/1");
+
+        ReF.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri)
+            {
+                String url = uri.toString();
+                Toast.makeText(Chat.this, url, Toast.LENGTH_SHORT).show();
+                Picasso.get().load(url).into(imageView);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception)
+            {
+            }
+        });
     }
 
     private void InitializeFields()
@@ -253,9 +302,8 @@ public class Chat extends AppCompatActivity
         mScrollView = findViewById(R.id.my_scroll_view);
         Temporizador = findViewById(R.id.tiempo);
         SendImageButton = (ImageButton) findViewById(R.id.send_image_button);
+        RecieveImageButton = (ImageButton) findViewById(R.id.recieve_image_button);
         imageView = (ImageView) findViewById(R.id.imgView);
-        //messageImage = (ImageView) findViewById(R.id.message_image_layout);
-        //messagePicture = (ImageView) findViewById(R.id.message_image_view);
     }
 
     @Override
