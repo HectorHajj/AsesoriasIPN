@@ -21,8 +21,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Registro extends AppCompatActivity {
-
+public class Registro extends AppCompatActivity
+{
     EditText Email;
     EditText Password;
     EditText Nombre;
@@ -38,13 +38,16 @@ public class Registro extends AppCompatActivity {
     public void registrarNuevoUsuario(String userId, String Nombre, String ApellidoPaterno, String ApellidoMaterno, Boolean Rol) {
         Map<String, Object> user = new HashMap<>();
 
-        if(Rol){
+        if(Rol)
+        {
             //Si Rol es true entonces es un Alumno
             user.put("Nombre", Nombre);
             user.put("ApellidoPaterno", ApellidoPaterno);
             user.put("ApellidoMaterno", ApellidoMaterno);
             user.put("RolID", "I60WiSHvFyzJqUT0IU20");
-        } else{
+        }
+        else
+        {
             //Si Rol es true entonces es un Tutor
             user.put("Nombre", Nombre);
             user.put("ApellidoPaterno", ApellidoPaterno);
@@ -55,26 +58,30 @@ public class Registro extends AppCompatActivity {
         // Add a new document with a generated ID
         db.collection("users").document(userId).set(user);
 
-
-        if(user.get("RolID").toString() == "Ck5Tnzr0ipmAzKpQpTDX") {
+        if(user.get("RolID").toString() == "Ck5Tnzr0ipmAzKpQpTDX")
+        {
             Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
-
             startActivity(intent);
-        } else if (user.get("RolID").toString() == "I60WiSHvFyzJqUT0IU20"){
+        }
+        else if(user.get("RolID").toString() == "I60WiSHvFyzJqUT0IU20")
+        {
             Intent intent = new Intent(getApplicationContext(), AlumnoMain.class);
-
             startActivity(intent);
         }
     }
 
-    public void registrar(View view){
-        if(TextUtils.isEmpty(Email.getText().toString())) {
+    public void registrar(View view)
+    {
+        if(TextUtils.isEmpty(Email.getText().toString()))
+        {
             Toast.makeText(this, "Por favor introduzca un E-Mail", Toast.LENGTH_SHORT).show();
         }
-        else if(TextUtils.isEmpty(Password.getText().toString())) {
+        else if(TextUtils.isEmpty(Password.getText().toString()))
+        {
             Toast.makeText(this, "Por favor introduzca una contraseña", Toast.LENGTH_SHORT).show();
         }
-        else {
+        else
+        {
             loadingBar.setTitle("Creando una cuenta nueva");
             loadingBar.setMessage("Por favor espere mientras se crea su cuenta");
             loadingBar.setCanceledOnTouchOutside(true);
@@ -83,26 +90,28 @@ public class Registro extends AppCompatActivity {
             mAuth.createUserWithEmailAndPassword(Email.getText().toString(), Password.getText().toString())
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
+                        public void onComplete(@NonNull Task<AuthResult> task)
+                        {
+                            if (task.isSuccessful())
+                            {
                                 // Sign in success, update UI with the signed-in user's information
                                 FirebaseUser user = mAuth.getInstance().getCurrentUser();
-
                                 registrarNuevoUsuario(user.getUid(), Nombre.getText().toString(), ApellidoPaterno.getText().toString(), ApellidoMaterno.getText().toString(), alumnoTutor.isChecked());
-
-                            } else {
+                            }
+                            else
+                            {
                                 String message = task.getException().toString();
                                 Toast.makeText(Registro.this, "Error:" + message, Toast.LENGTH_SHORT).show();
                                 loadingBar.dismiss();
                             }
-
                         }
                     });
         }
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registro);
 
@@ -124,7 +133,6 @@ public class Registro extends AppCompatActivity {
     public void sendUserToLoginActivity(View view)
     {
         Intent loginIntent = new Intent(getApplicationContext(), Login.class);
-
         startActivity(loginIntent);
     }
 }

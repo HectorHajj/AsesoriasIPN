@@ -93,7 +93,7 @@ public class Chat extends AppCompatActivity
     TextView displayTextMessages, Temporizador;
 
     //Variables
-    String currentUserID, currentUserRole, currentUserName, PeticionID, AsesorID, AlumnoID, nombreIMAGEN;
+    String currentUserID, currentUserRole, currentUserName, PeticionID, AsesorID, AlumnoID, nombreIMAGEN, auxNAME1, auxNAME2;
     CountDownTimer Reloj;
     Integer CantidadExtensiones = 3, ExtensionesUsadas = 0;
     Date FechaCreacion;
@@ -103,7 +103,7 @@ public class Chat extends AppCompatActivity
     private Uri filePath;
     private final int PICK_IMAGE_REQUEST = 71;
     FirebaseStorage storage, FiReBaSeStOrAgE;
-    StorageReference storageReference, ref, StOrAgErEfErEnCe, ReF, auxREF;
+    StorageReference storageReference, ref, StOrAgErEfErEnCe, ReF;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -204,10 +204,7 @@ public class Chat extends AppCompatActivity
             progressDialog.setTitle("Uploading...");
             progressDialog.show();
 
-            //nombreIMAGEN = "images/" + UUID.randomUUID().toString();
-            nombreIMAGEN = "images/1";
-
-            ref = storageReference.child(nombreIMAGEN);
+            ref = storageReference.child(auxNAME1);
 
             ref.putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -217,7 +214,8 @@ public class Chat extends AppCompatActivity
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
-                public void onFailure(@NonNull Exception e) {
+                public void onFailure(@NonNull Exception e)
+                {
                     progressDialog.dismiss();
                     Toast.makeText(Chat.this, "Failed" + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
@@ -233,17 +231,14 @@ public class Chat extends AppCompatActivity
 
     public void downloadImage()
     {
-        Toast.makeText(Chat.this, "Entra a downloadImage()", Toast.LENGTH_SHORT).show();
-
         StOrAgErEfErEnCe=FiReBaSeStOrAgE.getInstance().getReference();
-        ReF=StOrAgErEfErEnCe.child("images/1");
+        ReF=StOrAgErEfErEnCe.child(auxNAME2);
 
         ReF.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri)
             {
                 String url = uri.toString();
-                Toast.makeText(Chat.this, url, Toast.LENGTH_SHORT).show();
                 Picasso.get().load(url).into(imageView);
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -263,7 +258,8 @@ public class Chat extends AppCompatActivity
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    public void onSuccess(DocumentSnapshot documentSnapshot)
+                    {
                         //Informacion de participantes
                         AsesorID = documentSnapshot.getData().get("AsesorID").toString();
                         AlumnoID = documentSnapshot.getData().get("AlumnoID").toString();
@@ -277,8 +273,20 @@ public class Chat extends AppCompatActivity
                                     .get()
                                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                         @Override
-                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                        public void onSuccess(DocumentSnapshot documentSnapshot)
+                                        {
                                             setTitle("Chat con: " + documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString());
+                                            auxNAME1 = documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString();
+                                        }
+                                    });
+
+                            db.collection("users").document(AsesorID)
+                                    .get()
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot)
+                                        {
+                                            auxNAME2 = documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString();
                                         }
                                     });
                         }
@@ -290,6 +298,17 @@ public class Chat extends AppCompatActivity
                                         @Override
                                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                                             setTitle("Chat con: " + documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString());
+                                            auxNAME1 = documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString();
+                                        }
+                                    });
+
+                            db.collection("users").document(AlumnoID)
+                                    .get()
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot)
+                                        {
+                                            auxNAME2 = documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString();
                                         }
                                     });
                         }
