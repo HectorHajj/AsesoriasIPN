@@ -1,12 +1,9 @@
 package com.example.tutor40;
 
-import android.app.DownloadManager;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -14,41 +11,26 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
-import android.widget.Gallery;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.Registry;
-import com.bumptech.glide.annotation.GlideModule;
-import com.bumptech.glide.load.model.GlideUrl;
-import com.bumptech.glide.module.AppGlideModule;
-import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -56,27 +38,16 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
-import static android.os.Environment.DIRECTORY_DOWNLOADS;
 
 
 public class Chat extends AppCompatActivity
@@ -84,6 +55,8 @@ public class Chat extends AppCompatActivity
     //Firebase
     FirebaseAuth mAuth;
     FirebaseFirestore db;
+    FirebaseStorage storage, FiReBaSeStOrAgE;
+    StorageReference storageReference, ref, StOrAgErEfErEnCe, ReF;
 
     //Controles
     Toolbar toolbar;
@@ -91,20 +64,16 @@ public class Chat extends AppCompatActivity
     EditText userMessageInput;
     ScrollView mScrollView;
     TextView displayTextMessages, Temporizador;
+    ImageView imageView;
 
     //Variables
-    String currentUserID, currentUserRole, currentUserName, PeticionID, AsesorID, AlumnoID, nombreIMAGEN, auxNAME1, auxNAME2;
-    String auxRolIDT, auxRolIDA;
+    String currentUserID, currentUserRole, currentUserName, PeticionID, AsesorID, AlumnoID, nombreIMAGEN, auxNAME1, auxNAME2, Pregunta;
     CountDownTimer Reloj;
     Integer CantidadExtensiones = 3, ExtensionesUsadas = 0;
     Date FechaCreacion;
     ArrayList<Mensajes> mensajesChat;
-
-    private ImageView imageView;
-    private Uri filePath;
-    private final int PICK_IMAGE_REQUEST = 71;
-    FirebaseStorage storage, FiReBaSeStOrAgE;
-    StorageReference storageReference, ref, StOrAgErEfErEnCe, ReF;
+    Uri filePath;
+    final int PICK_IMAGE_REQUEST = 71;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -124,7 +93,6 @@ public class Chat extends AppCompatActivity
         storageReference = storage.getReference();
 
         InitializeFields();
-        GetUserInfo();
         DisplayMessages();
 
         SendMessageButton.setOnClickListener(new View.OnClickListener(){
@@ -139,6 +107,7 @@ public class Chat extends AppCompatActivity
             }
         });
 
+        //Escucha de eventos que desata la actualización de ambos chats si es que hay algun cambioo adición a los mensajes
         db.collection("Chats").document(PeticionID).collection("Mensajes").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException e) {
@@ -146,27 +115,11 @@ public class Chat extends AppCompatActivity
             }
         });
 
-        SendImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view)
-            {
-                chooseImage();
-            }
-        });
-
-        RecieveImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view)
-            {
-                downloadImage();
-            }
-        });
-
         //Comienza el temporizador del chat
         reiniciarTemporizador();
     }
 
-    private void chooseImage()
+    public void chooseImage(View v)
     {
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -230,7 +183,7 @@ public class Chat extends AppCompatActivity
         }
     }
 
-    public void downloadImage()
+    public void downloadImage(View v)
     {
         StOrAgErEfErEnCe=FiReBaSeStOrAgE.getInstance().getReference();
         ReF=StOrAgErEfErEnCe.child(auxNAME2);
@@ -264,6 +217,7 @@ public class Chat extends AppCompatActivity
                         //Informacion de participantes
                         AsesorID = documentSnapshot.getData().get("AsesorID").toString();
                         AlumnoID = documentSnapshot.getData().get("AlumnoID").toString();
+                        Pregunta = documentSnapshot.getData().get("Pregunta").toString();
 
                         Timestamp fecha = (Timestamp) documentSnapshot.getData().get("FechaCreacion");
                         FechaCreacion = fecha.toDate();
@@ -276,10 +230,10 @@ public class Chat extends AppCompatActivity
                                         @Override
                                         public void onSuccess(DocumentSnapshot documentSnapshot)
                                         {
-                                            //setTitle("Chat con: " + documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString());
-                                            setTitle("Chat con alumno");
+                                            currentUserName = documentSnapshot.getData().get("Nombre").toString();
+                                            currentUserRole = "Ck5Tnzr0ipmAzKpQpTDX";
+                                            setTitle("Pregunta: " + Pregunta);
                                             auxNAME1 = documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString();
-                                            auxRolIDA = documentSnapshot.getData().get("RolID").toString();
                                         }
                                     });
 
@@ -290,7 +244,6 @@ public class Chat extends AppCompatActivity
                                         public void onSuccess(DocumentSnapshot documentSnapshot)
                                         {
                                             auxNAME2 = documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString();
-                                            auxRolIDT = documentSnapshot.getData().get("RolID").toString();
                                         }
                                     });
                         }
@@ -301,10 +254,10 @@ public class Chat extends AppCompatActivity
                                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                         @Override
                                         public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                            //setTitle("Chat con: " + documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString());
-                                            setTitle("Chat con asesor");
+                                            currentUserName = documentSnapshot.getData().get("Nombre").toString();
+                                            currentUserRole = "I60WiSHvFyzJqUT0IU20";
+                                            setTitle("Pregunta: " + Pregunta);
                                             auxNAME1 = documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString();
-                                            auxRolIDT = documentSnapshot.getData().get("RolID").toString();
                                         }
                                     });
 
@@ -315,7 +268,6 @@ public class Chat extends AppCompatActivity
                                         public void onSuccess(DocumentSnapshot documentSnapshot)
                                         {
                                             auxNAME2 = documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString();
-                                            auxRolIDA = documentSnapshot.getData().get("RolID").toString();
                                         }
                                     });
                         }
@@ -327,9 +279,9 @@ public class Chat extends AppCompatActivity
         displayTextMessages = findViewById(R.id.group_chat_text_display);
         mScrollView = findViewById(R.id.my_scroll_view);
         Temporizador = findViewById(R.id.tiempo);
-        SendImageButton = (ImageButton) findViewById(R.id.send_image_button);
-        RecieveImageButton = (ImageButton) findViewById(R.id.recieve_image_button);
-        imageView = (ImageView) findViewById(R.id.imgView);
+        SendImageButton = findViewById(R.id.send_image_button);
+        RecieveImageButton = findViewById(R.id.recieve_image_button);
+        imageView = findViewById(R.id.imgView);
     }
 
     @Override
@@ -370,12 +322,21 @@ public class Chat extends AppCompatActivity
                                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                         @Override
                                                         public void onSuccess(Void aVoid) {
-                                                            Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
+                                                            if (currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")){
+                                                                Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
+                                                                startActivity(intent);
+                                                            }
+                                                            else
+                                                            {
+                                                                Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
 
-                                                            intent.putExtra("AsesorID",AsesorID);
-                                                            intent.putExtra("AlumnoID",AlumnoID);
+                                                                if(currentUserRole.equals("I60WiSHvFyzJqUT0IU20")){
+                                                                    intent.putExtra("UserID",AsesorID);
+                                                                }
+                                                                intent.putExtra("RolID",currentUserRole);
 
-                                                            startActivity(intent);
+                                                                startActivity(intent);
+                                                            }
                                                         }
                                                     })
                                                     .addOnFailureListener(new OnFailureListener() {
@@ -601,8 +562,8 @@ public class Chat extends AppCompatActivity
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task)
-                        {
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
                             displayTextMessages.setText("");
                             mensajesChat= new ArrayList<>();
 
@@ -624,19 +585,8 @@ public class Chat extends AppCompatActivity
                                 //Mostrar los mensajes en orden cronologico
                                 Collections.sort(mensajesChat, new SortByDate());
 
-                                for(Mensajes mensaje : mensajesChat)
-                                {
-                                    displayTextMessages.append(mensaje.Mensaje + "\n");
-                                    /*if(currentUserRole=="I60WiSHvFyzJqUT0IU20")
-                                    {
-                                        displayTextMessages.append("Alumno: " + mensaje.Mensaje + "\n");
-                                    }
-                                    else
-                                    {
-                                        displayTextMessages.append("Asesor:  " + mensaje.Mensaje + "\n");
-                                    }*/
-
-                                    //displayTextMessages.append(mensaje.Nombre + ": " + mensaje.Mensaje + "\n");
+                                for (Mensajes mensaje : mensajesChat) {
+                                    displayTextMessages.append(mensaje.Nombre + ": " + mensaje.Mensaje + "\n");
                                     //mensaje.Fecha.getHours() + ":" + mensaje.Fecha.getMinutes() + ":" + mensaje.Fecha.getSeconds() + "     " + mensaje.Fecha.toString() +
                                     mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
                                 }
@@ -668,7 +618,11 @@ public class Chat extends AppCompatActivity
 
             mensaje.UserID = currentUserID;
 
-            mensaje.Nombre = currentUserName;
+            if(currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")){
+                mensaje.Nombre = "Asesor";
+            } else {
+                mensaje.Nombre = "Alumno";
+            }
 
             mensaje.Mensaje = message;
 
@@ -683,17 +637,5 @@ public class Chat extends AppCompatActivity
                         }
                     });
         }
-    }
-
-    private void GetUserInfo()
-    {
-        DocumentReference docRef = db.collection("users").document(currentUserID);
-        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                currentUserName = documentSnapshot.getData().get("Nombre").toString() + " ";//+ documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString()
-                currentUserRole = documentSnapshot.getData().get("RolID").toString();
-            }
-        });
     }
 }

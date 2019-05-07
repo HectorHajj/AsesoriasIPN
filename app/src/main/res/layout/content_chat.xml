@@ -66,6 +66,7 @@
             android:id="@+id/send_image_button"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
+            android:onClick="chooseImage"
             android:src="@drawable/send_image_1"
             android:visibility="visible" />
 
@@ -73,8 +74,9 @@
             android:id="@+id/recieve_image_button"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
+            android:onClick="downloadImage"
             android:src="@drawable/send_image_2"
-            android:visibility="visible"/>
+            android:visibility="visible" />
 
         <EditText
             android:id="@+id/input_group_message"
