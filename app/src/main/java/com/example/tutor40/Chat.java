@@ -94,6 +94,7 @@ public class Chat extends AppCompatActivity
 
     //Variables
     String currentUserID, currentUserRole, currentUserName, PeticionID, AsesorID, AlumnoID, nombreIMAGEN, auxNAME1, auxNAME2;
+    String auxRolIDT, auxRolIDA;
     CountDownTimer Reloj;
     Integer CantidadExtensiones = 3, ExtensionesUsadas = 0;
     Date FechaCreacion;
@@ -275,8 +276,10 @@ public class Chat extends AppCompatActivity
                                         @Override
                                         public void onSuccess(DocumentSnapshot documentSnapshot)
                                         {
-                                            setTitle("Chat con: " + documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString());
+                                            //setTitle("Chat con: " + documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString());
+                                            setTitle("Chat con alumno");
                                             auxNAME1 = documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString();
+                                            auxRolIDA = documentSnapshot.getData().get("RolID").toString();
                                         }
                                     });
 
@@ -287,6 +290,7 @@ public class Chat extends AppCompatActivity
                                         public void onSuccess(DocumentSnapshot documentSnapshot)
                                         {
                                             auxNAME2 = documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString();
+                                            auxRolIDT = documentSnapshot.getData().get("RolID").toString();
                                         }
                                     });
                         }
@@ -297,8 +301,10 @@ public class Chat extends AppCompatActivity
                                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                         @Override
                                         public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                            setTitle("Chat con: " + documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString());
+                                            //setTitle("Chat con: " + documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString());
+                                            setTitle("Chat con asesor");
                                             auxNAME1 = documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString();
+                                            auxRolIDT = documentSnapshot.getData().get("RolID").toString();
                                         }
                                     });
 
@@ -309,6 +315,7 @@ public class Chat extends AppCompatActivity
                                         public void onSuccess(DocumentSnapshot documentSnapshot)
                                         {
                                             auxNAME2 = documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString();
+                                            auxRolIDA = documentSnapshot.getData().get("RolID").toString();
                                         }
                                     });
                         }
@@ -594,8 +601,8 @@ public class Chat extends AppCompatActivity
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
+                        public void onComplete(@NonNull Task<QuerySnapshot> task)
+                        {
                             displayTextMessages.setText("");
                             mensajesChat= new ArrayList<>();
 
@@ -617,8 +624,19 @@ public class Chat extends AppCompatActivity
                                 //Mostrar los mensajes en orden cronologico
                                 Collections.sort(mensajesChat, new SortByDate());
 
-                                for (Mensajes mensaje : mensajesChat) {
-                                    displayTextMessages.append(mensaje.Nombre + ": " + mensaje.Mensaje + "\n");
+                                for(Mensajes mensaje : mensajesChat)
+                                {
+                                    displayTextMessages.append(mensaje.Mensaje + "\n");
+                                    /*if(currentUserRole=="I60WiSHvFyzJqUT0IU20")
+                                    {
+                                        displayTextMessages.append("Alumno: " + mensaje.Mensaje + "\n");
+                                    }
+                                    else
+                                    {
+                                        displayTextMessages.append("Asesor:  " + mensaje.Mensaje + "\n");
+                                    }*/
+
+                                    //displayTextMessages.append(mensaje.Nombre + ": " + mensaje.Mensaje + "\n");
                                     //mensaje.Fecha.getHours() + ":" + mensaje.Fecha.getMinutes() + ":" + mensaje.Fecha.getSeconds() + "     " + mensaje.Fecha.toString() +
                                     mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
                                 }
