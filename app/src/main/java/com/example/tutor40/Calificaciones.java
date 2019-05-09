@@ -78,6 +78,9 @@ public class Calificaciones extends AppCompatActivity {
                                                 public void onComplete(@NonNull Task<Void> task) {
                                                     if (task.isSuccessful()) {
                                                         Intent intent = new Intent(getApplicationContext(), AlumnoMain.class);
+
+                                                        intent.putExtra("RolID", CurrentUserRole);
+
                                                         startActivity(intent);
                                                     }
                                                 }
@@ -93,6 +96,9 @@ public class Calificaciones extends AppCompatActivity {
                                                 @Override
                                                 public void onSuccess(Void aVoid) {
                                                     Intent intent = new Intent(getApplicationContext(), AlumnoMain.class);
+
+                                                    intent.putExtra("RolID", CurrentUserRole);
+
                                                     startActivity(intent);
                                                 }
                                             });

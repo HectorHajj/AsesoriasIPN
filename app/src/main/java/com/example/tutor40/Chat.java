@@ -38,6 +38,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -48,6 +49,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class Chat extends AppCompatActivity
@@ -107,12 +111,75 @@ public class Chat extends AppCompatActivity
             }
         });
 
-        //Escucha de eventos que desata la actualización de ambos chats si es que hay algun cambioo adición a los mensajes
-        db.collection("Chats").document(PeticionID).collection("Mensajes").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        //Si se encuentra el mensaje de "Borrandose", inicia secuencia de cerrado del chat
+        final DocumentReference docRef = db.collection("Chats").document(PeticionID);
+        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException e) {
-                DisplayMessages();
+            public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException e) {
+                if (snapshot != null && snapshot.exists()) {
+
+                    if(snapshot.getData().get("Borrandose") != null){
+                        //Mostrar AlertDialog de cerrado
+                        new AlertDialog.Builder(Chat.this)
+                                .setCancelable(false)
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .setTitle("El otro usuario a decidido terminar el Chat")
+                                .setMessage("Se eliminara esta sala.")
+                                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener(){
+
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        db.collection("Peticiones").document(PeticionID)
+                                                .delete()
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+
+                                                        //Borrar chat tambien
+                                                        db.collection("Chats").document(PeticionID)
+                                                                .delete()
+                                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                    @Override
+                                                                    public void onSuccess(Void aVoid) {
+                                                                        if (currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")) {
+                                                                            Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
+
+                                                                            intent.putExtra("RolID", currentUserRole);
+
+                                                                            startActivity(intent);
+                                                                        }
+                                                                        else if(currentUserRole.equals("I60WiSHvFyzJqUT0IU20")){
+                                                                            Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
+
+                                                                            intent.putExtra("RolID",currentUserRole);
+                                                                            intent.putExtra("UserID",AsesorID);
+
+                                                                            startActivity(intent);
+                                                                        }
+                                                                    }
+                                                                })
+                                                                .addOnFailureListener(new OnFailureListener() {
+                                                                    @Override
+                                                                    public void onFailure(@NonNull Exception e) {
+
+                                                                    }
+                                                                });
+                                                    }
+                                                });
+                                    }
+                                }).show();
+                    }
+                }
             }
+        });
+
+        //Escucha de eventos que desata la actualización de ambos chats si es que hay algun cambioo adición a los mensajes
+        db.collection("Chats").document(PeticionID).collection("Mensajes")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException e) {
+                        DisplayMessages();
+                    }
         });
 
         //Comienza el temporizador del chat
@@ -222,7 +289,7 @@ public class Chat extends AppCompatActivity
                         Timestamp fecha = (Timestamp) documentSnapshot.getData().get("FechaCreacion");
                         FechaCreacion = fecha.toDate();
 
-                        if(getIntent().getStringExtra("Rol").equals("Ck5Tnzr0ipmAzKpQpTDX"))
+                        if(getIntent().getStringExtra("RolID").equals("Ck5Tnzr0ipmAzKpQpTDX"))
                         {
                             db.collection("users").document(AlumnoID)
                                     .get()
@@ -247,7 +314,7 @@ public class Chat extends AppCompatActivity
                                         }
                                     });
                         }
-                        else if (getIntent().getStringExtra("Rol").equals("I60WiSHvFyzJqUT0IU20"))
+                        else if (getIntent().getStringExtra("RolID").equals("I60WiSHvFyzJqUT0IU20"))
                         {
                             db.collection("users").document(AsesorID)
                                     .get()
@@ -287,9 +354,9 @@ public class Chat extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        if(getIntent().getStringExtra("Rol").equals("Ck5Tnzr0ipmAzKpQpTDX")){
+        if(getIntent().getStringExtra("RolID").equals("Ck5Tnzr0ipmAzKpQpTDX")){
             getMenuInflater().inflate(R.menu.chat_menu_asesor, menu);
-        } else if (getIntent().getStringExtra("Rol").equals("I60WiSHvFyzJqUT0IU20")){
+        } else if (getIntent().getStringExtra("RolID").equals("I60WiSHvFyzJqUT0IU20")){
             getMenuInflater().inflate(R.menu.chat_menu_alumno, menu);
         }
         return true;
@@ -311,45 +378,57 @@ public class Chat extends AppCompatActivity
                     .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            db.collection("Peticiones").document(PeticionID)
-                                    .delete()
+                            Map<String, Object> data = new HashMap<>();
+                            data.put("Borrandose", true);
+
+                            db.collection("Chats").document(PeticionID)
+                                    .set(data, SetOptions.merge())
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
-                                            //Borrar chat tambien
-                                            db.collection("Chats").document(PeticionID)
+                                            db.collection("Peticiones").document(PeticionID)
                                                     .delete()
                                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                         @Override
                                                         public void onSuccess(Void aVoid) {
-                                                            if (currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")){
-                                                                Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
+                                                            //Borrar chat tambien
+                                                            db.collection("Chats").document(PeticionID)
+                                                                    .delete()
+                                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                        @Override
+                                                                        public void onSuccess(Void aVoid) {
+                                                                            if (currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")){
+                                                                                Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
 
-                                                                startActivity(intent);
-                                                            }
-                                                            else
-                                                            {
-                                                                Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
+                                                                                intent.putExtra("RolID", currentUserRole);
 
-                                                                intent.putExtra("UserID",AsesorID);
-                                                                intent.putExtra("RolID",currentUserRole);
+                                                                                startActivity(intent);
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
 
-                                                                startActivity(intent);
-                                                            }
+                                                                                intent.putExtra("UserID",AsesorID);
+                                                                                intent.putExtra("RolID",currentUserRole);
+
+                                                                                startActivity(intent);
+                                                                            }
+                                                                        }
+                                                                    })
+                                                                    .addOnFailureListener(new OnFailureListener() {
+                                                                        @Override
+                                                                        public void onFailure(@NonNull Exception e) {
+                                                                            Log.i("Error", "Error borrando Chat");
+                                                                        }
+                                                                    });
                                                         }
                                                     })
                                                     .addOnFailureListener(new OnFailureListener() {
                                                         @Override
                                                         public void onFailure(@NonNull Exception e) {
-                                                            Log.i("Error", "Error borrando Chat");
+                                                            Log.i("Error", "Error borrando Peticion");
                                                         }
                                                     });
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Log.i("Error", "Error borrando Peticion");
                                         }
                                     });
                         }
@@ -444,7 +523,7 @@ public class Chat extends AppCompatActivity
                 {
                     new AlertDialog.Builder(Chat.this)
                             .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle("Tiempo Agotado¿Desea continuar con la sesión?")
+                            .setTitle("Tiempo Agotado ¿Desea continuar con la sesión?")
                             .setPositiveButton("Aceptar",new DialogInterface.OnClickListener(){
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -452,49 +531,60 @@ public class Chat extends AppCompatActivity
                                     reiniciarTemporizador();
                                 }
                             })
-                            .setNegativeButton("Rechazar",new DialogInterface.OnClickListener(){
+                            .setNegativeButton("Rechazar",new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    db.collection("Peticiones").document(PeticionID)
-                                            .delete()
+                                    Map<String, Object> data = new HashMap<>();
+                                    data.put("Borrandose", true);
+
+                                    db.collection("Chats").document(PeticionID)
+                                            .set(data, SetOptions.merge())
                                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                 @Override
                                                 public void onSuccess(Void aVoid) {
-
-                                                    //Borrar chat tambien
-                                                    db.collection("Chats").document(PeticionID)
+                                                    db.collection("Peticiones").document(PeticionID)
                                                             .delete()
                                                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                 @Override
                                                                 public void onSuccess(Void aVoid) {
-                                                                    if (currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")){
-                                                                        Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
 
-                                                                        startActivity(intent);
-                                                                    }
-                                                                    else {
-                                                                        Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
+                                                                    //Borrar chat tambien
+                                                                    db.collection("Chats").document(PeticionID)
+                                                                            .delete()
+                                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                @Override
+                                                                                public void onSuccess(Void aVoid) {
+                                                                                    if (currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")) {
+                                                                                        Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
 
-                                                                        intent.putExtra("RolID",currentUserRole);
-                                                                        intent.putExtra("UserID",AsesorID);
+                                                                                        intent.putExtra("RolID", currentUserRole);
 
-                                                                        startActivity(intent);
-                                                                    }
+                                                                                        startActivity(intent);
+                                                                                    } else {
+                                                                                        Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
+
+                                                                                        intent.putExtra("RolID", currentUserRole);
+                                                                                        intent.putExtra("UserID", AsesorID);
+
+                                                                                        startActivity(intent);
+                                                                                    }
+                                                                                }
+                                                                            })
+
+                                                                            .addOnFailureListener(new OnFailureListener() {
+                                                                                @Override
+                                                                                public void onFailure(@NonNull Exception e) {
+
+                                                                                }
+                                                                            });
                                                                 }
                                                             })
-
                                                             .addOnFailureListener(new OnFailureListener() {
                                                                 @Override
                                                                 public void onFailure(@NonNull Exception e) {
 
                                                                 }
                                                             });
-                                                }
-                                            })
-                                            .addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-
                                                 }
                                             });
                                 }
@@ -508,40 +598,50 @@ public class Chat extends AppCompatActivity
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle("Han utilizado todas sus extensiones. Se terminará el chat al acabar el tiempo restante.")
                     .setPositiveButton("Aceptar", new DialogInterface.OnClickListener(){
-
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    db.collection("Peticiones").document(PeticionID)
-                                            .delete()
+                                    Map<String, Object> data = new HashMap<>();
+                                    data.put("Borrandose", true);
+
+                                    db.collection("Chats").document(PeticionID)
+                                            .set(data, SetOptions.merge())
                                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                 @Override
                                                 public void onSuccess(Void aVoid) {
-
-                                                    //Borrar chat tambien
-                                                    db.collection("Chats").document(PeticionID)
+                                                    db.collection("Peticiones").document(PeticionID)
                                                             .delete()
                                                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                 @Override
                                                                 public void onSuccess(Void aVoid) {
-                                                                    if (currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")) {
-                                                                        Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
 
-                                                                        startActivity(intent);
-                                                                    }
-                                                                    else if(currentUserRole.equals("I60WiSHvFyzJqUT0IU20")){
-                                                                        Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
+                                                                    //Borrar chat tambien
+                                                                    db.collection("Chats").document(PeticionID)
+                                                                            .delete()
+                                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                @Override
+                                                                                public void onSuccess(Void aVoid) {
+                                                                                    if (currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")) {
+                                                                                        Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
 
-                                                                        intent.putExtra("RolID",currentUserRole);
-                                                                        intent.putExtra("UserID",AsesorID);
+                                                                                        intent.putExtra("RolID", currentUserRole);
 
-                                                                        startActivity(intent);
-                                                                    }
-                                                                }
-                                                            })
-                                                            .addOnFailureListener(new OnFailureListener() {
-                                                                @Override
-                                                                public void onFailure(@NonNull Exception e) {
+                                                                                        startActivity(intent);
+                                                                                    } else if (currentUserRole.equals("I60WiSHvFyzJqUT0IU20")) {
+                                                                                        Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
 
+                                                                                        intent.putExtra("RolID", currentUserRole);
+                                                                                        intent.putExtra("UserID", AsesorID);
+
+                                                                                        startActivity(intent);
+                                                                                    }
+                                                                                }
+                                                                            })
+                                                                            .addOnFailureListener(new OnFailureListener() {
+                                                                                @Override
+                                                                                public void onFailure(@NonNull Exception e) {
+
+                                                                                }
+                                                                            });
                                                                 }
                                                             });
                                                 }
