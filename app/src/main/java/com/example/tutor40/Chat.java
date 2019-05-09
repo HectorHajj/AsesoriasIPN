@@ -324,15 +324,14 @@ public class Chat extends AppCompatActivity
                                                         public void onSuccess(Void aVoid) {
                                                             if (currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")){
                                                                 Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
+
                                                                 startActivity(intent);
                                                             }
                                                             else
                                                             {
                                                                 Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
 
-                                                                if(currentUserRole.equals("I60WiSHvFyzJqUT0IU20")){
-                                                                    intent.putExtra("UserID",AsesorID);
-                                                                }
+                                                                intent.putExtra("UserID",AsesorID);
                                                                 intent.putExtra("RolID",currentUserRole);
 
                                                                 startActivity(intent);
@@ -470,22 +469,17 @@ public class Chat extends AppCompatActivity
                                                                 public void onSuccess(Void aVoid) {
                                                                     if (currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")){
                                                                         Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
+
                                                                         startActivity(intent);
                                                                     }
-                                                                    else
-                                                                    {
-                                                                    Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
-                                                                   // if (currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")) {
-                                                                      //  intent.putExtra("UserID",AlumnoID);
-                                                                    //}
-                                                                    //else
-                                                                        if(currentUserRole.equals("I60WiSHvFyzJqUT0IU20")){
-                                                                        intent.putExtra("UserID",AsesorID);
-                                                                    }
-                                                                    intent.putExtra("RolID",currentUserRole);
+                                                                    else {
+                                                                        Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
 
-                                                                    startActivity(intent);
-                                                                }
+                                                                        intent.putExtra("RolID",currentUserRole);
+                                                                        intent.putExtra("UserID",AsesorID);
+
+                                                                        startActivity(intent);
+                                                                    }
                                                                 }
                                                             })
 
@@ -529,16 +523,19 @@ public class Chat extends AppCompatActivity
                                                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                 @Override
                                                                 public void onSuccess(Void aVoid) {
-                                                                    Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
                                                                     if (currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")) {
-                                                                        intent.putExtra("UserID",AlumnoID);
+                                                                        Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
+
+                                                                        startActivity(intent);
                                                                     }
                                                                     else if(currentUserRole.equals("I60WiSHvFyzJqUT0IU20")){
-                                                                        intent.putExtra("UserID",AsesorID);
-                                                                    }
-                                                                    intent.putExtra("RolID",currentUserRole);
+                                                                        Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
 
-                                                                    startActivity(intent);
+                                                                        intent.putExtra("RolID",currentUserRole);
+                                                                        intent.putExtra("UserID",AsesorID);
+
+                                                                        startActivity(intent);
+                                                                    }
                                                                 }
                                                             })
                                                             .addOnFailureListener(new OnFailureListener() {

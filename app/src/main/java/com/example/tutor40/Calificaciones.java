@@ -36,7 +36,7 @@ public class Calificaciones extends AppCompatActivity {
 
         CurrentUserRole = getIntent().getStringExtra("RolID");
         UserID = getIntent().getStringExtra("UserID");
-        Log.i("UserID AQUIIIIIIIIII",UserID);
+
         R1 = (RatingBar) findViewById (R.id. ratingBar );  // iniciar una barra de calificación
         db = FirebaseFirestore.getInstance();
     }
