@@ -35,7 +35,8 @@ public class Registro extends AppCompatActivity
     FirebaseAuth mAuth;
     FirebaseFirestore db;
 
-    public void registrarNuevoUsuario(String userId, String Nombre, String ApellidoPaterno, String ApellidoMaterno, Boolean Rol) {
+    public void registrarNuevoUsuario(String userId, String Nombre, String ApellidoPaterno, String ApellidoMaterno, Boolean Rol)
+    {
         Map<String, Object> user = new HashMap<>();
 
         if(Rol)
@@ -60,12 +61,12 @@ public class Registro extends AppCompatActivity
 
         if(user.get("RolID").toString() == "Ck5Tnzr0ipmAzKpQpTDX")
         {
-            Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
+            Intent intent = new Intent(getApplicationContext(), Login.class);
             startActivity(intent);
         }
         else if(user.get("RolID").toString() == "I60WiSHvFyzJqUT0IU20")
         {
-            Intent intent = new Intent(getApplicationContext(), AlumnoMain.class);
+            Intent intent = new Intent(getApplicationContext(), Login.class);
             startActivity(intent);
         }
     }

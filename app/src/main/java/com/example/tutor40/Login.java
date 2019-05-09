@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -30,7 +31,8 @@ public class Login extends AppCompatActivity
 
     FirebaseFirestore db;
 
-    public void login(View view){
+    public void login(View view)
+    {
         if(TextUtils.isEmpty(Email.getText().toString()))
         {
             Toast.makeText(this, "Por favor introduzca un email", Toast.LENGTH_SHORT).show();
@@ -49,7 +51,8 @@ public class Login extends AppCompatActivity
             mAuth.signInWithEmailAndPassword(Email.getText().toString(), Password.getText().toString())
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
+                        public void onComplete(@NonNull Task<AuthResult> task)
+                        {
                             if(task.isSuccessful())
                             {
                                 // Sign in success, update UI with the signed-in user's information
@@ -60,7 +63,8 @@ public class Login extends AppCompatActivity
                                 DocumentReference docRef = db.collection("users").document(user.getUid());
                                 docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                     @Override
-                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    public void onSuccess(DocumentSnapshot documentSnapshot)
+                                    {
                                         if(documentSnapshot.getData().get("RolID").toString().equals("Ck5Tnzr0ipmAzKpQpTDX"))
                                         {
                                             loadingBar.dismiss();
@@ -99,6 +103,12 @@ public class Login extends AppCompatActivity
     {
         Intent intent = new Intent(getApplicationContext(), Registro.class);
         startActivity(intent);
+    }
+
+    public void irOlvideContraseña(View view)
+    {
+        Intent contraseña = new Intent(getApplicationContext(), ReseteoContraseña.class);
+        startActivity(contraseña);
     }
 
     @Override
