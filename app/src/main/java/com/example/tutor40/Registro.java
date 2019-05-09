@@ -100,7 +100,7 @@ public class Registro extends AppCompatActivity
             Toast.makeText(Registro.this, "Por favor introduzca su apellido paterno", Toast.LENGTH_SHORT).show();
         }
 
-        if(TextUtils.isEmpty(ApellidoPaterno.getText().toString()))
+        if(TextUtils.isEmpty(ApellidoMaterno.getText().toString()))
         {
             Toast.makeText(Registro.this, "Por favor introduzca su apellido materno", Toast.LENGTH_SHORT).show();
         }
