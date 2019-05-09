@@ -43,11 +43,6 @@ public class Login extends AppCompatActivity
         }
         else
         {
-            loadingBar.setTitle("Cargando");
-            loadingBar.setMessage("Por favor espere...");
-            loadingBar.setCanceledOnTouchOutside(true);
-            loadingBar.show();
-
             mAuth.signInWithEmailAndPassword(Email.getText().toString(), Password.getText().toString())
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
@@ -59,34 +54,45 @@ public class Login extends AppCompatActivity
 
                                 FirebaseUser user = mAuth.getCurrentUser();
 
-                                //Verificar Rol de usuario y mandarlo a pantalla correspondiente
-                                DocumentReference docRef = db.collection("users").document(user.getUid());
-                                docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                    @Override
-                                    public void onSuccess(DocumentSnapshot documentSnapshot)
-                                    {
-                                        if(documentSnapshot.getData().get("RolID").toString().equals("Ck5Tnzr0ipmAzKpQpTDX"))
-                                        {
-                                            loadingBar.dismiss();
+                                if(user.isEmailVerified())
+                                {
+                                    loadingBar.setTitle("Cargando");
+                                    loadingBar.setMessage("Por favor espere...");
+                                    loadingBar.setCanceledOnTouchOutside(true);
+                                    loadingBar.show();
 
-                                            Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
+                                    //Verificar Rol de usuario y mandarlo a pantalla correspondiente
+                                    DocumentReference docRef = db.collection("users").document(user.getUid());
+                                    docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            if(documentSnapshot.getData().get("RolID").toString().equals("Ck5Tnzr0ipmAzKpQpTDX"))
+                                            {
+                                                loadingBar.dismiss();
 
-                                            intent.putExtra("RolID", "Ck5Tnzr0ipmAzKpQpTDX");
+                                                Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
 
-                                            startActivity(intent);
+                                                intent.putExtra("RolID", "Ck5Tnzr0ipmAzKpQpTDX");
+
+                                                startActivity(intent);
+                                            }
+                                            else if (documentSnapshot.getData().get("RolID").toString().equals("I60WiSHvFyzJqUT0IU20"))
+                                            {
+                                                loadingBar.dismiss();
+
+                                                Intent intent = new Intent(getApplicationContext(), AlumnoMain.class);
+
+                                                intent.putExtra("RolID", "I60WiSHvFyzJqUT0IU20");
+
+                                                startActivity(intent);
+                                            }
                                         }
-                                        else if(documentSnapshot.getData().get("RolID").toString().equals("I60WiSHvFyzJqUT0IU20"))
-                                        {
-                                            loadingBar.dismiss();
-
-                                            Intent intent = new Intent(getApplicationContext(), AlumnoMain.class);
-
-                                            intent.putExtra("RolID", "I60WiSHvFyzJqUT0IU20");
-
-                                            startActivity(intent);
-                                        }
-                                    }
-                                });
+                                    });
+                                }
+                                else
+                                {
+                                    Toast.makeText(Login.this, "Favor de verificar su correo primero", Toast.LENGTH_SHORT).show();
+                                }
                             }
                             else
                             {

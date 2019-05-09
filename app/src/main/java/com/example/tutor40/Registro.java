@@ -61,11 +61,13 @@ public class Registro extends AppCompatActivity
 
         if(user.get("RolID").toString() == "Ck5Tnzr0ipmAzKpQpTDX")
         {
+            Toast.makeText(Registro.this, "Cuenta de asesor creada, verifique su correo", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(getApplicationContext(), Login.class);
             startActivity(intent);
         }
         else if(user.get("RolID").toString() == "I60WiSHvFyzJqUT0IU20")
         {
+            Toast.makeText(Registro.this, "Cuenta de alumno creada, verifique su correo", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(getApplicationContext(), Login.class);
             startActivity(intent);
         }
@@ -97,6 +99,7 @@ public class Registro extends AppCompatActivity
                             {
                                 // Sign in success, update UI with the signed-in user's information
                                 FirebaseUser user = mAuth.getInstance().getCurrentUser();
+                                user.sendEmailVerification();
                                 registrarNuevoUsuario(user.getUid(), Nombre.getText().toString(), ApellidoPaterno.getText().toString(), ApellidoMaterno.getText().toString(), alumnoTutor.isChecked());
                             }
                             else
