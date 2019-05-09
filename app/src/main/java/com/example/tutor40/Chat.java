@@ -585,7 +585,7 @@ public class Chat extends AppCompatActivity
                                 //Mostrar los mensajes en orden cronologico
                                 Collections.sort(mensajesChat, new SortByDate());
 
-                                for (Mensajes mensaje : mensajesChat) {
+                                for(Mensajes mensaje : mensajesChat) {
                                     displayTextMessages.append(mensaje.Nombre + ": " + mensaje.Mensaje + "\n");
                                     //mensaje.Fecha.getHours() + ":" + mensaje.Fecha.getMinutes() + ":" + mensaje.Fecha.getSeconds() + "     " + mensaje.Fecha.toString() +
                                     mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
