@@ -24,7 +24,7 @@ import java.util.Map;
 public class Registro extends AppCompatActivity
 {
     EditText Email;
-    EditText Password;
+    EditText Password, Password2;
     EditText Nombre;
     EditText ApellidoPaterno;
     EditText ApellidoMaterno;
@@ -77,13 +77,20 @@ public class Registro extends AppCompatActivity
     {
         if(TextUtils.isEmpty(Email.getText().toString()))
         {
-            Toast.makeText(this, "Por favor introduzca un E-Mail", Toast.LENGTH_SHORT).show();
+            Toast.makeText(Registro.this, "Por favor introduzca un E-Mail", Toast.LENGTH_SHORT).show();
         }
-        else if(TextUtils.isEmpty(Password.getText().toString()))
+
+        if(TextUtils.isEmpty(Password.getText().toString()))
         {
-            Toast.makeText(this, "Por favor introduzca una contraseña", Toast.LENGTH_SHORT).show();
+            Toast.makeText(Registro.this, "Por favor introduzca una contraseña", Toast.LENGTH_SHORT).show();
         }
-        else
+
+        if(TextUtils.isEmpty(Password2.getText().toString()))
+        {
+            Toast.makeText(Registro.this, "Por favor introduzca la verificación de la contraseña", Toast.LENGTH_SHORT).show();
+        }
+
+        if(!TextUtils.isEmpty(Email.getText().toString()) & !TextUtils.isEmpty(Password.getText().toString()) & !TextUtils.isEmpty(Password2.getText().toString()) & TextUtils.equals(Password.getText().toString(), Password2.getText().toString()))
         {
             loadingBar.setTitle("Creando una cuenta nueva");
             loadingBar.setMessage("Por favor espere mientras se crea su cuenta");
@@ -93,23 +100,24 @@ public class Registro extends AppCompatActivity
             mAuth.createUserWithEmailAndPassword(Email.getText().toString(), Password.getText().toString())
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
-                        public void onComplete(@NonNull Task<AuthResult> task)
-                        {
-                            if (task.isSuccessful())
-                            {
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
                                 FirebaseUser user = mAuth.getInstance().getCurrentUser();
                                 user.sendEmailVerification();
                                 registrarNuevoUsuario(user.getUid(), Nombre.getText().toString(), ApellidoPaterno.getText().toString(), ApellidoMaterno.getText().toString(), alumnoTutor.isChecked());
-                            }
-                            else
-                            {
+                            } else {
                                 String message = task.getException().toString();
                                 Toast.makeText(Registro.this, "Error:" + message, Toast.LENGTH_SHORT).show();
                                 loadingBar.dismiss();
                             }
                         }
                     });
+        }
+
+        if(!TextUtils.equals(Password.getText().toString(), Password2.getText().toString()))
+        {
+            Toast.makeText(Registro.this, "Las contraseñas no son similares", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -121,6 +129,7 @@ public class Registro extends AppCompatActivity
 
         Email = findViewById(R.id.editTextEmail);
         Password = findViewById(R.id.editTextPassword);
+        Password2 = findViewById(R.id.editTextPassword2);
         Nombre = findViewById(R.id.editTextNombre);
         ApellidoPaterno = findViewById(R.id.editTextApellidoPaterno);
         ApellidoMaterno = findViewById(R.id.editTextApellidoMaterno);
