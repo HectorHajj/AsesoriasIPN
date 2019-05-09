@@ -36,7 +36,7 @@ public class Calificaciones extends AppCompatActivity {
 
         CurrentUserRole = getIntent().getStringExtra("RolID");
         UserID = getIntent().getStringExtra("UserID");
-        Log.i("UserID AQUIIIIIIIIII",UserID);
+
         R1 = (RatingBar) findViewById (R.id. ratingBar );  // iniciar una barra de calificación
         db = FirebaseFirestore.getInstance();
     }
@@ -78,6 +78,9 @@ public class Calificaciones extends AppCompatActivity {
                                                 public void onComplete(@NonNull Task<Void> task) {
                                                     if (task.isSuccessful()) {
                                                         Intent intent = new Intent(getApplicationContext(), AlumnoMain.class);
+
+                                                        intent.putExtra("RolID", CurrentUserRole);
+
                                                         startActivity(intent);
                                                     }
                                                 }
@@ -93,6 +96,9 @@ public class Calificaciones extends AppCompatActivity {
                                                 @Override
                                                 public void onSuccess(Void aVoid) {
                                                     Intent intent = new Intent(getApplicationContext(), AlumnoMain.class);
+
+                                                    intent.putExtra("RolID", CurrentUserRole);
+
                                                     startActivity(intent);
                                                 }
                                             });

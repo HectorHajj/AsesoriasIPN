@@ -293,7 +293,7 @@ public class AsesorMain extends AppCompatActivity
                                                                                 public void onSuccess(Void aVoid) {
                                                                                     Intent intent = new Intent(getApplicationContext(), Chat.class);
 
-                                                                                    intent.putExtra("Rol", getIntent().getStringExtra("Rol"));
+                                                                                    intent.putExtra("RolID", getIntent().getStringExtra("RolID"));
                                                                                     intent.putExtra("PeticionID", peticionEscogida.PeticionID);
 
                                                                                     startActivity(intent);

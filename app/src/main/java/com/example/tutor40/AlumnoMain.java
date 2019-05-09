@@ -132,7 +132,7 @@ public class AlumnoMain extends AppCompatActivity
                                             Intent intent = new Intent(getApplicationContext(), Chat.class);
 
                                             intent.putExtra("PeticionID", documentReference.getId());
-                                            intent.putExtra("Rol", getIntent().getStringExtra("Rol"));
+                                            intent.putExtra("RolID", getIntent().getStringExtra("RolID"));
 
                                             startActivity(intent);
                                         }

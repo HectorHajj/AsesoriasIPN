@@ -67,7 +67,7 @@ public class Login extends AppCompatActivity
 
                                             Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
 
-                                            intent.putExtra("Rol", "Ck5Tnzr0ipmAzKpQpTDX");
+                                            intent.putExtra("RolID", "Ck5Tnzr0ipmAzKpQpTDX");
 
                                             startActivity(intent);
                                         }
@@ -77,7 +77,7 @@ public class Login extends AppCompatActivity
 
                                             Intent intent = new Intent(getApplicationContext(), AlumnoMain.class);
 
-                                            intent.putExtra("Rol", "I60WiSHvFyzJqUT0IU20");
+                                            intent.putExtra("RolID", "I60WiSHvFyzJqUT0IU20");
 
                                             startActivity(intent);
                                         }
