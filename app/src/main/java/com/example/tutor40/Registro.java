@@ -90,7 +90,22 @@ public class Registro extends AppCompatActivity
             Toast.makeText(Registro.this, "Por favor introduzca la verificación de la contraseña", Toast.LENGTH_SHORT).show();
         }
 
-        if(!TextUtils.isEmpty(Email.getText().toString()) & !TextUtils.isEmpty(Password.getText().toString()) & !TextUtils.isEmpty(Password2.getText().toString()) & TextUtils.equals(Password.getText().toString(), Password2.getText().toString()))
+        if(TextUtils.isEmpty(Nombre.getText().toString()))
+        {
+            Toast.makeText(Registro.this, "Por favor introduzca su nombre", Toast.LENGTH_SHORT).show();
+        }
+
+        if(TextUtils.isEmpty(ApellidoPaterno.getText().toString()))
+        {
+            Toast.makeText(Registro.this, "Por favor introduzca su apellido paterno", Toast.LENGTH_SHORT).show();
+        }
+
+        if(TextUtils.isEmpty(ApellidoPaterno.getText().toString()))
+        {
+            Toast.makeText(Registro.this, "Por favor introduzca su apellido materno", Toast.LENGTH_SHORT).show();
+        }
+
+        if(!TextUtils.isEmpty(Email.getText().toString()) & !TextUtils.isEmpty(Password.getText().toString()) & !TextUtils.isEmpty(Password2.getText().toString()) & !TextUtils.isEmpty(Nombre.getText().toString()) & !TextUtils.isEmpty(ApellidoPaterno.getText().toString()) & !TextUtils.isEmpty(ApellidoMaterno.getText().toString()) & TextUtils.equals(Password.getText().toString(), Password2.getText().toString()))
         {
             loadingBar.setTitle("Creando una cuenta nueva");
             loadingBar.setMessage("Por favor espere mientras se crea su cuenta");
