@@ -22,12 +22,14 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -431,11 +433,58 @@ public class AsesorMain extends AppCompatActivity
 
             startActivity(intent);
         }
+        else if(id == R.id.delete)
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("¿Esta seguro de que desea eliminar su cuenta?");
+            builder.setCancelable(false);
+
+            builder.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which)
+                {
+                    final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                    FirebaseFirestore db;
+                    db = FirebaseFirestore.getInstance();
+
+                    db.collection("users").document(user.getUid().toString()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task)
+                        {
+                        }
+                    });
+
+                    user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task)
+                        {
+                            if(task.isSuccessful())
+                            {
+                                Toast.makeText(AsesorMain.this, "Cuenta eliminada", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(getApplicationContext(), Login.class));
+                            }
+                        }
+                    });
+                }
+            });
+
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which)
+                {
+                    dialog.cancel();
+                }
+            });
+
+            AlertDialog ad = builder.create();
+            ad.setTitle("Eliminar cuenta");
+            ad.show();
+        }
 
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item)
     {
