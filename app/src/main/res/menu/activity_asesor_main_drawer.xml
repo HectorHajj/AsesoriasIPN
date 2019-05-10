@@ -13,6 +13,6 @@
             android:title="Ranking" />
         <item
             android:id="@+id/perfil"
-            android:title="Perfil" />
+            android:title="Actualizar datos" />
     </group>
 </menu>

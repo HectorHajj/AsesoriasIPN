@@ -202,7 +202,6 @@ public class AlumnoMain extends AppCompatActivity implements NavigationView.OnNa
             @Override
             public void onNothingSelected(AdapterView<?> parent)
             {
-
             }
         });
 
@@ -210,13 +209,18 @@ public class AlumnoMain extends AppCompatActivity implements NavigationView.OnNa
         db.collection("Materias").get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()){
+                    public void onComplete(@NonNull Task<QuerySnapshot> task)
+                    {
+                        if(task.isSuccessful())
+                        {
+                            for(QueryDocumentSnapshot document : task.getResult())
+                            {
                                 spinnerArray.add(document.getData().get("Nombre").toString());
                                 adapter.notifyDataSetChanged();
                             }
-                        } else {
+                        }
+                        else
+                        {
                             Log.i("Mala tuya", "Error getting documents: ", task.getException());
                         }
                     }
@@ -318,16 +322,18 @@ public class AlumnoMain extends AppCompatActivity implements NavigationView.OnNa
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(MenuItem item)
+    {
         int id = item.getItemId();
 
-         if (id == R.id.perfil) {
+        if(id == R.id.perfil)
+        {
             Intent intent = new Intent(getApplicationContext(), Perfil.class);
-
             startActivity(intent);
-        } else if (id == R.id.ranking) {
+        }
+        else if(id == R.id.ranking)
+        {
             Intent intent = new Intent(getApplicationContext(), Perfil.class);
-
             startActivity(intent);
         }
 
@@ -337,11 +343,12 @@ public class AlumnoMain extends AppCompatActivity implements NavigationView.OnNa
     }
 
     @Override
-    public void onStart() {
+    public void onStart()
+    {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        try {
-
+        try
+        {
             db = FirebaseFirestore.getInstance();
 
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -352,21 +359,23 @@ public class AlumnoMain extends AppCompatActivity implements NavigationView.OnNa
             DocumentReference docRef = db.collection("users").document(user.getUid());
             docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    if(documentSnapshot.getData().get("RolID").toString() == "Ck5Tnzr0ipmAzKpQpTDX") {
+                public void onSuccess(DocumentSnapshot documentSnapshot)
+                {
+                    if(documentSnapshot.getData().get("RolID").toString() == "Ck5Tnzr0ipmAzKpQpTDX")
+                    {
                         Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
-
                         startActivity(intent);
                     }
                 }
             });
 
-        } catch(Exception e){
+        }
+        catch(Exception e)
+        {
             e.printStackTrace();
 
             //Los llevamos a Login
             Intent intent = new Intent(getApplicationContext(), Login.class);
-
             startActivity(intent);
         }
     }
