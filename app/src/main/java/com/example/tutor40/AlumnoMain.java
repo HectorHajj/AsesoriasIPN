@@ -257,7 +257,6 @@ public class AlumnoMain extends AppCompatActivity implements NavigationView.OnNa
         if(id == R.id.perfil)
         {
             Intent intent = new Intent(getApplicationContext(), Perfil.class);
-
             startActivity(intent);
         }
         else if(id == R.id.logout)
@@ -265,7 +264,6 @@ public class AlumnoMain extends AppCompatActivity implements NavigationView.OnNa
             FirebaseAuth.getInstance().signOut();
 
             Intent intent = new Intent(getApplicationContext(), Login.class);
-
             startActivity(intent);
         }
         else if(id == R.id.delete)

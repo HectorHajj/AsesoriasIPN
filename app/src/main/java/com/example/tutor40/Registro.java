@@ -41,7 +41,7 @@ public class Registro extends AppCompatActivity
 
         if(Rol)
         {
-            //Si Rol es true entonces es un Alumno
+            //Si Rol es true entonces es un alumno
             user.put("Nombre", Nombre);
             user.put("ApellidoPaterno", ApellidoPaterno);
             user.put("ApellidoMaterno", ApellidoMaterno);
@@ -49,7 +49,7 @@ public class Registro extends AppCompatActivity
         }
         else
         {
-            //Si Rol es true entonces es un Tutor
+            //Si Rol es false entonces es un asesor
             user.put("Nombre", Nombre);
             user.put("ApellidoPaterno", ApellidoPaterno);
             user.put("ApellidoMaterno", ApellidoMaterno);
