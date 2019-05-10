@@ -52,7 +52,7 @@ public class AsesorMain extends AppCompatActivity
     Button conectarse;
     TextView textViewEstado;
     ProgressDialog loadingBar;
-    Switch SwitchE;
+
 
     //Variables
     ArrayList<String> materiasPreferidasList = new ArrayList<>();
@@ -383,7 +383,7 @@ public class AsesorMain extends AppCompatActivity
         conectarse = findViewById(R.id.buttonConectarse);
         textViewEstado = findViewById(R.id.textViewEstado);
         loadingBar = new ProgressDialog(this);
-        SwitchE = findViewById(R.id.switch1);
+
 
         //Shared Preferences
         sharedPreferences = getSharedPreferences("com.example.tutor40", MODE_PRIVATE);
@@ -451,11 +451,11 @@ public class AsesorMain extends AppCompatActivity
             Intent intent = new Intent(getApplicationContext(), Perfil.class);
             startActivity(intent);
         }
-        else if(id == R.id.ranking)
-        {
-            Intent intent = new Intent(getApplicationContext(), Perfil.class);
-            startActivity(intent);
-        }
+       // else if(id == R.id.ranking)
+        //{
+         //   Intent intent = new Intent(getApplicationContext(), Perfil.class);
+          //  startActivity(intent);
+        //}
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -465,14 +465,10 @@ public class AsesorMain extends AppCompatActivity
     @Override
     protected void onRestart()
     {
-        //Si se regresa a view, desconectar al usuario y actualizar sus preferencias
+        //Si se regresa a view se actualizan sus preferencias
         actualizarMateriasPreferidas();
-        if (SwitchE.isChecked()) {
-            Conectar(detenerse);
-        }
-        else{
-            Desconectar(detenerse);
-        }
+        //Conectar(detenerse);
+        //Desconectar(detenerse);
         super.onRestart();
     }
 }

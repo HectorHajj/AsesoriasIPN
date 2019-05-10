@@ -14,14 +14,13 @@
 
     <RatingBar
         android:id="@+id/ratingBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="86dp"
-        android:layout_marginTop="116dp"
-        android:layout_marginEnd="42dp"
+        style="@android:style/Widget.RatingBar"
+        android:layout_width="292dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="112dp"
         android:numStars="5"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.186"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

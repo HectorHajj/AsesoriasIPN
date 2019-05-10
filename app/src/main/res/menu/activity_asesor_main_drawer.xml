@@ -9,9 +9,6 @@
             android:id="@+id/materias"
             android:title="Materias" />
         <item
-            android:id="@+id/ranking"
-            android:title="Ranking" />
-        <item
             android:id="@+id/perfil"
             android:title="Perfil" />
     </group>
