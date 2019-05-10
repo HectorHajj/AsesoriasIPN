@@ -116,12 +116,15 @@ public class Registro extends AppCompatActivity
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
+                            if(task.isSuccessful())
+                            {
                                 // Sign in success, update UI with the signed-in user's information
                                 FirebaseUser user = mAuth.getInstance().getCurrentUser();
                                 user.sendEmailVerification();
                                 registrarNuevoUsuario(user.getUid(), Nombre.getText().toString(), ApellidoPaterno.getText().toString(), ApellidoMaterno.getText().toString(), alumnoTutor.isChecked());
-                            } else {
+                            }
+                            else
+                            {
                                 String message = task.getException().toString();
                                 Toast.makeText(Registro.this, "Error:" + message, Toast.LENGTH_SHORT).show();
                                 loadingBar.dismiss();

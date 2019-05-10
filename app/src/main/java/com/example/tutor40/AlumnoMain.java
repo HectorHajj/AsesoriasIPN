@@ -1,9 +1,11 @@
 package com.example.tutor40;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -30,6 +32,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -42,9 +46,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class AlumnoMain extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
-
+public class AlumnoMain extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
+{
     //Firebase
     FirebaseFirestore db;
     FirebaseAuth mAuth;
@@ -155,7 +158,8 @@ public class AlumnoMain extends AppCompatActivity
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alumno_main);
 
@@ -190,12 +194,15 @@ public class AlumnoMain extends AppCompatActivity
         //Acciones de spinner
         spinnerMaterias.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
                 ((TextView) view).setTextColor(Color.BLACK);
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+            public void onNothingSelected(AdapterView<?> parent)
+            {
+
             }
         });
 
@@ -217,36 +224,93 @@ public class AlumnoMain extends AppCompatActivity
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBackPressed()
+    {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
+        if(drawer.isDrawerOpen(GravityCompat.START))
+        {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
+        }
+        else
+        {
             super.onBackPressed();
         }
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
         int id = item.getItemId();
 
-        if(id == R.id.perfil){
+        if(id == R.id.perfil)
+        {
             Intent intent = new Intent(getApplicationContext(), Perfil.class);
 
             startActivity(intent);
-        } else if (id == R.id.logout){
+        }
+        else if(id == R.id.logout)
+        {
             FirebaseAuth.getInstance().signOut();
 
             Intent intent = new Intent(getApplicationContext(), Login.class);
 
             startActivity(intent);
+        }
+        else if(id == R.id.delete)
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("¿Esta seguro de que desea eliminar su cuenta?");
+            builder.setCancelable(false);
+
+            builder.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which)
+                {
+                    final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                    FirebaseFirestore db;
+                    db = FirebaseFirestore.getInstance();
+
+                    db.collection("users").document(user.getUid().toString()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task)
+                        {
+                        }
+                    });
+
+                    user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task)
+                        {
+                            if(task.isSuccessful())
+                            {
+                                Toast.makeText(AlumnoMain.this, "Cuenta eliminada", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(getApplicationContext(), Login.class));
+                            }
+                        }
+                    });
+                }
+            });
+
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which)
+                {
+                    dialog.cancel();
+                }
+            });
+
+            AlertDialog ad = builder.create();
+            ad.setTitle("Eliminar cuenta");
+            ad.show();
         }
 
         return super.onOptionsItemSelected(item);
