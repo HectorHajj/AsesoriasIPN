@@ -37,11 +37,13 @@ public class Login extends AppCompatActivity
         {
             Toast.makeText(this, "Por favor introduzca un email", Toast.LENGTH_SHORT).show();
         }
-        else if(TextUtils.isEmpty(Password.getText().toString()))
+
+        if(TextUtils.isEmpty(Password.getText().toString()))
         {
             Toast.makeText(this, "Por favor introduzca una contraseña", Toast.LENGTH_SHORT).show();
         }
-        else
+
+        if(!TextUtils.isEmpty(Email.getText().toString()) & !TextUtils.isEmpty(Password.getText().toString()))
         {
             mAuth.signInWithEmailAndPassword(Email.getText().toString(), Password.getText().toString())
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {

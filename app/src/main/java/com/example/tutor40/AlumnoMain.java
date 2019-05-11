@@ -67,17 +67,22 @@ public class AlumnoMain extends AppCompatActivity implements NavigationView.OnNa
 
     public void enviarPregunta(View view){
         //Tomar valor actual de pregunta y de materia y enviarla
-        if(TextUtils.isEmpty(pregunta.getText().toString())){
+        if(TextUtils.isEmpty(pregunta.getText().toString()))
+        {
             Toast.makeText(this, "Introduzca su pregunta en el campo proporcionado, porfavor.", Toast.LENGTH_LONG).show();
-        } else {
-
-            loadingBar.show(this, "Buscando Asesores", "Por favor espere...", true, true, new DialogInterface.OnCancelListener() {
+        }
+        else
+        {
+            loadingBar.show(this, "Buscando asesores", "Por favor espere...", true, true, new DialogInterface.OnCancelListener() {
                 @Override
                 public void onCancel(DialogInterface dialog) {
                     //TODO:
-                    if(peticionActual.isEmpty()){
+                    if(peticionActual.isEmpty())
+                    {
                         loadingBar.dismiss();
-                    } else {
+                    }
+                    else
+                    {
                         loadingBar.dismiss();
 
                         db.collection("Peticiones").document(peticionActual)

@@ -9,9 +9,7 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="45dp" >
+        android:layout_height="match_parent">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -32,54 +30,66 @@
             <EditText
                 android:id="@+id/editTextNombre"
                 android:layout_width="350dp"
-                android:layout_height="55dp"
+                android:layout_height="60dp"
+                android:layout_below="@+id/perfil_image"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="5dp"
+                android:layout_marginEnd="16dp"
                 android:background="@drawable/inputs"
                 android:drawableStart="@drawable/usr"
                 android:hint="Nombre(s)..."
                 android:inputType="textPersonName"
                 android:padding="4dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/perfil_image" />
 
             <EditText
                 android:id="@+id/editTextApellidoPaterno"
                 android:layout_width="350dp"
-                android:layout_height="55dp"
+                android:layout_height="60dp"
+                android:layout_below="@+id/editTextNombre"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="5dp"
+                android:layout_marginEnd="16dp"
                 android:background="@drawable/inputs"
                 android:drawableStart="@drawable/usr"
                 android:hint="Apellido paterno..."
                 android:inputType="textPersonName"
                 android:padding="4dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/editTextNombre" />
 
             <EditText
                 android:id="@+id/editTextApellidoMaterno"
                 android:layout_width="350dp"
-                android:layout_height="55dp"
+                android:layout_height="60dp"
+                android:layout_below="@+id/editTextApellidoPaterno"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="5dp"
+                android:layout_marginEnd="16dp"
                 android:background="@drawable/inputs"
                 android:drawableStart="@drawable/usr"
                 android:hint="Apellido materno..."
                 android:inputType="textPersonName"
                 android:padding="4dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/editTextApellidoPaterno" />
 
             <Button
                 android:id="@+id/actualizar_button"
-                android:layout_width="380dp"
-                android:layout_height="wrap_content"
+                android:layout_width="350dp"
+                android:layout_height="60dp"
                 android:layout_below="@id/editTextApellidoMaterno"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="5dp"
+                android:layout_marginEnd="16dp"
                 android:background="@drawable/buttons"
                 android:padding="4dp"
                 android:text="Actualizar"
@@ -87,24 +97,25 @@
                 android:textColor="@android:color/background_light"
                 android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/editTextApellidoMaterno" />
 
             <TextView
                 android:id="@+id/cancel_link"
-                android:layout_width="380dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/actualizar_button"
                 android:layout_centerHorizontal="true"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
                 android:text="Regresar"
                 android:textAlignment="center"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="17sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/actualizar_button" />
         </android.support.constraint.ConstraintLayout>

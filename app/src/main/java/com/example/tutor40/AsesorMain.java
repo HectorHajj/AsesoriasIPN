@@ -40,9 +40,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AsesorMain extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
-
+public class AsesorMain extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
+{
     SharedPreferences sharedPreferences;
 
     //Firebase
@@ -81,7 +80,7 @@ public class AsesorMain extends AppCompatActivity
         conectarse.setVisibility(View.INVISIBLE);
 
         //Cambiar texto a Buscando Peticiones de Tutoria...
-        textViewEstado.setText("Buscando Peticiones de Tutoria...");
+        textViewEstado.setText("Buscando peticiones de asesoria...");
 
         //Buscar peticiones con materias preferidas de usuario Tutor (Si NO tiene materias preferidas alertarlo y mandarlo a pantalla de materias)
         //Si materiasPreferidas no esta vacia proseguir
@@ -90,16 +89,20 @@ public class AsesorMain extends AppCompatActivity
             //Comenzar una busqueda asincrona
             getPeticiones = new GetPeticionesTask();
 
-            loadingBar.show(this, "Buscando Preguntas", "Por favor espere...", true, true, new DialogInterface.OnCancelListener() {
+            loadingBar.show(this, "Buscando preguntas", "Por favor espere...", true, true, new DialogInterface.OnCancelListener() {
                 @Override
                 public void onCancel(DialogInterface dialog) {
-                    try {
-                        if(getPeticiones.getStatus() == AsyncTask.Status.RUNNING){
+                    try
+                    {
+                        if(getPeticiones.getStatus() == AsyncTask.Status.RUNNING)
+                        {
                             getPeticiones.cancel(true);
                         }
 
                         Desconectar(detenerse);
-                    } catch (Exception e) {
+                    }
+                    catch(Exception e)
+                    {
                         e.printStackTrace();
                     }
                 }
@@ -163,19 +166,20 @@ public class AsesorMain extends AppCompatActivity
         {
             new AlertDialog.Builder(this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setTitle("No tiene Materias Preferidas")
+                    .setTitle("No tiene materias preferidas")
                     .setMessage("Para poder contestar preguntas, tiene que elegir las materias de su preferencia.")
-                    .setPositiveButton("Ir a Materias", new DialogInterface.OnClickListener() {
+                    .setPositiveButton("Ir a materias", new DialogInterface.OnClickListener() {
                         @Override
-                        public void onClick(DialogInterface dialog, int which) {
+                        public void onClick(DialogInterface dialog, int which)
+                        {
                             Intent intent = new Intent(getApplicationContext(), AsesorMaterias.class);
-
                             startActivity(intent);
                         }
                     })
-                    .setNegativeButton("Ir despues", new DialogInterface.OnClickListener() {
+                    .setNegativeButton("Despues", new DialogInterface.OnClickListener() {
                         @Override
-                        public void onClick(DialogInterface dialog, int which) {
+                        public void onClick(DialogInterface dialog, int which)
+                        {
                             Desconectar(detenerse);
                         }
                     }).show();
@@ -269,12 +273,12 @@ public class AsesorMain extends AppCompatActivity
 
                                                     new AlertDialog.Builder(AsesorMain.this)
                                                             .setIcon(android.R.drawable.ic_dialog_alert)
-                                                            .setTitle("Pregunta encontrada!")
+                                                            .setTitle("Pregunta encontrada")
                                                             .setMessage(peticiones.get(posicion).Pregunta)
                                                             .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                                                                 @Override
-                                                                public void onClick(DialogInterface dialog, int which) {
-
+                                                                public void onClick(DialogInterface dialog, int which)
+                                                                {
                                                                     //Modificar peticion
 
                                                                     peticionEscogida.AsesorID = AsesorID;
@@ -307,7 +311,8 @@ public class AsesorMain extends AppCompatActivity
                                                             //Si rechazas peticion, se quita de lista de posibles peticiones a resolver
                                                             .setNegativeButton("Rechazar", new DialogInterface.OnClickListener() {
                                                                 @Override
-                                                                public void onClick(DialogInterface dialog, int which) {
+                                                                public void onClick(DialogInterface dialog, int which)
+                                                                {
                                                                     try
                                                                     {
                                                                         //Agregar pregunta rechazada a lista de preguntas a ignorar

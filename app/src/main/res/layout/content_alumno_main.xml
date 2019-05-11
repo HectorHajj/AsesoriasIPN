@@ -10,37 +10,27 @@
 
     <EditText
         android:id="@+id/editTextPregunta"
-        android:layout_width="295dp"
-        android:layout_height="211dp"
-        android:layout_marginTop="48dp"
-        android:ems="10"
-        android:hint="Introduzca su pregunta"
+        android:layout_width="350dp"
+        android:layout_height="60dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/inputs"
+        android:drawableStart="@drawable/edit_status"
+        android:hint="Introduzca su pregunta..."
         android:inputType="textMultiLine|text"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:padding="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/spinnerMaterias"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/buttonPreguntar"
-        style="@android:style/Widget.DeviceDefault.Button.Toggle"
-        android:layout_width="157dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="32dp"
-        android:onClick="enviarPregunta"
-        android:text="Enviar Pregunta"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinnerMaterias" />
 
     <Spinner
         android:id="@+id/spinnerMaterias"
         android:layout_width="306dp"
         android:layout_height="43dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="40dp"
         android:dropDownWidth="match_parent"
         android:spinnerMode="dialog"
         app:layout_constraintBottom_toTopOf="@+id/buttonPreguntar"
@@ -48,5 +38,25 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextPregunta" />
+
+    <Button
+        android:id="@+id/buttonPreguntar"
+        android:layout_width="350dp"
+        android:layout_height="60dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="45dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/buttons"
+        android:onClick="enviarPregunta"
+        android:padding="4dp"
+        android:text="Enviar pregunta"
+        android:textAllCaps="false"
+        android:textColor="@android:color/background_light"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spinnerMaterias" />
+
 
 </android.support.constraint.ConstraintLayout>
