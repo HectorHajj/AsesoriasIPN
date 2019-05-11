@@ -30,7 +30,7 @@
                 android:id="@+id/titulo1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Ciencias Básicas y Matemáticas"
+                android:text="Básicas"
                 android:textSize="24sp" />
 
             <TableLayout
@@ -47,7 +47,7 @@
                 android:id="@+id/titulo2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Ciencias de la Ingeniería"
+                android:text="Ciencias de la ingeniería"
                 android:textSize="24sp" />
 
             <TableLayout
@@ -64,7 +64,7 @@
                 android:id="@+id/titulo3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Ingeniería Aplicada"
+                android:text="Ingeniería aplicada"
                 android:textSize="24sp" />
 
             <TableLayout
@@ -82,7 +82,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Ciencias Sociales y Humanidades"
+                android:text="Ciencias sociales y humanísticas"
                 android:textSize="24sp" />
 
             <TableLayout

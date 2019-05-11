@@ -186,8 +186,8 @@ public class AsesorMain extends AppCompatActivity
         return true;
     }
 
-    public void GuardarEstado(View view) {
-
+    public void GuardarEstado(View view)
+    {
     }
 
     public class GetPeticionesTask extends AsyncTask<ArrayList<String>, Void, Void>
