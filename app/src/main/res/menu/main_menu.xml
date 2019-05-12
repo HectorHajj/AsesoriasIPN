@@ -6,5 +6,7 @@
 
     <item android:title="Desloguearse" android:id="@+id/logout" />
 
+    <item android:title="Cambiar contraseña" android:id="@+id/cpass" />
+
     <item android:title="Eliminar cuenta" android:id="@+id/delete" />
 </menu>

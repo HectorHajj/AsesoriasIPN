@@ -261,14 +261,14 @@ public class AlumnoMain extends AppCompatActivity implements NavigationView.OnNa
 
         if(id == R.id.perfil)
         {
-            Intent intent = new Intent(getApplicationContext(), Perfil.class);
+            Intent intent = new Intent(AlumnoMain.this, Perfil.class);
             startActivity(intent);
         }
         else if(id == R.id.logout)
         {
             FirebaseAuth.getInstance().signOut();
 
-            Intent intent = new Intent(getApplicationContext(), Login.class);
+            Intent intent = new Intent(AlumnoMain.this, Login.class);
             startActivity(intent);
         }
         else if(id == R.id.delete)
@@ -318,6 +318,11 @@ public class AlumnoMain extends AppCompatActivity implements NavigationView.OnNa
             AlertDialog ad = builder.create();
             ad.setTitle("Eliminar cuenta");
             ad.show();
+        }
+        else if(id == R.id.cpass)
+        {
+            Intent intent = new Intent(AlumnoMain.this, ChangePassword.class);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
