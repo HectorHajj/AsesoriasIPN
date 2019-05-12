@@ -69,7 +69,7 @@ public class AlumnoMain extends AppCompatActivity implements NavigationView.OnNa
         //Tomar valor actual de pregunta y de materia y enviarla
         if(TextUtils.isEmpty(pregunta.getText().toString()))
         {
-            Toast.makeText(this, "Introduzca su pregunta en el campo proporcionado, porfavor.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Ingrese primero su pregunta por favor", Toast.LENGTH_LONG).show();
         }
         else
         {

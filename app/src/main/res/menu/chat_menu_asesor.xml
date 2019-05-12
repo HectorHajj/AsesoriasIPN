@@ -3,8 +3,8 @@
 
     <item
         android:id="@+id/extender"
-        android:title="Extender tiempo." />
+        android:title="Extender tiempo" />
     <item
         android:id="@+id/terminar"
-        android:title="Terminar Chat" />
+        android:title="Terminar chat" />
 </menu>
