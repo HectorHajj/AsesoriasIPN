@@ -3,12 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:title="Actualizar datos" android:id="@+id/perfil" />
-
-    <item android:title="Desloguearse" android:id="@+id/logout" />
-
     <item android:title="Cambiar E-mail" android:id="@+id/email"/>
-
     <item android:title="Cambiar contraseña" android:id="@+id/cpass" />
-
     <item android:title="Eliminar cuenta" android:id="@+id/delete" />
+    <item android:title="Salir" android:id="@+id/logout" />
 </menu>
