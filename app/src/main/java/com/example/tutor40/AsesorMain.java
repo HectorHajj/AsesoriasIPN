@@ -489,6 +489,11 @@ public class AsesorMain extends AppCompatActivity implements NavigationView.OnNa
             Intent intent = new Intent(AsesorMain.this, ChangePassword.class);
             startActivity(intent);
         }
+        else if(id == R.id.email)
+        {
+            Intent intent = new Intent(AsesorMain.this, ChangeEmail.class);
+            startActivity(intent);
+        }
 
         return super.onOptionsItemSelected(item);
     }

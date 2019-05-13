@@ -46,5 +46,6 @@
         <activity android:name=".Perfil" />
         <activity android:name=".ChangePassword" />
         <activity android:name=".ReseteoContraseña" />
+        <activity android:name=".ChangeEmail" />>
     </application>
 </manifest>

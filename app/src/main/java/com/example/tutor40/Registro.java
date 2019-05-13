@@ -105,17 +105,24 @@ public class Registro extends AppCompatActivity
             Toast.makeText(Registro.this, "Por favor introduzca su apellido materno", Toast.LENGTH_SHORT).show();
         }
 
+        if(!TextUtils.equals(Password.getText().toString(), Password2.getText().toString()))
+        {
+            Toast.makeText(Registro.this, "Las contraseñas no son similares", Toast.LENGTH_SHORT).show();
+        }
+
         if(!TextUtils.isEmpty(Email.getText().toString()) & !TextUtils.isEmpty(Password.getText().toString()) & !TextUtils.isEmpty(Password2.getText().toString()) & !TextUtils.isEmpty(Nombre.getText().toString()) & !TextUtils.isEmpty(ApellidoPaterno.getText().toString()) & !TextUtils.isEmpty(ApellidoMaterno.getText().toString()) & TextUtils.equals(Password.getText().toString(), Password2.getText().toString()))
         {
             loadingBar.setTitle("Creando una cuenta nueva");
             loadingBar.setMessage("Por favor espere mientras se crea su cuenta");
             loadingBar.setCanceledOnTouchOutside(true);
             loadingBar.show();
+
             //Metodo para crear nuevo usuario
             mAuth.createUserWithEmailAndPassword(Email.getText().toString(), Password.getText().toString())
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
+                        public void onComplete(@NonNull Task<AuthResult> task)
+                        {
                             if(task.isSuccessful())
                             {
                                 // Sign in success, update UI with the signed-in user's information
@@ -131,11 +138,6 @@ public class Registro extends AppCompatActivity
                             }
                         }
                     });
-        }
-
-        if(!TextUtils.equals(Password.getText().toString(), Password2.getText().toString()))
-        {
-            Toast.makeText(Registro.this, "Las contraseñas no son similares", Toast.LENGTH_SHORT).show();
         }
     }
 

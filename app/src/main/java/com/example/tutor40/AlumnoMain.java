@@ -324,6 +324,11 @@ public class AlumnoMain extends AppCompatActivity implements NavigationView.OnNa
             Intent intent = new Intent(AlumnoMain.this, ChangePassword.class);
             startActivity(intent);
         }
+        else if(id == R.id.email)
+        {
+            Intent intent = new Intent(AlumnoMain.this, ChangeEmail.class);
+            startActivity(intent);
+        }
 
         return super.onOptionsItemSelected(item);
     }

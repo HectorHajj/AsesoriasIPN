@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -52,8 +51,6 @@ public class Login extends AppCompatActivity
                         {
                             if(task.isSuccessful())
                             {
-                                // Sign in success, update UI with the signed-in user's information
-
                                 FirebaseUser user = mAuth.getCurrentUser();
 
                                 if(user.isEmailVerified())
@@ -72,17 +69,15 @@ public class Login extends AppCompatActivity
                                             {
                                                 loadingBar.dismiss();
 
-                                                Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
-
+                                                Intent intent = new Intent(Login.this, AsesorMain.class);
                                                 intent.putExtra("RolID", "Ck5Tnzr0ipmAzKpQpTDX");
                                                 startActivity(intent);
                                             }
-                                            else if (documentSnapshot.getData().get("RolID").toString().equals("I60WiSHvFyzJqUT0IU20"))
+                                            else if(documentSnapshot.getData().get("RolID").toString().equals("I60WiSHvFyzJqUT0IU20"))
                                             {
                                                 loadingBar.dismiss();
 
-                                                Intent intent = new Intent(getApplicationContext(), AlumnoMain.class);
-
+                                                Intent intent = new Intent(Login.this, AlumnoMain.class);
                                                 intent.putExtra("RolID", "I60WiSHvFyzJqUT0IU20");
                                                 startActivity(intent);
                                             }
