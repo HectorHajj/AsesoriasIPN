@@ -118,6 +118,8 @@ public class ChangePassword extends AppCompatActivity
                                         {
                                             Toast.makeText(ChangePassword.this, "Contraseña actualizada, vuelva a iniciar sesión", Toast.LENGTH_SHORT).show();
 
+                                            FirebaseAuth.getInstance().signOut();
+
                                             Intent intent = new Intent(ChangePassword.this, Login.class);
                                             startActivity(intent);
                                         }

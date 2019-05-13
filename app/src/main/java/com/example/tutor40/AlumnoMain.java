@@ -300,6 +300,9 @@ public class AlumnoMain extends AppCompatActivity implements NavigationView.OnNa
                             if(task.isSuccessful())
                             {
                                 Toast.makeText(AlumnoMain.this, "Cuenta eliminada", Toast.LENGTH_SHORT).show();
+
+                                FirebaseAuth.getInstance().signOut();
+
                                 Intent intent = new Intent(AlumnoMain.this, Login.class);
                                 startActivity(intent);
                             }

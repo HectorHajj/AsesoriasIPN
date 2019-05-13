@@ -116,6 +116,8 @@ public class ChangeEmail extends AppCompatActivity
                                             user.sendEmailVerification();
                                             Toast.makeText(ChangeEmail.this, "E-mail actualizado, verifique su correo", Toast.LENGTH_SHORT).show();
 
+                                            FirebaseAuth.getInstance().signOut();
+
                                             Intent intent = new Intent(ChangeEmail.this, Login.class);
                                             startActivity(intent);
                                         }

@@ -254,6 +254,9 @@ public class AsesorMaterias extends AppCompatActivity implements NavigationView.
                             if(task.isSuccessful())
                             {
                                 Toast.makeText(AsesorMaterias.this, "Cuenta eliminada", Toast.LENGTH_SHORT).show();
+
+                                FirebaseAuth.getInstance().signOut();
+
                                 Intent intent = new Intent(AsesorMaterias.this, Login.class);
                                 startActivity(intent);
                             }

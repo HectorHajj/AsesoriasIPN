@@ -465,6 +465,9 @@ public class AsesorMain extends AppCompatActivity implements NavigationView.OnNa
                             if(task.isSuccessful())
                             {
                                 Toast.makeText(AsesorMain.this, "Cuenta eliminada", Toast.LENGTH_SHORT).show();
+
+                                FirebaseAuth.getInstance().signOut();
+
                                 Intent intent = new Intent(AsesorMain.this, Login.class);
                                 startActivity(intent);
                             }
