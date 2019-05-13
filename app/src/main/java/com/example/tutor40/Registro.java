@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class Registro extends AppCompatActivity
 {
-    EditText Email;
+    EditText Email, Email2;
     EditText Password, Password2;
     EditText Nombre;
     EditText ApellidoPaterno;
@@ -80,6 +80,11 @@ public class Registro extends AppCompatActivity
             Toast.makeText(Registro.this, "Por favor introduzca un E-Mail", Toast.LENGTH_SHORT).show();
         }
 
+        if(TextUtils.isEmpty(Email2.getText().toString()))
+        {
+            Toast.makeText(Registro.this, "Por favor introduzca la verificación del E-Mail", Toast.LENGTH_SHORT).show();
+        }
+
         if(TextUtils.isEmpty(Password.getText().toString()))
         {
             Toast.makeText(Registro.this, "Por favor introduzca una contraseña", Toast.LENGTH_SHORT).show();
@@ -110,7 +115,12 @@ public class Registro extends AppCompatActivity
             Toast.makeText(Registro.this, "Las contraseñas no son similares", Toast.LENGTH_SHORT).show();
         }
 
-        if(!TextUtils.isEmpty(Email.getText().toString()) & !TextUtils.isEmpty(Password.getText().toString()) & !TextUtils.isEmpty(Password2.getText().toString()) & !TextUtils.isEmpty(Nombre.getText().toString()) & !TextUtils.isEmpty(ApellidoPaterno.getText().toString()) & !TextUtils.isEmpty(ApellidoMaterno.getText().toString()) & TextUtils.equals(Password.getText().toString(), Password2.getText().toString()))
+        if(!TextUtils.equals(Email.getText().toString(), Email2.getText().toString()))
+        {
+            Toast.makeText(Registro.this, "Los E-mails no son similares", Toast.LENGTH_SHORT).show();
+        }
+
+        if(!TextUtils.isEmpty(Email.getText().toString()) & !TextUtils.isEmpty(Password.getText().toString()) & !TextUtils.isEmpty(Password2.getText().toString()) & !TextUtils.isEmpty(Nombre.getText().toString()) & !TextUtils.isEmpty(ApellidoPaterno.getText().toString()) & !TextUtils.isEmpty(ApellidoMaterno.getText().toString()) & TextUtils.equals(Password.getText().toString(), Password2.getText().toString()) & TextUtils.equals(Email.getText().toString(), Email2.getText().toString()))
         {
             loadingBar.setTitle("Creando una cuenta nueva");
             loadingBar.setMessage("Por favor espere mientras se crea su cuenta");
@@ -148,6 +158,7 @@ public class Registro extends AppCompatActivity
         setContentView(R.layout.activity_registro);
 
         Email = findViewById(R.id.editTextEmail);
+        Email2= findViewById(R.id.editTextEmail2);
         Password = findViewById(R.id.editTextPassword);
         Password2 = findViewById(R.id.editTextPassword2);
         Nombre = findViewById(R.id.editTextNombre);

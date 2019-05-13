@@ -78,11 +78,6 @@ public class ChangePassword extends AppCompatActivity
             @Override
             public void onClick(View view)
             {
-                if(TextUtils.isEmpty(CA.getText().toString()))
-                {
-                    Toast.makeText(ChangePassword.this, "Por favor introduzca su contraseña actual", Toast.LENGTH_SHORT).show();
-                }
-
                 if(TextUtils.isEmpty(CN.getText().toString()))
                 {
                     Toast.makeText(ChangePassword.this, "Por favor introduzca su contraseña nueva", Toast.LENGTH_SHORT).show();
@@ -91,6 +86,11 @@ public class ChangePassword extends AppCompatActivity
                 if(TextUtils.isEmpty(CNR.getText().toString()))
                 {
                     Toast.makeText(ChangePassword.this, "Por favor introduzca la verificación de la contraseña", Toast.LENGTH_SHORT).show();
+                }
+
+                if(TextUtils.isEmpty(CA.getText().toString()))
+                {
+                    Toast.makeText(ChangePassword.this, "Por favor introduzca su contraseña actual", Toast.LENGTH_SHORT).show();
                 }
 
                 if(!TextUtils.equals(CN.getText().toString(), CNR.getText().toString()))
