@@ -300,7 +300,8 @@ public class AlumnoMain extends AppCompatActivity implements NavigationView.OnNa
                             if(task.isSuccessful())
                             {
                                 Toast.makeText(AlumnoMain.this, "Cuenta eliminada", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(getApplicationContext(), Login.class));
+                                Intent intent = new Intent(AlumnoMain.this, Login.class);
+                                startActivity(intent);
                             }
                         }
                     });
@@ -339,14 +340,10 @@ public class AlumnoMain extends AppCompatActivity implements NavigationView.OnNa
     {
         int id = item.getItemId();
 
-        if(id == R.id.perfil)
+        if(id == R.id.ranking)
         {
-            Intent intent = new Intent(getApplicationContext(), Perfil.class);
-            startActivity(intent);
-        }
-        else if(id == R.id.ranking)
-        {
-            Intent intent = new Intent(getApplicationContext(), Perfil.class);
+        //Deben poner hacia que ventana ira ranking, de momento esta hacia login.
+            Intent intent = new Intent(AlumnoMain.this, Login.class);
             startActivity(intent);
         }
 
@@ -376,7 +373,7 @@ public class AlumnoMain extends AppCompatActivity implements NavigationView.OnNa
                 {
                     if(documentSnapshot.getData().get("RolID").toString() == "Ck5Tnzr0ipmAzKpQpTDX")
                     {
-                        Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
+                        Intent intent = new Intent(AlumnoMain.this, AsesorMain.class);
                         startActivity(intent);
                     }
                 }
@@ -388,7 +385,7 @@ public class AlumnoMain extends AppCompatActivity implements NavigationView.OnNa
             e.printStackTrace();
 
             //Los llevamos a Login
-            Intent intent = new Intent(getApplicationContext(), Login.class);
+            Intent intent = new Intent(AlumnoMain.this, Login.class);
             startActivity(intent);
         }
     }

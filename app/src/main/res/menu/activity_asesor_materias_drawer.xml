@@ -5,11 +5,7 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/materias"
-            android:title="Materias" />
-        <item
-            android:id="@+id/perfil"
-            android:title="Cambiar datos" />
+            android:id="@+id/regresar"
+            android:title="Asesorar" />
     </group>
-
 </menu>

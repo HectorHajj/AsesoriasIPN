@@ -465,7 +465,8 @@ public class AsesorMain extends AppCompatActivity implements NavigationView.OnNa
                             if(task.isSuccessful())
                             {
                                 Toast.makeText(AsesorMain.this, "Cuenta eliminada", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(getApplicationContext(), Login.class));
+                                Intent intent = new Intent(AsesorMain.this, Login.class);
+                                startActivity(intent);
                             }
                         }
                     });
@@ -505,19 +506,9 @@ public class AsesorMain extends AppCompatActivity implements NavigationView.OnNa
 
         if(id == R.id.materias)
         {
-            Intent intent = new Intent(getApplicationContext(), AsesorMaterias.class);
+            Intent intent = new Intent(AsesorMain.this, AsesorMaterias.class);
             startActivity(intent);
         }
-        else if(id == R.id.perfil)
-        {
-            Intent intent = new Intent(getApplicationContext(), Perfil.class);
-            startActivity(intent);
-        }
-       // else if(id == R.id.ranking)
-        //{
-         //   Intent intent = new Intent(getApplicationContext(), Perfil.class);
-          //  startActivity(intent);
-        //}
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

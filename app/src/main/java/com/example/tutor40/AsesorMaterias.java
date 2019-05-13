@@ -1,9 +1,11 @@
 package com.example.tutor40;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -17,10 +19,12 @@ import android.view.MenuItem;
 import android.widget.CheckBox;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -211,14 +215,73 @@ public class AsesorMaterias extends AppCompatActivity implements NavigationView.
 
         if(id == R.id.perfil)
         {
-            Intent intent = new Intent(getApplicationContext(), Perfil.class);
+            Intent intent = new Intent(AsesorMaterias.this, Perfil.class);
             startActivity(intent);
         }
-        else if (id == R.id.logout)
+        else if(id == R.id.logout)
         {
             FirebaseAuth.getInstance().signOut();
 
-            Intent intent = new Intent(getApplicationContext(), Login.class);
+            Intent intent = new Intent(AsesorMaterias.this, Login.class);
+            startActivity(intent);
+        }
+        else if(id == R.id.delete)
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("¿Esta seguro de que desea eliminar su cuenta?");
+            builder.setCancelable(false);
+
+            builder.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which)
+                {
+                    final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                    FirebaseFirestore db;
+                    db = FirebaseFirestore.getInstance();
+
+                    db.collection("users").document(user.getUid().toString()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task)
+                        {
+                        }
+                    });
+
+                    user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task)
+                        {
+                            if(task.isSuccessful())
+                            {
+                                Toast.makeText(AsesorMaterias.this, "Cuenta eliminada", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(AsesorMaterias.this, Login.class);
+                                startActivity(intent);
+                            }
+                        }
+                    });
+                }
+            });
+
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which)
+                {
+                    dialog.cancel();
+                }
+            });
+
+            AlertDialog ad = builder.create();
+            ad.setTitle("Eliminar cuenta");
+            ad.show();
+        }
+        else if(id == R.id.cpass)
+        {
+            Intent intent = new Intent(AsesorMaterias.this, ChangePassword.class);
+            startActivity(intent);
+        }
+        else if(id == R.id.email)
+        {
+            Intent intent = new Intent(AsesorMaterias.this, ChangeEmail.class);
             startActivity(intent);
         }
 
@@ -231,19 +294,9 @@ public class AsesorMaterias extends AppCompatActivity implements NavigationView.
     {
         int id = item.getItemId();
 
-        if(id == R.id.materias)
+        if (id == R.id.regresar)
         {
-            Intent intent = new Intent(getApplicationContext(), AsesorMaterias.class);
-            startActivity(intent);
-        }
-        else if (id == R.id.perfil)
-        {
-            Intent intent = new Intent(getApplicationContext(), Perfil.class);
-            startActivity(intent);
-        }
-        else if (id == R.id.ranking)
-        {
-            Intent intent = new Intent(getApplicationContext(), Perfil.class);
+            Intent intent = new Intent(AsesorMaterias.this, AsesorMain.class);
             startActivity(intent);
         }
 
