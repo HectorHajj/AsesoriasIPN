@@ -353,25 +353,34 @@ public class Chat extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         // Inflate the menu; this adds items to the action bar if it is present.
-        if(getIntent().getStringExtra("RolID").equals("Ck5Tnzr0ipmAzKpQpTDX")){
+        if(getIntent().getStringExtra("RolID").equals("Ck5Tnzr0ipmAzKpQpTDX"))
+        {
             getMenuInflater().inflate(R.menu.chat_menu_asesor, menu);
-        } else if (getIntent().getStringExtra("RolID").equals("I60WiSHvFyzJqUT0IU20")){
+        }
+        else if(getIntent().getStringExtra("RolID").equals("I60WiSHvFyzJqUT0IU20"))
+        {
             getMenuInflater().inflate(R.menu.chat_menu_alumno, menu);
         }
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
         int id = item.getItemId();
 
         if(id == R.id.extender){
             reiniciarTemporizador();
-        }else if (id == R.id.solicitarExtension) {
+        }
+        else if(id == R.id.solicitarExtension)
+        {
             //TODO: Crear mensaje que alerte al tutor de el tiempo restante
-        }else if (id == R.id.terminar){
+        }
+        else if(id == R.id.terminar)
+        {
             new AlertDialog.Builder(Chat.this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle("¿En verdad deseas terminar el chat?")
@@ -386,48 +395,118 @@ public class Chat extends AppCompatActivity
                                     .set(data, SetOptions.merge())
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
-                                        public void onSuccess(Void aVoid) {
+                                        public void onSuccess(Void aVoid)
+                                        {
                                             db.collection("Peticiones").document(PeticionID)
                                                     .delete()
                                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                         @Override
-                                                        public void onSuccess(Void aVoid) {
+                                                        public void onSuccess(Void aVoid)
+                                                        {
                                                             //Borrar chat tambien
                                                             db.collection("Chats").document(PeticionID)
                                                                     .delete()
                                                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                         @Override
-                                                                        public void onSuccess(Void aVoid) {
-                                                                            if (currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")){
+                                                                        public void onSuccess(Void aVoid)
+                                                                        {
+                                                                            if(currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX"))
+                                                                            {
+                                                                                StorageReference Imagen1 = storage.getReference();
+                                                                                StorageReference ImagenAlumno = Imagen1.child(AlumnoID);
+
+                                                                                ImagenAlumno.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                    @Override
+                                                                                    public void onSuccess(Void aVoid)
+                                                                                    {
+
+                                                                                    }
+                                                                                }).addOnFailureListener(new OnFailureListener() {
+                                                                                    @Override
+                                                                                    public void onFailure(@NonNull Exception exception)
+                                                                                    {
+
+                                                                                    }
+                                                                                });
+
+                                                                                StorageReference Imagen2 = storage.getReference();
+                                                                                StorageReference ImagenAsesor = Imagen2.child(AsesorID);
+
+                                                                                ImagenAsesor.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                    @Override
+                                                                                    public void onSuccess(Void aVoid)
+                                                                                    {
+
+                                                                                    }
+                                                                                }).addOnFailureListener(new OnFailureListener() {
+                                                                                    @Override
+                                                                                    public void onFailure(@NonNull Exception exception)
+                                                                                    {
+
+                                                                                    }
+                                                                                });
+
                                                                                 Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
-
                                                                                 intent.putExtra("RolID", currentUserRole);
-
                                                                                 startActivity(intent);
                                                                             }
                                                                             else
                                                                             {
-                                                                                Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
+                                                                                StorageReference Imagen1 = storage.getReference();
+                                                                                StorageReference ImagenAlumno = Imagen1.child(AlumnoID);
 
+                                                                                ImagenAlumno.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                    @Override
+                                                                                    public void onSuccess(Void aVoid)
+                                                                                    {
+
+                                                                                    }
+                                                                                }).addOnFailureListener(new OnFailureListener() {
+                                                                                    @Override
+                                                                                    public void onFailure(@NonNull Exception exception)
+                                                                                    {
+
+                                                                                    }
+                                                                                });
+
+                                                                                StorageReference Imagen2 = storage.getReference();
+                                                                                StorageReference ImagenAsesor = Imagen2.child(AsesorID);
+
+                                                                                ImagenAsesor.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                    @Override
+                                                                                    public void onSuccess(Void aVoid)
+                                                                                    {
+
+                                                                                    }
+                                                                                }).addOnFailureListener(new OnFailureListener() {
+                                                                                    @Override
+                                                                                    public void onFailure(@NonNull Exception exception)
+                                                                                    {
+
+                                                                                    }
+                                                                                });
+
+                                                                                Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
                                                                                 intent.putExtra("UserID",AsesorID);
                                                                                 intent.putExtra("RolID",currentUserRole);
-
                                                                                 startActivity(intent);
                                                                             }
                                                                         }
                                                                     })
                                                                     .addOnFailureListener(new OnFailureListener() {
                                                                         @Override
-                                                                        public void onFailure(@NonNull Exception e) {
-                                                                            Log.i("Error", "Error borrando Chat");
+                                                                        public void onFailure(@NonNull Exception e)
+                                                                        {
+                                                                            Log.i("Error", "Error borrando chat");
                                                                         }
                                                                     });
                                                         }
                                                     })
                                                     .addOnFailureListener(new OnFailureListener() {
                                                         @Override
-                                                        public void onFailure(@NonNull Exception e) {
-                                                            Log.i("Error", "Error borrando Peticion");
+                                                        public void onFailure(@NonNull Exception e)
+                                                        {
+                                                            Log.i("Error", "Error borrando petición");
                                                         }
                                                     });
                                         }
@@ -529,7 +608,8 @@ public class Chat extends AppCompatActivity
                             .setCancelable(false)
                             .setPositiveButton("Aceptar",new DialogInterface.OnClickListener(){
                                 @Override
-                                public void onClick(DialogInterface dialog, int which) {
+                                public void onClick(DialogInterface dialog, int which)
+                                {
                                     Reloj.cancel();
                                     reiniciarTemporizador();
                                 }
@@ -557,18 +637,85 @@ public class Chat extends AppCompatActivity
                                                                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                                 @Override
                                                                                 public void onSuccess(Void aVoid) {
-                                                                                    if (currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")) {
+                                                                                    if(currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX"))
+                                                                                    {
+                                                                                        StorageReference Imagen1 = storage.getReference();
+                                                                                        StorageReference ImagenAlumno = Imagen1.child(AlumnoID);
+
+                                                                                        ImagenAlumno.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                            @Override
+                                                                                            public void onSuccess(Void aVoid)
+                                                                                            {
+
+                                                                                            }
+                                                                                        }).addOnFailureListener(new OnFailureListener() {
+                                                                                            @Override
+                                                                                            public void onFailure(@NonNull Exception exception)
+                                                                                            {
+
+                                                                                            }
+                                                                                        });
+
+                                                                                        StorageReference Imagen2 = storage.getReference();
+                                                                                        StorageReference ImagenAsesor = Imagen2.child(AsesorID);
+
+                                                                                        ImagenAsesor.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                            @Override
+                                                                                            public void onSuccess(Void aVoid)
+                                                                                            {
+
+                                                                                            }
+                                                                                        }).addOnFailureListener(new OnFailureListener() {
+                                                                                            @Override
+                                                                                            public void onFailure(@NonNull Exception exception)
+                                                                                            {
+
+                                                                                            }
+                                                                                        });
+
                                                                                         Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
-
                                                                                         intent.putExtra("RolID", currentUserRole);
-
                                                                                         startActivity(intent);
-                                                                                    } else {
-                                                                                        Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        StorageReference Imagen1 = storage.getReference();
+                                                                                        StorageReference ImagenAlumno = Imagen1.child(AlumnoID);
 
+                                                                                        ImagenAlumno.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                            @Override
+                                                                                            public void onSuccess(Void aVoid)
+                                                                                            {
+
+                                                                                            }
+                                                                                        }).addOnFailureListener(new OnFailureListener() {
+                                                                                            @Override
+                                                                                            public void onFailure(@NonNull Exception exception)
+                                                                                            {
+
+                                                                                            }
+                                                                                        });
+
+                                                                                        StorageReference Imagen2 = storage.getReference();
+                                                                                        StorageReference ImagenAsesor = Imagen2.child(AsesorID);
+
+                                                                                        ImagenAsesor.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                            @Override
+                                                                                            public void onSuccess(Void aVoid)
+                                                                                            {
+
+                                                                                            }
+                                                                                        }).addOnFailureListener(new OnFailureListener() {
+                                                                                            @Override
+                                                                                            public void onFailure(@NonNull Exception exception)
+                                                                                            {
+
+                                                                                            }
+                                                                                        });
+
+                                                                                        Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
                                                                                         intent.putExtra("RolID", currentUserRole);
                                                                                         intent.putExtra("UserID", AsesorID);
-
                                                                                         startActivity(intent);
                                                                                     }
                                                                                 }
@@ -623,18 +770,85 @@ public class Chat extends AppCompatActivity
                                                                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                                 @Override
                                                                                 public void onSuccess(Void aVoid) {
-                                                                                    if (currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")) {
+                                                                                    if(currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX"))
+                                                                                    {
+                                                                                        StorageReference Imagen1 = storage.getReference();
+                                                                                        StorageReference ImagenAlumno = Imagen1.child(AlumnoID);
+
+                                                                                        ImagenAlumno.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                            @Override
+                                                                                            public void onSuccess(Void aVoid)
+                                                                                            {
+
+                                                                                            }
+                                                                                        }).addOnFailureListener(new OnFailureListener() {
+                                                                                            @Override
+                                                                                            public void onFailure(@NonNull Exception exception)
+                                                                                            {
+
+                                                                                            }
+                                                                                        });
+
+                                                                                        StorageReference Imagen2 = storage.getReference();
+                                                                                        StorageReference ImagenAsesor = Imagen2.child(AsesorID);
+
+                                                                                        ImagenAsesor.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                            @Override
+                                                                                            public void onSuccess(Void aVoid)
+                                                                                            {
+
+                                                                                            }
+                                                                                        }).addOnFailureListener(new OnFailureListener() {
+                                                                                            @Override
+                                                                                            public void onFailure(@NonNull Exception exception)
+                                                                                            {
+
+                                                                                            }
+                                                                                        });
+
                                                                                         Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
-
                                                                                         intent.putExtra("RolID", currentUserRole);
-
                                                                                         startActivity(intent);
-                                                                                    } else if (currentUserRole.equals("I60WiSHvFyzJqUT0IU20")) {
-                                                                                        Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
+                                                                                    }
+                                                                                    else if(currentUserRole.equals("I60WiSHvFyzJqUT0IU20"))
+                                                                                    {
+                                                                                        StorageReference Imagen1 = storage.getReference();
+                                                                                        StorageReference ImagenAlumno = Imagen1.child(AlumnoID);
 
+                                                                                        ImagenAlumno.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                            @Override
+                                                                                            public void onSuccess(Void aVoid)
+                                                                                            {
+
+                                                                                            }
+                                                                                        }).addOnFailureListener(new OnFailureListener() {
+                                                                                            @Override
+                                                                                            public void onFailure(@NonNull Exception exception)
+                                                                                            {
+
+                                                                                            }
+                                                                                        });
+
+                                                                                        StorageReference Imagen2 = storage.getReference();
+                                                                                        StorageReference ImagenAsesor = Imagen2.child(AsesorID);
+
+                                                                                        ImagenAsesor.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                            @Override
+                                                                                            public void onSuccess(Void aVoid)
+                                                                                            {
+
+                                                                                            }
+                                                                                        }).addOnFailureListener(new OnFailureListener() {
+                                                                                            @Override
+                                                                                            public void onFailure(@NonNull Exception exception)
+                                                                                            {
+
+                                                                                            }
+                                                                                        });
+
+                                                                                        Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
                                                                                         intent.putExtra("RolID", currentUserRole);
                                                                                         intent.putExtra("UserID", AsesorID);
-
                                                                                         startActivity(intent);
                                                                                     }
                                                                                 }
