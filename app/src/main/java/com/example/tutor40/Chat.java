@@ -301,7 +301,7 @@ public class Chat extends AppCompatActivity
                                             currentUserName = documentSnapshot.getData().get("Nombre").toString();
                                             currentUserRole = "Ck5Tnzr0ipmAzKpQpTDX";
                                             setTitle("Pregunta: " + Pregunta);
-                                            auxNAME1 = documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString();
+                                            auxNAME1 = AlumnoID;
                                         }
                                     });
 
@@ -311,7 +311,7 @@ public class Chat extends AppCompatActivity
                                         @Override
                                         public void onSuccess(DocumentSnapshot documentSnapshot)
                                         {
-                                            auxNAME2 = documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString();
+                                            auxNAME2 = AsesorID;
                                         }
                                     });
                         }
@@ -325,7 +325,7 @@ public class Chat extends AppCompatActivity
                                             currentUserName = documentSnapshot.getData().get("Nombre").toString();
                                             currentUserRole = "I60WiSHvFyzJqUT0IU20";
                                             setTitle("Pregunta: " + Pregunta);
-                                            auxNAME1 = documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString();
+                                            auxNAME1 = AsesorID;
                                         }
                                     });
 
@@ -335,7 +335,7 @@ public class Chat extends AppCompatActivity
                                         @Override
                                         public void onSuccess(DocumentSnapshot documentSnapshot)
                                         {
-                                            auxNAME2 = documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString();
+                                            auxNAME2 = AlumnoID;
                                         }
                                     });
                         }
