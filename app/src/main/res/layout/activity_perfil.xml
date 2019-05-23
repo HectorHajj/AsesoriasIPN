@@ -23,7 +23,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_marginTop="4dp"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ad"
+                android:src="@drawable/man_actualizar"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
