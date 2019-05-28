@@ -103,6 +103,7 @@ public class Chat extends AppCompatActivity
             @Override
             public void onClick(View view)
             {
+                Toast.makeText(Chat.this, currentUserRole.toString(), Toast.LENGTH_SHORT).show();
                 SaveMessageInfoToDatabase();
 
                 userMessageInput.setText("");
@@ -217,6 +218,21 @@ public class Chat extends AppCompatActivity
             uploadImage();
         }
     }
+
+    /*public void chooseImage(View v)
+    {
+        Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(intent, 0);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+        imageView.setImageBitmap(bitmap);
+        uploadImage();
+    }*/
 
     private void uploadImage()
     {
@@ -525,13 +541,19 @@ public class Chat extends AppCompatActivity
         {
             final long tiempoTemporizador;
 
-            if(ExtensionesUsadas == 0){
+            if(ExtensionesUsadas == 0)
+            {
                 tiempoTemporizador = 60000;
-            } else {
+            }
+            else
+            {
                 //Calcular tiempo restante
-                if((new Date().getTime() - FechaCreacion.getTime()) <= 0){
+                if((new Date().getTime() - FechaCreacion.getTime()) <= 0)
+                {
                     tiempoTemporizador = 60000;
-                } else {
+                }
+                else
+                {
                     tiempoTemporizador = ((new Date().getTime() - FechaCreacion.getTime()) + 60000) - (ExtensionesUsadas * 60000);
                 }
             }
@@ -543,12 +565,14 @@ public class Chat extends AppCompatActivity
                 @Override
                 public void onTick(long milisegundosRestantes)
                 {
-                    if(FechaCreacion == null){
+                    if(FechaCreacion == null)
+                    {
                         db.collection("Chats").document(PeticionID)
                                 .get()
                                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                     @Override
-                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    public void onSuccess(DocumentSnapshot documentSnapshot)
+                                    {
                                         Timestamp fecha = (Timestamp) documentSnapshot.getData().get("FechaCreacion");
                                         FechaCreacion = fecha.toDate();
 
@@ -559,22 +583,35 @@ public class Chat extends AppCompatActivity
                                         String segundosEdit;
                                         String minutosEdit;
 
-                                        if (segundos < 10) {
+                                        if(segundos < 10)
+                                        {
                                             segundosEdit = "0" + String.valueOf(segundos);
-                                        } else {
+                                        }
+                                        else
+                                        {
                                             segundosEdit = String.valueOf(segundos);
                                         }
 
-                                        if (minutos < 10) {
+                                        if(minutos < 10)
+                                        {
                                             minutosEdit = "0" + String.valueOf(minutos);
-                                        } else {
+                                        }
+                                        else
+                                        {
                                             minutosEdit = String.valueOf(minutos);
                                         }
 
-                                        Temporizador.setText(String.valueOf(minutosEdit) + ":" + String.valueOf(segundosEdit));
+                                        //if(currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX"))
+                                        //{
+                                        //    View Temp = findViewById(R.id.tiempo);
+                                        //    Temp.setVisibility(View.VISIBLE);
+                                            Temporizador.setText(String.valueOf(minutosEdit) + ":" + String.valueOf(segundosEdit));
+                                        //}
                                     }
                                 });
-                    } else {
+                    }
+                    else
+                    {
                         //Segundos restantes calculados desde la creación en servidor
                         long segundos = (new Date().getTime() - FechaCreacion.getTime()) / 1000 % 60;
                         long minutos = (new Date().getTime() - FechaCreacion.getTime()) / 60000 % 60;
@@ -582,19 +619,30 @@ public class Chat extends AppCompatActivity
                         String segundosEdit;
                         String minutosEdit;
 
-                        if (segundos < 10) {
+                        if(segundos < 10)
+                        {
                             segundosEdit = "0" + String.valueOf(segundos);
-                        } else {
+                        }
+                        else
+                        {
                             segundosEdit = String.valueOf(segundos);
                         }
 
-                        if (minutos < 10) {
+                        if(minutos < 10)
+                        {
                             minutosEdit = "0" + String.valueOf(minutos);
-                        } else {
+                        }
+                        else
+                        {
                             minutosEdit = String.valueOf(minutos);
                         }
 
-                        Temporizador.setText(String.valueOf(minutosEdit) + ":" + String.valueOf(segundosEdit));
+                        if(currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX"))
+                        {
+                            View Temp = findViewById(R.id.tiempo);
+                            Temp.setVisibility(View.VISIBLE);
+                            Temporizador.setText(String.valueOf(minutosEdit) + ":" + String.valueOf(segundosEdit));
+                        }
                     }
                 }
 
