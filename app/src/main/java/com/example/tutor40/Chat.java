@@ -654,12 +654,12 @@ public class Chat extends AppCompatActivity
                             minutosEdit = String.valueOf(minutos);
                         }
 
-                        if(currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX"))
-                        {
-                            View Temp = findViewById(R.id.tiempo);
-                            Temp.setVisibility(View.VISIBLE);
+                        //if(currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX"))
+                        //{
+                            //View Temp = findViewById(R.id.tiempo);
+                            //Temp.setVisibility(View.VISIBLE);
                             Temporizador.setText(String.valueOf(minutosEdit) + ":" + String.valueOf(segundosEdit));
-                        }
+                        //}
                     }
                 }
 

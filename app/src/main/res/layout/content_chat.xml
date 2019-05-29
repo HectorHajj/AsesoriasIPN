@@ -16,7 +16,7 @@
         android:layout_marginStart="16dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
         android:textColor="@color/design_default_color_primary"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.973"
         app:layout_constraintStart_toStartOf="parent"
