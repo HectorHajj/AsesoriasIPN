@@ -1,8 +1,11 @@
 package com.example.tutor40;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,6 +13,8 @@ import android.os.CountDownTimer;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -45,6 +50,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -78,12 +84,14 @@ public class Chat extends AppCompatActivity
     ArrayList<Mensajes> mensajesChat;
     Uri filePath;
     final int PICK_IMAGE_REQUEST = 71;
+    final static int cons = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        checkCameraPermission();
 
         //Toolbar
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -187,7 +195,23 @@ public class Chat extends AppCompatActivity
         reiniciarTemporizador();
     }
 
-    public void chooseImage(View v)
+    private void  checkCameraPermission()
+    {
+        int permissionCheck = ContextCompat.checkSelfPermission(Chat.this, Manifest.permission.CAMERA);
+
+        if(permissionCheck != PackageManager.PERMISSION_GRANTED)
+        {
+            Log.i("Mensaje", "No se tiene permiso para la camara.");
+
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 225);
+        }
+        else
+        {
+            Log.i("Mensaje", "Tienes permiso para usar la camara.");
+        }
+    }
+
+    /*public void chooseImage(View v)
     {
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -216,51 +240,45 @@ public class Chat extends AppCompatActivity
 
             uploadImage();
         }
-    }
+    }*/
 
-    /*public void chooseImage(View v)
+    public void chooseImage(View v)
     {
         Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(intent, 0);
+        startActivityForResult(intent, cons);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
-        Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-        imageView.setImageBitmap(bitmap);
-        uploadImage();
-    }*/
 
-    private void uploadImage()
-    {
-        if(filePath != null)
+        if(resultCode== Activity.RESULT_OK)
         {
-            final ProgressDialog progressDialog = new ProgressDialog(this);
-            progressDialog.setTitle("Subiendo...");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
+            Bundle ext = data.getExtras();
+            Bitmap bitmap = (Bitmap) ext.get("data");
+            imageView.setImageBitmap(bitmap);
 
-            ref = storageReference.child(auxNAME1);
+            FirebaseStorage FBS = FirebaseStorage.getInstance();
+            StorageReference SRI = storageReference.child(auxNAME1);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-            ref.putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] datas = baos.toByteArray();
+
+            UploadTask uploadTask = SRI.putBytes(datas);
+
+            uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    progressDialog.dismiss();
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e)
+                public void onFailure(@NonNull Exception exception)
                 {
-                    progressDialog.dismiss();
-                    Toast.makeText(Chat.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Chat.this, "Hubo un error.", Toast.LENGTH_SHORT).show();
                 }
-            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
-                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                    double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
-                    progressDialog.setMessage("Subida " + (int) progress + "%");
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
+                {
+                    Toast.makeText(Chat.this, "Subida con exito.", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -923,8 +941,8 @@ public class Chat extends AppCompatActivity
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
+                        public void onComplete(@NonNull Task<QuerySnapshot> task)
+                        {
                             displayTextMessages.setText("");
                             mensajesChat= new ArrayList<>();
 
@@ -946,9 +964,9 @@ public class Chat extends AppCompatActivity
                                 //Mostrar los mensajes en orden cronologico
                                 Collections.sort(mensajesChat, new SortByDate());
 
-                                for(Mensajes mensaje : mensajesChat) {
+                                for(Mensajes mensaje : mensajesChat)
+                                {
                                     displayTextMessages.append(mensaje.Nombre + ": " + mensaje.Mensaje + "\n");
-                                    //mensaje.Fecha.getHours() + ":" + mensaje.Fecha.getMinutes() + ":" + mensaje.Fecha.getSeconds() + "     " + mensaje.Fecha.toString() +
                                     mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
                                 }
                             }
