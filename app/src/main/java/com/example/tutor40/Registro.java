@@ -23,54 +23,33 @@ import java.util.Map;
 
 public class Registro extends AppCompatActivity
 {
+    //Controles
     EditText Email, Email2;
     EditText Password, Password2;
     EditText Nombre;
     EditText ApellidoPaterno;
     EditText ApellidoMaterno;
 
-    Switch alumnoTutor;
+    //Barra de carga
     ProgressDialog loadingBar;
 
+    //Firebase
     FirebaseAuth mAuth;
     FirebaseFirestore db;
 
-    public void registrarNuevoUsuario(String userId, String Nombre, String ApellidoPaterno, String ApellidoMaterno, Boolean Rol)
+    public void registrarNuevoUsuario(String userId, String Nombre, String ApellidoPaterno, String ApellidoMaterno)
     {
         Map<String, Object> user = new HashMap<>();
 
-        if(Rol)
-        {
-            //Si Rol es true entonces es un alumno
-            user.put("Nombre", Nombre);
-            user.put("ApellidoPaterno", ApellidoPaterno);
-            user.put("ApellidoMaterno", ApellidoMaterno);
-            user.put("RolID", "I60WiSHvFyzJqUT0IU20");
-        }
-        else
-        {
-            //Si Rol es false entonces es un asesor
-            user.put("Nombre", Nombre);
-            user.put("ApellidoPaterno", ApellidoPaterno);
-            user.put("ApellidoMaterno", ApellidoMaterno);
-            user.put("RolID", "Ck5Tnzr0ipmAzKpQpTDX");
-        }
+        user.put("Nombre", Nombre);
+        user.put("ApellidoPaterno", ApellidoPaterno);
+        user.put("ApellidoMaterno", ApellidoMaterno);
 
-        // Add a new document with a generated ID
         db.collection("users").document(userId).set(user);
 
-        if(user.get("RolID").toString() == "Ck5Tnzr0ipmAzKpQpTDX")
-        {
-            Toast.makeText(Registro.this, "Cuenta de asesor creada, verifique su correo", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(getApplicationContext(), Login.class);
-            startActivity(intent);
-        }
-        else if(user.get("RolID").toString() == "I60WiSHvFyzJqUT0IU20")
-        {
-            Toast.makeText(Registro.this, "Cuenta de alumno creada, verifique su correo", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(getApplicationContext(), Login.class);
-            startActivity(intent);
-        }
+        Toast.makeText(Registro.this, "Cuenta creada. Verifique su correo.", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(getApplicationContext(), Login.class);
+        startActivity(intent);
     }
 
     public void registrar(View view)
@@ -112,12 +91,12 @@ public class Registro extends AppCompatActivity
 
         if(!TextUtils.equals(Password.getText().toString(), Password2.getText().toString()))
         {
-            Toast.makeText(Registro.this, "Las contraseñas no son similares", Toast.LENGTH_SHORT).show();
+            Toast.makeText(Registro.this, "Las contraseñas no son identicas", Toast.LENGTH_SHORT).show();
         }
 
         if(!TextUtils.equals(Email.getText().toString(), Email2.getText().toString()))
         {
-            Toast.makeText(Registro.this, "Los E-mails no son similares", Toast.LENGTH_SHORT).show();
+            Toast.makeText(Registro.this, "Los E-mails no son identicas", Toast.LENGTH_SHORT).show();
         }
 
         if(!TextUtils.isEmpty(Email.getText().toString()) & !TextUtils.isEmpty(Password.getText().toString()) & !TextUtils.isEmpty(Password2.getText().toString()) & !TextUtils.isEmpty(Nombre.getText().toString()) & !TextUtils.isEmpty(ApellidoPaterno.getText().toString()) & !TextUtils.isEmpty(ApellidoMaterno.getText().toString()) & TextUtils.equals(Password.getText().toString(), Password2.getText().toString()) & TextUtils.equals(Email.getText().toString(), Email2.getText().toString()))
@@ -138,7 +117,7 @@ public class Registro extends AppCompatActivity
                                 // Sign in success, update UI with the signed-in user's information
                                 FirebaseUser user = mAuth.getInstance().getCurrentUser();
                                 user.sendEmailVerification();
-                                registrarNuevoUsuario(user.getUid(), Nombre.getText().toString(), ApellidoPaterno.getText().toString(), ApellidoMaterno.getText().toString(), alumnoTutor.isChecked());
+                                registrarNuevoUsuario(user.getUid(), Nombre.getText().toString(), ApellidoPaterno.getText().toString(), ApellidoMaterno.getText().toString());
                             }
                             else
                             {
@@ -157,6 +136,11 @@ public class Registro extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registro);
 
+        //Firebase
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
+        //Controles
         Email = findViewById(R.id.editTextEmail);
         Email2= findViewById(R.id.editTextEmail2);
         Password = findViewById(R.id.editTextPassword);
@@ -165,12 +149,7 @@ public class Registro extends AppCompatActivity
         ApellidoPaterno = findViewById(R.id.editTextApellidoPaterno);
         ApellidoMaterno = findViewById(R.id.editTextApellidoMaterno);
 
-        alumnoTutor = findViewById(R.id.switchTutorAlumno);
-
-        mAuth = FirebaseAuth.getInstance();
-
-        db = FirebaseFirestore.getInstance();
-
+        //Barra de carga
         loadingBar = new ProgressDialog(this);
     }
 

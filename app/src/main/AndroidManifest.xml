@@ -16,10 +16,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".MainActivity"></activity>
         <activity
             android:name=".Chat"
             android:label="@string/title_activity_demo"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Calificaciones" />
         <activity android:name=".Materias_carreras" />
         <activity android:name=".Settings" />
@@ -48,4 +49,5 @@
         <activity android:name=".ReseteoContraseña" />
         <activity android:name=".ChangeEmail" />
     </application>
+
 </manifest>

@@ -42,6 +42,7 @@ import java.util.Map;
 
 public class AsesorMain extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
 {
+    //SharedPreferences
     SharedPreferences sharedPreferences;
 
     //Firebase
@@ -53,7 +54,6 @@ public class AsesorMain extends AppCompatActivity implements NavigationView.OnNa
     Button conectarse;
     TextView textViewEstado;
     ProgressDialog loadingBar;
-
 
     //Variables
     ArrayList<String> materiasPreferidasList = new ArrayList<>();

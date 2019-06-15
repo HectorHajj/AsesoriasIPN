@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -146,42 +145,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/editTextApellidoPaterno" />
 
-            <Switch
-                android:id="@+id/switchTutorAlumno"
-                android:layout_width="wrap_content"
-                android:layout_height="55dp"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/inputs"
-                android:checked="false"
-                android:showText="true"
-                android:textOff="Asesor"
-                android:textOn="Alumno"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/editTextApellidoMaterno"
-                tools:checked="false" />
-
-            <Button
-                android:id="@+id/register_button"
-                android:layout_width="350dp"
-                android:layout_height="60dp"
-                android:layout_below="@id/editTextPassword"
-                android:layout_alignParentStart="true"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="16dp"
-                android:background="@drawable/buttons"
-                android:onClick="registrar"
-                android:padding="4dp"
-                android:text="Crear una cuenta"
-                android:textAllCaps="false"
-                android:textColor="@android:color/background_light"
-                android:textSize="24sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/switchTutorAlumno" />
-
             <TextView
                 android:id="@+id/already_have_account_link"
                 android:layout_width="match_parent"
@@ -201,6 +164,27 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/register_button" />
+
+            <Button
+                android:id="@+id/register_button"
+                android:layout_width="350dp"
+                android:layout_height="60dp"
+                android:layout_below="@id/editTextPassword"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/buttons"
+                android:onClick="registrar"
+                android:padding="4dp"
+                android:text="Crear una cuenta"
+                android:textAllCaps="false"
+                android:textColor="@android:color/background_light"
+                android:textSize="24sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/editTextApellidoMaterno" />
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
 </android.support.constraint.ConstraintLayout>

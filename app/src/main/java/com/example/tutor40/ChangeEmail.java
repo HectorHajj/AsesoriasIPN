@@ -35,7 +35,7 @@ public class ChangeEmail extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.cemail);
+        setContentView(R.layout.activity_cambio_email);
 
         CEN = (EditText) findViewById(R.id.ce_nuevo);
         CER = (EditText) findViewById(R.id.ce_nuevo_rep);

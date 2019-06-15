@@ -22,13 +22,16 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class Login extends AppCompatActivity
 {
+    //Firebase
     FirebaseAuth mAuth;
-    ProgressDialog loadingBar;
+    FirebaseFirestore db;
 
+    //Controles
     EditText Email;
     EditText Password;
 
-    FirebaseFirestore db;
+    //Barra de carga
+    ProgressDialog loadingBar;
 
     public void login(View view)
     {
@@ -65,22 +68,10 @@ public class Login extends AppCompatActivity
                                     docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                         @Override
                                         public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                            if(documentSnapshot.getData().get("RolID").toString().equals("Ck5Tnzr0ipmAzKpQpTDX"))
-                                            {
-                                                loadingBar.dismiss();
+                                            loadingBar.dismiss();
 
-                                                Intent intent = new Intent(Login.this, AsesorMain.class);
-                                                intent.putExtra("RolID", "Ck5Tnzr0ipmAzKpQpTDX");
-                                                startActivity(intent);
-                                            }
-                                            else if(documentSnapshot.getData().get("RolID").toString().equals("I60WiSHvFyzJqUT0IU20"))
-                                            {
-                                                loadingBar.dismiss();
-
-                                                Intent intent = new Intent(Login.this, AlumnoMain.class);
-                                                intent.putExtra("RolID", "I60WiSHvFyzJqUT0IU20");
-                                                startActivity(intent);
-                                            }
+                                            Intent intent = new Intent(Login.this, MainActivity.class);
+                                            startActivity(intent);
                                         }
                                     });
                                 }
@@ -118,12 +109,13 @@ public class Login extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        loadingBar = new ProgressDialog(this);
-
-        Email = findViewById(R.id.editTextEmail);
-        Password = findViewById(R.id.editTextPassword);
-
+        //Firebase
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+
+        //Controles
+        loadingBar = new ProgressDialog(this);
+        Email = findViewById(R.id.editTextEmail);
+        Password = findViewById(R.id.editTextPassword);
     }
 }

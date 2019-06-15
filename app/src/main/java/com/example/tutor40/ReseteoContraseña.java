@@ -25,7 +25,7 @@ public class ReseteoContraseña extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.olvido_de_password);
+        setContentView(R.layout.activity_contrasena_olvidada);
 
         mAuth = FirebaseAuth.getInstance();
 
