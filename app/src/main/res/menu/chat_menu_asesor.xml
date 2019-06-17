@@ -5,6 +5,10 @@
         android:id="@+id/extender"
         android:title="Extender tiempo" />
     <item
+        android:id="@+id/reportar"
+        android:title="Reportar Usuario" />
+    <item
         android:id="@+id/terminar"
+        android:icon="@drawable/stop"
         android:title="Terminar chat" />
 </menu>

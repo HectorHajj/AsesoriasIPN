@@ -78,6 +78,7 @@ public class Chat extends AppCompatActivity
     ArrayList<Mensajes> mensajesChat;
     Uri filePath;
     final int PICK_IMAGE_REQUEST = 71;
+    ArrayList<String> usuariosBloqueados = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -301,6 +302,13 @@ public class Chat extends AppCompatActivity
                                             currentUserName = documentSnapshot.getData().get("Nombre").toString();
                                             currentUserRole = "1";
                                             setTitle("Pregunta: " + Pregunta);
+
+                                            try {
+                                                usuariosBloqueados = (ArrayList<String>) ObjectSerializer.deserialize(documentSnapshot.getData().get("bloqueados").toString());
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+
                                             auxNAME1 = documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString();
                                         }
                                     });
@@ -367,10 +375,128 @@ public class Chat extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
+        if(id == R.id.reportar){
+            //Si el usuario reporta al otro usuario, no volvera a tener contacto con el y el chat termina en ese momento
+            //Preguntar por confirmacion
+            new AlertDialog.Builder(Chat.this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle("Reportar Usuario")
+                    .setMessage("Esta acción terminará inmediatamente el chat y el usuario quedará bloqueado para futuras interacciones.")
+                    .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Map<String, Object> data = new HashMap<>();
+                            data.put("Borrandose", true);
+
+                            db.collection("Chats").document(PeticionID)
+                                    .set(data, SetOptions.merge())
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            db.collection("Peticiones").document(PeticionID)
+                                                    .delete()
+                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+                                                            //Borrar chat tambien
+                                                            db.collection("Chats").document(PeticionID)
+                                                                    .delete()
+                                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                        @Override
+                                                                        public void onSuccess(Void aVoid) {
+
+                                                                            //Añadir usuario a lista de bloqueos
+                                                                            if (currentUserRole.equals("1")){
+
+                                                                                usuariosBloqueados.add(AlumnoID);
+
+                                                                                Map<String, Object> bloqueado = new HashMap<>();
+                                                                                try
+                                                                                {
+                                                                                    bloqueado.put("bloqueados", ObjectSerializer.serialize(usuariosBloqueados));
+                                                                                } catch (IOException e) {
+                                                                                    e.printStackTrace();
+                                                                                }
+
+                                                                                db.collection("users").document(currentUserID)
+                                                                                        .set(bloqueado, SetOptions.merge())
+                                                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                            @Override
+                                                                                            public void onSuccess(Void aVoid) {
+                                                                                                try
+                                                                                                {
+                                                                                                    Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
+
+                                                                                                    intent.putExtra("RolID", currentUserRole);
+
+                                                                                                    startActivity(intent);
+                                                                                                }
+                                                                                                catch(Exception e)
+                                                                                                {
+                                                                                                    e.printStackTrace();
+                                                                                                }
+                                                                                            }
+                                                                                        });
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                usuariosBloqueados.add(AsesorID);
+
+                                                                                Map<String, Object> bloqueado = new HashMap<>();
+                                                                                try
+                                                                                {
+                                                                                    bloqueado.put("bloqueados", ObjectSerializer.serialize(usuariosBloqueados));
+                                                                                } catch (IOException e) {
+                                                                                    e.printStackTrace();
+                                                                                }
+
+                                                                                db.collection("users").document(currentUserID)
+                                                                                        .set(bloqueado, SetOptions.merge())
+                                                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                            @Override
+                                                                                            public void onSuccess(Void aVoid) {
+                                                                                                try
+                                                                                                {
+                                                                                                    Intent intent = new Intent(getApplicationContext(), AlumnoMain.class);
+
+                                                                                                    intent.putExtra("RolID",currentUserRole);
+
+                                                                                                    startActivity(intent);
+                                                                                                }
+                                                                                                catch(Exception e)
+                                                                                                {
+                                                                                                    e.printStackTrace();
+                                                                                                }
+                                                                                            }
+                                                                                        });
+                                                                            }
+                                                                        }
+                                                                    })
+                                                                    .addOnFailureListener(new OnFailureListener() {
+                                                                        @Override
+                                                                        public void onFailure(@NonNull Exception e) {
+                                                                            Log.i("Error", "Error borrando Chat");
+                                                                        }
+                                                                    });
+                                                        }
+                                                    })
+                                                    .addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception e) {
+                                                            Log.i("Error", "Error borrando Peticion");
+                                                        }
+                                                    });
+                                        }
+                                    });
+                        }
+                    })
+                    .setNegativeButton("Rechazar", null).show();
+        }
+
         if(id == R.id.extender){
             reiniciarTemporizador();
         }else if (id == R.id.solicitarExtension) {
-            //TODO: Crear mensaje que alerte al tutor de el tiempo restante
+            //TODO: Crear mensaje que alerte al asesor de el tiempo restante
         }else if (id == R.id.terminar){
             new AlertDialog.Builder(Chat.this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
@@ -398,7 +524,7 @@ public class Chat extends AppCompatActivity
                                                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                         @Override
                                                                         public void onSuccess(Void aVoid) {
-                                                                            if (currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")){
+                                                                            if (currentUserRole.equals("1")){
                                                                                 Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
 
                                                                                 intent.putExtra("RolID", currentUserRole);

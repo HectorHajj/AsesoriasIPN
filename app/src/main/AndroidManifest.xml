@@ -22,7 +22,6 @@
             android:label="@string/title_activity_demo"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Calificaciones" />
-        <activity android:name=".Materias_carreras" />
         <activity android:name=".Settings" />
         <activity
             android:name=".AlumnoMain"
