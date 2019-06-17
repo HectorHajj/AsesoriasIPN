@@ -83,7 +83,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/editTextPassword" />
+                app:layout_constraintTop_toBottomOf="@+id/need_new_account_link" />
 
             <Button
                 android:id="@+id/buttonLogin"
@@ -102,8 +102,9 @@
                 android:textColor="@android:color/background_light"
                 android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.482"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/password_link" />
+                app:layout_constraintTop_toBottomOf="@+id/editTextPassword" />
 
             <TextView
                 android:id="@+id/need_new_account_link"

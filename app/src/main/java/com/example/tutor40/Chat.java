@@ -141,18 +141,18 @@ public class Chat extends AppCompatActivity
                                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                     @Override
                                                                     public void onSuccess(Void aVoid) {
-                                                                        if (currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")) {
+                                                                        if (currentUserRole.equals("1")) {
                                                                             Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
 
                                                                             intent.putExtra("RolID", currentUserRole);
 
                                                                             startActivity(intent);
                                                                         }
-                                                                        else if(currentUserRole.equals("I60WiSHvFyzJqUT0IU20")){
+                                                                        else if(currentUserRole.equals("2")){
                                                                             Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
 
-                                                                            intent.putExtra("RolID",currentUserRole);
-                                                                            intent.putExtra("UserID",AsesorID);
+                                                                            intent.putExtra("RolID", currentUserRole);
+                                                                            intent.putExtra("UserID", AsesorID);
 
                                                                             startActivity(intent);
                                                                         }
@@ -290,7 +290,7 @@ public class Chat extends AppCompatActivity
                         Timestamp fecha = (Timestamp) documentSnapshot.getData().get("FechaCreacion");
                         FechaCreacion = fecha.toDate();
 
-                        if(getIntent().getStringExtra("RolID").equals("Ck5Tnzr0ipmAzKpQpTDX"))
+                        if(getIntent().getStringExtra("RolID").equals("1"))
                         {
                             db.collection("users").document(AlumnoID)
                                     .get()
@@ -299,7 +299,7 @@ public class Chat extends AppCompatActivity
                                         public void onSuccess(DocumentSnapshot documentSnapshot)
                                         {
                                             currentUserName = documentSnapshot.getData().get("Nombre").toString();
-                                            currentUserRole = "Ck5Tnzr0ipmAzKpQpTDX";
+                                            currentUserRole = "1";
                                             setTitle("Pregunta: " + Pregunta);
                                             auxNAME1 = documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString();
                                         }
@@ -315,7 +315,7 @@ public class Chat extends AppCompatActivity
                                         }
                                     });
                         }
-                        else if (getIntent().getStringExtra("RolID").equals("I60WiSHvFyzJqUT0IU20"))
+                        else if (getIntent().getStringExtra("RolID").equals("2"))
                         {
                             db.collection("users").document(AsesorID)
                                     .get()
@@ -323,7 +323,7 @@ public class Chat extends AppCompatActivity
                                         @Override
                                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                                             currentUserName = documentSnapshot.getData().get("Nombre").toString();
-                                            currentUserRole = "I60WiSHvFyzJqUT0IU20";
+                                            currentUserRole = "2";
                                             setTitle("Pregunta: " + Pregunta);
                                             auxNAME1 = documentSnapshot.getData().get("Nombre").toString() + " " + documentSnapshot.getData().get("ApellidoPaterno").toString() + " " + documentSnapshot.getData().get("ApellidoMaterno").toString();
                                         }
@@ -355,9 +355,9 @@ public class Chat extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        if(getIntent().getStringExtra("RolID").equals("Ck5Tnzr0ipmAzKpQpTDX")){
+        if(getIntent().getStringExtra("RolID").equals("1")){
             getMenuInflater().inflate(R.menu.chat_menu_asesor, menu);
-        } else if (getIntent().getStringExtra("RolID").equals("I60WiSHvFyzJqUT0IU20")){
+        } else if (getIntent().getStringExtra("RolID").equals("2")){
             getMenuInflater().inflate(R.menu.chat_menu_alumno, menu);
         }
         return true;
@@ -557,7 +557,7 @@ public class Chat extends AppCompatActivity
                                                                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                                 @Override
                                                                                 public void onSuccess(Void aVoid) {
-                                                                                    if (currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")) {
+                                                                                    if (currentUserRole.equals("1")) {
                                                                                         Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
 
                                                                                         intent.putExtra("RolID", currentUserRole);
@@ -623,13 +623,13 @@ public class Chat extends AppCompatActivity
                                                                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                                 @Override
                                                                                 public void onSuccess(Void aVoid) {
-                                                                                    if (currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")) {
+                                                                                    if (currentUserRole.equals("1")) {
                                                                                         Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
 
                                                                                         intent.putExtra("RolID", currentUserRole);
 
                                                                                         startActivity(intent);
-                                                                                    } else if (currentUserRole.equals("I60WiSHvFyzJqUT0IU20")) {
+                                                                                    } else if (currentUserRole.equals("2")) {
                                                                                         Intent intent = new Intent(getApplicationContext(), Calificaciones.class);
 
                                                                                         intent.putExtra("RolID", currentUserRole);
@@ -718,7 +718,7 @@ public class Chat extends AppCompatActivity
 
             mensaje.UserID = currentUserID;
 
-            if(currentUserRole.equals("Ck5Tnzr0ipmAzKpQpTDX")){
+            if(currentUserRole.equals("1")){
                 mensaje.Nombre = "Asesor";
             } else {
                 mensaje.Nombre = "Alumno";

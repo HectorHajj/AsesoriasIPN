@@ -131,7 +131,7 @@ public class AlumnoMain extends AppCompatActivity implements NavigationView.OnNa
                                     if (snapshot != null && snapshot.exists()) {
                                         Log.i("Heard event", "Current data: " + snapshot.getData());
 
-                                        //Si se asigna un Tutor
+                                        //Si se asigna un Asesor
                                         if(snapshot.getData().get("AsesorID") != null){
                                             loadingBar.dismiss();
 

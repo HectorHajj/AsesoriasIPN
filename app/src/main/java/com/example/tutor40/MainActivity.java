@@ -16,11 +16,15 @@ public class MainActivity extends AppCompatActivity {
     public void IrAlumno(View view) {
         Intent intent = new Intent(getApplicationContext(), AlumnoMain.class);
 
+        intent.putExtra("RolID","2");
+
         startActivity(intent);
     }
 
     public void IrAsesor(View view) {
         Intent intent = new Intent(getApplicationContext(), AsesorMain.class);
+
+        intent.putExtra("RolID","1");
 
         startActivity(intent);
     }

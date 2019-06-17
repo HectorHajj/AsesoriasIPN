@@ -60,8 +60,6 @@ public class Settings extends AppCompatActivity
             }
         });
 
-        //RetrieveUserInfo();
-
         userProfileImage.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view)
@@ -81,78 +79,6 @@ public class Settings extends AppCompatActivity
         userStatus = (EditText) findViewById(R.id.set_profile_status);
         userProfileImage = (ImageView) findViewById(R.id.set_profile_image);
         loadingBar = new ProgressDialog(this);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
-    {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        /*if((requestCode == GalleryPick)&&(resultCode==RESULT_OK)&&(data!=null))
-        {
-            Uri ImgaeUri = data.getData();
-
-            CropImage.activity().setGuidelines(CropImageView.Guidelines.ON).setAspectRatio(1,1).start(this);
-        }
-
-        if(requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
-        {
-            CropImage.ActivityResult result = CropImage.getActivityResult(data);
-
-            if(resultCode == RESULT_OK)
-            {
-                loadingBar.setTitle("Actualizando Perfil");
-                loadingBar.setMessage("Por favor espere, su imagen de perfil se esta actualizando...");
-                loadingBar.setCanceledOnTouchOutside(false);
-                loadingBar.show();
-
-                Uri resultUri = result.getUri();
-
-                StorageReference filePath = UserProfileImagesRef.child(currentUserID + ".jpg");
-
-                filePath.putFile(resultUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>(){
-                    @Override
-                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task)
-                    {
-                        if(task.isSuccessful())
-                        {
-                            Toast.makeText(Settings.this, "Imagen de perfil subida exitosamente...", Toast.LENGTH_SHORT).show();
-
-                            final String downloadUrl = task.getResult().getDownloadUrl().toString();
-
-                            HashMap<String, String> downloadUrlMap = new HashMap<>();
-                            downloadUrlMap.put("image", downloadUrl);
-
-                            db.collection("users").document(currentUserID)
-                                    .set(downloadUrlMap)
-                                    .addOnCompleteListener(new OnCompleteListener<Void>(){
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task)
-                                        {
-                                            if(task.isSuccessful())
-                                            {
-                                                Toast.makeText(Settings.this, "Imagen guadada en la base de datos exitosamente", Toast.LENGTH_SHORT).show();
-                                                loadingBar.dismiss();
-                                            }
-                                            else
-                                            {
-                                                String message = task.getException().toString();
-                                                Toast.makeText(Settings.this, "Error: " + message, Toast.LENGTH_SHORT).show();
-                                                loadingBar.dismiss();
-                                            }
-                                        }
-                                    });
-                        }
-                        else
-                        {
-                            String message = task.getException().toString();
-                            Toast.makeText(Settings.this, "Error: " + message, Toast.LENGTH_SHORT).show();
-                            loadingBar.dismiss();   //Linea extra
-                        }
-                    }
-                });
-            }
-        }*/
     }
 
     private void UpdateSettings()
@@ -204,37 +130,5 @@ public class Settings extends AppCompatActivity
         finish();
     }
 
-    /*private void RetrieveUserInfo()
-    {
-        RootRef.child("Users").child(currentUserID)
-                .addValueEventListener(new ValueEventListener(){
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-                    {
-                        if((dataSnapshot.exists()) && (dataSnapshot.hasChild("name")) && (dataSnapshot.hasChild("image")))
-                        {
-                            String retrieveUserName = dataSnapshot.child("name").getValue().toString();
-                            String retrievesStatus = dataSnapshot.child("status").getValue().toString();
-                            String retrieveProfileImage = dataSnapshot.child("image").getValue().toString();
 
-                            userName.setText(retrieveUserName);
-                            userStatus.setText(retrievesStatus);
-                            Picasso.get().load(retrieveProfileImage).into(userProfileImage);    //Linea extra
-                        }
-                        else if((dataSnapshot.exists()) && (dataSnapshot.hasChild("name")))
-                        {
-                            String retrieveUserName = dataSnapshot.child("name").getValue().toString();
-                            String retrievesStatus = dataSnapshot.child("status").getValue().toString();
-
-                            userName.setText(retrieveUserName);
-                            userStatus.setText(retrievesStatus);
-                        }
-                        else
-                        {
-                            userName.setVisibility(View.VISIBLE);
-                            Toast.makeText(Settings.this, "Por favor actualiza tu información de perfil", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-    }*/
 }
